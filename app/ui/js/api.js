@@ -9,6 +9,7 @@
 //   ?mock=idle|joined|hosting   starting state (default idle)
 //   ?update=modal|later|none    the "2.0.1 available" event after ~3 s (default modal)
 //   ?install=1                  start a port install on load (to screenshot progress)
+//   ?invite=1                   another GradApp on the LAN invites this one after ~3 s
 
 const TAURI = typeof window !== "undefined" ? window.__TAURI__ : undefined;
 export const isTauri = Boolean(TAURI?.core?.invoke);
@@ -50,6 +51,7 @@ if (isTauri) {
   TAURI.event.listen("gm://event", (e) => dispatch(e.payload));
   TAURI.event.listen("gm://invite", (e) => dispatchChannel("invite", e.payload));
   TAURI.event.listen("gm://navigate", (e) => dispatchChannel("navigate", e.payload));
+  TAURI.event.listen("gm://transfer", (e) => dispatchChannel("transfer", e.payload));
   call = (cmd, args) =>
     invoke(cmd, args).catch((error) => {
       throw new Error(typeof error === "string" ? error : error?.message || String(error));
@@ -82,4 +84,26 @@ export const api = {
   openUrl: (url) => (isTauri ? call("open_url", { url }) : Promise.resolve(window.open(url, "_blank", "noopener"))),
   hideWindow: () => call("hide_window"),
   quitApp: () => call("quit_app"),
+  // Datasets and runs (app/src-tauri/src/datasets.rs, runs.rs).
+  datasetsOverview: () => call("datasets_overview"),
+  datasetImport: (key, makeDefault) => call("dataset_import", { key, makeDefault }),
+  datasetUpload: (path, name, makeDefault) => call("dataset_upload", { path, name, makeDefault }),
+  datasetSetDefault: (id) => call("dataset_set_default", { id }),
+  datasetDelete: (id) => call("dataset_delete", { id }),
+  datasetDownload: (id, name, dir) => call("dataset_download", { id, name, dir }),
+  pickDatasetZip: () => call("pick_dataset_zip"),
+  pickFolder: (title) => call("pick_folder", { title: title || null }),
+  transfers: () => call("transfers"),
+  transferCancel: (id) => call("transfer_cancel", { id }),
+  runOptions: () => call("run_options"),
+  runCreate: (request) => call("run_create", { request }),
+  runStop: (id) => call("run_stop", { id }),
+  runDelete: (id) => call("run_delete", { id }),
+  runLive: (id) => call("run_live", { id }),
+  runDownloadWeights: (id, name, dir) => call("run_download_weights", { id, name, dir }),
+  // GradApps on this network (peers.rs).
+  peersState: () => call("peers_state"),
+  peerInvite: (deviceIds) => call("peer_invite", { deviceIds }),
+  inviteRespond: (nonce, action) => call("invite_respond", { nonce, action }),
+  peersUnblockAll: () => call("peers_unblock_all"),
 };

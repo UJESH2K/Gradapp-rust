@@ -1,0 +1,138 @@
+/* GradApps on this network (Discover) and the incoming-invite dialog. */
+
+.peer-panel {
+  gap: 16px;
+}
+
+.peer-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 248px;
+  gap: 18px;
+  align-items: start;
+}
+
+.peer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 12px;
+}
+
+.peer-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.026), rgba(255, 255, 255, 0.005));
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.peer-card.is-selected {
+  border-color: rgba(91, 124, 250, 0.55);
+  box-shadow: 0 0 0 1px rgba(91, 124, 250, 0.25), 0 14px 34px -22px rgba(91, 124, 250, 0.7);
+}
+
+.peer-card.is-member {
+  border-color: rgba(52, 211, 153, 0.3);
+  background: linear-gradient(180deg, rgba(52, 211, 153, 0.045), rgba(255, 255, 255, 0.005));
+}
+
+.peer-head {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+}
+
+.peer-avatar {
+  width: 36px;
+  height: 36px;
+  flex: none;
+  font-size: 0.72rem;
+}
+
+.peer-card.is-member .peer-avatar {
+  border-color: rgba(52, 211, 153, 0.55);
+  color: var(--live);
+}
+
+.peer-avatar.is-empty {
+  color: var(--text-faint);
+}
+
+.peer-check {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.peer-member {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 560;
+  color: var(--live);
+}
+
+.peer-outcome {
+  align-self: flex-start;
+}
+
+.peer-action {
+  display: flex;
+  justify-content: flex-start;
+  padding-top: 2px;
+  border-top: 1px solid var(--line);
+  padding-top: 11px;
+}
+
+.peer-empty {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 16px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius);
+}
+
+.peer-aside {
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.peer-qr {
+  padding: 12px;
+  justify-self: center;
+  align-self: center;
+}
+
+.peer-qr svg {
+  width: 132px;
+  height: 132px;
+}
+
+.peer-block {
+  color: var(--danger);
+}
+
+@media (max-width: 1100px) {
+  .peer-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.peer-gpu {
+  color: var(--text-dim);
+}
+
+.peer-card .vendor {
+  flex: none;
+}

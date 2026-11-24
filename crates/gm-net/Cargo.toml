@@ -11,7 +11,7 @@ serde.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true
 tokio.workspace = true
-reqwest.workspace = true
+reqwest = { workspace = true, features = ["multipart"] }
 axum.workspace = true
 if-addrs.workspace = true
 url.workspace = true
@@ -21,6 +21,7 @@ tokio-util = "0.7.13"
 socket2 = { version = "0.5", features = ["all"] }
 mdns-sd = "0.13"
 percent-encoding = "2"
+uuid.workspace = true
 
 [dev-dependencies]
 tempfile.workspace = true

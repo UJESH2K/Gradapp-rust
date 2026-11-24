@@ -59,7 +59,7 @@ pub async fn download_with<F>(
     url: &str,
     target: &Path,
     timeout: Duration,
-    mut on_progress: F,
+    on_progress: F,
 ) -> Result<u64>
 where
     F: FnMut(u64, Option<u64>),
@@ -77,6 +77,21 @@ where
             detail: format!("HTTP {} for {url}", status.as_u16()),
         });
     }
+    save_response(response, url, target, on_progress).await
+}
+
+/// Stream an already-successful `response` body to `<target>.part`, then rename
+/// it to `target` (shared by [`download_with`] and the coordinator client's
+/// authenticated downloads). The `.part` file is removed on any failure.
+pub(crate) async fn save_response<F>(
+    response: reqwest::Response,
+    what: &str,
+    target: &Path,
+    mut on_progress: F,
+) -> Result<u64>
+where
+    F: FnMut(u64, Option<u64>),
+{
     let total = response.content_length().filter(|n| *n > 0);
     if let Some(dir) = target.parent().filter(|d| !d.as_os_str().is_empty()) {
         tokio::fs::create_dir_all(dir).await?;
@@ -87,7 +102,7 @@ where
     let mut received = 0u64;
     let mut body = response.bytes_stream();
     while let Some(chunk) = body.next().await {
-        let chunk = chunk.map_err(|e| NetError::from_reqwest(e, url))?;
+        let chunk = chunk.map_err(|e| NetError::from_reqwest(e, what))?;
         file.write_all(&chunk).await?;
         received += chunk.len() as u64;
         on_progress(received, total);

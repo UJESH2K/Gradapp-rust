@@ -16,6 +16,12 @@ export const store = {
   datasets: null,
   logs: [],
   meshes: new Map(),
+  // GradApps on this network: peers by device_id, invites received (by nonce),
+  // and what became of the ones this app sent (by device_id).
+  peers: new Map(),
+  peerInfo: null, // { running, listening, visible, invite_port, me, blocked }
+  invites: new Map(),
+  sent: new Map(), // device_id -> { nonce, outcome, detail, at }
   scan: { scanned: 0, total: 0, active: false },
   install: null, // { port, step, percent, lines: [], done, failed }
   update: null,
@@ -76,6 +82,20 @@ export async function refreshMesh() {
   try {
     store.mesh = await api.meshSnapshot();
     emit("mesh");
+  } catch (error) {
+    console.warn(error);
+  }
+}
+
+export async function refreshPeers() {
+  try {
+    const view = await api.peersState();
+    store.peerInfo = { running: view.running, listening: view.listening, visible: view.visible, invite_port: view.invite_port, me: view.me, blocked: view.blocked };
+    store.peers = new Map(view.peers.map((p) => [p.device_id, p]));
+    store.invites = new Map(view.incoming.map((i) => [i.nonce, i]));
+    for (const o of view.outgoing) if (!store.sent.has(o.device_id)) store.sent.set(o.device_id, { nonce: o.nonce, outcome: "sent", at: o.sent_at });
+    emit("peers");
+    emit("invites");
   } catch (error) {
     console.warn(error);
   }
@@ -168,6 +188,30 @@ function handle(event) {
         emit("update");
       }
       break;
+    case "peer_seen":
+      store.peers.set(event.peer.device_id, event.peer);
+      emit("peers");
+      break;
+    case "peer_gone":
+      store.peers.delete(event.device_id);
+      emit("peers");
+      break;
+    case "invite_received":
+      store.invites.set(event.invite.nonce, event.invite);
+      emit("invites");
+      break;
+    case "invite_result":
+      if (event.incoming) {
+        store.invites.delete(event.nonce);
+        emit("invites");
+      } else {
+        // An answer only applies to the latest invite sent to that machine.
+        const known = store.sent.get(event.device_id);
+        const stale = known?.nonce && event.nonce && known.nonce !== event.nonce && !["sent", "failed"].includes(event.outcome);
+        if (!stale) store.sent.set(event.device_id, { nonce: event.nonce || known?.nonce, outcome: event.outcome, detail: event.detail, at: Date.now() / 1000 });
+        emit("peers");
+      }
+      break;
     case "update_progress":
       store.updateProgress = { downloaded: event.downloaded, total: event.total };
       emit("update-progress");
@@ -194,6 +238,7 @@ export async function boot() {
   emit("status");
   refreshDevice();
   refreshMesh();
+  refreshPeers();
   schedulePoll();
 }
 

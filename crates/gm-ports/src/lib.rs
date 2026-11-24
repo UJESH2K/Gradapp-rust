@@ -23,6 +23,7 @@ mod paths;
 mod plan;
 mod provision;
 mod registry;
+mod spawn;
 mod status;
 pub mod uv;
 mod verify;
@@ -35,7 +36,9 @@ pub use paths::{
 pub use plan::{
     local_machine_fingerprint, lock_fingerprint, machine_fingerprint, plan, requirements,
 };
-pub use provision::{provision, provision_with, Progress, ProvisionOptions, VerifyMode};
+pub use provision::{
+    disk_needed_bytes, provision, provision_with, Progress, ProvisionOptions, VerifyMode,
+};
 pub use registry::{
     current_platform, uv_python_platform, validate_spec, Registry, BUILTIN_MANIFESTS, PLATFORMS,
     PORT_IDS, REFERENCE_TORCH, REFERENCE_TORCHVISION, REFERENCE_ULTRALYTICS,

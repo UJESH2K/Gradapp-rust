@@ -301,6 +301,90 @@ pub struct MeshEvent {
 }
 
 // ---------------------------------------------------------------------------
+// Peers: other GradApps on this network, and invites between them
+// ---------------------------------------------------------------------------
+
+/// What a GradApp is doing, as its presence announces it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PeerStatus {
+    Idle,
+    Contributing,
+    Hosting,
+}
+
+/// Another GradApp 2 on this network (its presence packet, as received).
+/// Carries no secret: never the mesh token.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PeerInfo {
+    /// Stable random id, persisted by each app. Not a secret, not an identity proof.
+    pub device_id: String,
+    /// Settings › name in the mesh, else the hostname.
+    pub name: String,
+    pub os: Os,
+    #[serde(default)]
+    pub gpu: Option<String>,
+    #[serde(default)]
+    pub backend: Option<Backend>,
+    /// State of the port this machine would train with.
+    #[serde(default)]
+    pub port_state: Option<PortState>,
+    pub status: PeerStatus,
+    /// The mesh it is in (contributing to or hosting), if any.
+    #[serde(default)]
+    pub mesh_id: Option<String>,
+    #[serde(default)]
+    pub mesh_name: Option<String>,
+    pub app_version: String,
+    /// TCP port of its invite endpoint; 0 when it cannot receive invites.
+    #[serde(default)]
+    pub invite_port: u16,
+    /// Filled in by the receiver from the datagram's source address; whatever
+    /// the sender put here is ignored.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub address: Option<String>,
+}
+
+/// An invitation from a hosting GradApp to contribute to its mesh
+/// (`POST /v1/invite` on the invitee's invite endpoint).
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct MeshInvite {
+    pub from_device: String,
+    pub from_name: String,
+    pub mesh_name: String,
+    pub mesh_id: String,
+    /// `http://<lan ip>:<port>` of the coordinator.
+    pub coordinator: String,
+    pub token: String,
+    /// Unix seconds.
+    pub sent_at: f64,
+    /// Random, unique per invite; the reply quotes it.
+    pub nonce: String,
+    /// Where the inviter hears the answer (its invite endpoint port).
+    #[serde(default)]
+    pub reply_port: u16,
+    /// Filled in by the receiver: the sender's address as seen on the socket.
+    #[serde(default)]
+    pub from_address: Option<String>,
+    /// Filled in by the receiver from the coordinator's `/health`.
+    #[serde(default)]
+    pub nodes_active: Option<u32>,
+}
+
+/// How an invite ended (or where it stands), for both sides.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum InviteOutcome {
+    /// Delivered; the other side has not answered yet.
+    Sent,
+    Accepted,
+    Declined,
+    TimedOut,
+    /// Could not be delivered or was refused (unreachable, rate-limited, ...).
+    Failed,
+}
+
+// ---------------------------------------------------------------------------
 // Updates
 // ---------------------------------------------------------------------------
 
@@ -402,6 +486,29 @@ pub enum AppEvent {
     /// A new event on the mesh this app is in (joined or hosting).
     MeshEvent {
         event: MeshEvent,
+    },
+    /// Another GradApp announced itself (new, or something about it changed).
+    PeerSeen {
+        peer: PeerInfo,
+    },
+    /// A GradApp went quiet (closed, hidden, or left the network).
+    PeerGone {
+        device_id: String,
+    },
+    /// Another GradApp invites this machine into its mesh (already checked:
+    /// its coordinator answered `/health` with our protocol).
+    InviteReceived {
+        invite: MeshInvite,
+    },
+    /// An invite changed state. `incoming`: one this machine received
+    /// (e.g. it timed out); otherwise one it sent to `device_id`.
+    InviteResult {
+        nonce: String,
+        device_id: String,
+        incoming: bool,
+        outcome: InviteOutcome,
+        #[serde(default)]
+        detail: Option<String>,
     },
 }
 

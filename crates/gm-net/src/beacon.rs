@@ -163,7 +163,10 @@ impl Drop for Beacon {
     }
 }
 
-fn sender_socket(bind: Ipv4Addr, multicast_if: Option<Ipv4Addr>) -> io::Result<UdpSocket> {
+pub(crate) fn sender_socket(
+    bind: Ipv4Addr,
+    multicast_if: Option<Ipv4Addr>,
+) -> io::Result<UdpSocket> {
     let socket = Socket::new(Domain::IPV4, Type::DGRAM, Some(Protocol::UDP))?;
     socket.set_broadcast(true)?;
     if let Some(iface) = multicast_if {
@@ -176,7 +179,7 @@ fn sender_socket(bind: Ipv4Addr, multicast_if: Option<Ipv4Addr>) -> io::Result<U
     UdpSocket::from_std(socket.into())
 }
 
-fn directed_broadcast(lan: &LanAddress) -> Option<Ipv4Addr> {
+pub(crate) fn directed_broadcast(lan: &LanAddress) -> Option<Ipv4Addr> {
     // /0 has no directed broadcast (and `<< 32` would overflow); /31 and /32 have none either.
     (1..=30)
         .contains(&lan.prefix)

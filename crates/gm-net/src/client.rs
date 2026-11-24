@@ -3,6 +3,7 @@
 //! detail rule, and the `/events` server-sent-event stream with reconnects.
 
 use std::collections::VecDeque;
+use std::path::{Path, PathBuf};
 use std::sync::{Arc, RwLock};
 use std::time::Duration;
 
@@ -11,8 +12,10 @@ use gm_types::MeshHealth;
 use reqwest::Method;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
+use tokio::io::AsyncReadExt;
 use tokio_util::sync::CancellationToken;
 
+use crate::download::save_response;
 use crate::error::{detail_of, NetError, Result};
 use crate::invite::{health_from_value, lan_client};
 
@@ -40,12 +43,62 @@ fn allowed(path: &str) -> bool {
         | ["token", "rotate"] => true,
         ["runs", r] => id(r),
         ["runs", r, "stop"] => id(r),
+        // Trained weights: the `.pt` artifact, and the raw current weights.
+        ["runs", r, "artifact"] | ["runs", r, "weights.bin"] => id(r),
         ["datasets", d] => id(d), // includes "standard"
         ["datasets", d, "default"] => id(d),
+        ["datasets", d, "download"] => id(d),
         ["nodes", n] => id(n),
         ["nodes", n, "reset"] => id(n),
         _ => false,
     }
+}
+
+/// Uploads and downloads may take this long in total (multi-GB datasets on WiFi).
+const TRANSFER_TIMEOUT: Duration = Duration::from_secs(6 * 60 * 60);
+/// Upload chunk size: progress is reported once per chunk.
+const UPLOAD_CHUNK: usize = 256 * 1024;
+
+/// A file name the server suggested (`Content-Disposition`), reduced to
+/// characters that are safe on Windows, macOS and Linux. Never a path.
+pub fn safe_file_name(name: &str) -> Option<String> {
+    let base = name.rsplit(['/', '\\']).next().unwrap_or("");
+    let cleaned: String = base
+        .chars()
+        .map(|c| {
+            if c.is_ascii_alphanumeric() || matches!(c, '.' | '-' | '_' | ' ' | '(' | ')') {
+                c
+            } else {
+                '-'
+            }
+        })
+        .collect();
+    let cleaned = cleaned.trim_matches(|c: char| c == '.' || c == ' ' || c == '-');
+    (!cleaned.is_empty()).then(|| cleaned.chars().take(120).collect())
+}
+
+/// `filename="x.zip"` (or `filename=x.zip`) from a `Content-Disposition` header.
+fn disposition_name(header: &str) -> Option<String> {
+    header.split(';').map(str::trim).find_map(|part| {
+        let value = part.strip_prefix("filename=")?;
+        Some(value.trim_matches('"').to_string())
+    })
+}
+
+/// `dir/name`, or `dir/name (1).ext`, `(2)`... when that file already exists.
+fn unique_path(dir: &Path, name: &str) -> PathBuf {
+    let first = dir.join(name);
+    if !first.exists() {
+        return first;
+    }
+    let (stem, ext) = match name.rfind('.') {
+        Some(i) if i > 0 => (&name[..i], &name[i..]),
+        _ => (name, ""),
+    };
+    (1..10_000)
+        .map(|n| dir.join(format!("{stem} ({n}){ext}")))
+        .find(|p| !p.exists())
+        .unwrap_or(first)
 }
 
 /// One event from `GET /events` (`event: <kind>\ndata: <json>\n\n`).
@@ -266,6 +319,155 @@ impl CoordinatorClient {
         self.get("/models").await
     }
 
+    /// `GET /datasets/standard` → `{"catalogue": [...], "import": {running, key, message, error}}`.
+    pub async fn standard_datasets(&self) -> Result<Value> {
+        self.get("/datasets/standard").await
+    }
+
+    /// `POST /datasets/standard {key, make_default}`: starts a background
+    /// import on the host (progress arrives as `dataset.importing` events and
+    /// in `standard_datasets().import`). Returns `{"status":"importing","key"}`.
+    pub async fn import_standard(&self, key: &str, make_default: bool) -> Result<Value> {
+        let body = json!({ "key": key, "make_default": make_default });
+        self.call(Method::POST, "/datasets/standard", Some(&body))
+            .await
+    }
+
+    pub async fn set_default_dataset(&self, id: &str) -> Result<Value> {
+        self.call(Method::POST, &format!("/datasets/{id}/default"), None)
+            .await
+    }
+
+    pub async fn delete_dataset(&self, id: &str) -> Result<Value> {
+        self.call(Method::DELETE, &format!("/datasets/{id}"), None)
+            .await
+    }
+
+    /// `POST /datasets` as `multipart/form-data` (`file`, `name`,
+    /// `make_default`), streaming the zip from disk in 256 KB chunks so a
+    /// multi-GB dataset is never held in memory. `on_progress(sent, total)` runs
+    /// per chunk read. When every byte is sent the host still has to unpack and
+    /// check the archive before it answers; the reply is the new dataset record.
+    pub async fn upload_dataset<F>(
+        &self,
+        path: &Path,
+        name: &str,
+        make_default: bool,
+        on_progress: F,
+    ) -> Result<Value>
+    where
+        F: Fn(u64, u64) + Send + Sync + 'static,
+    {
+        let file = tokio::fs::File::open(path).await?;
+        let total = file.metadata().await?.len();
+        let file_name = path
+            .file_name()
+            .map(|n| n.to_string_lossy().into_owned())
+            .unwrap_or_else(|| "dataset.zip".into());
+        let progress = Arc::new(on_progress);
+        let chunks = futures::stream::unfold(
+            (Some(file), 0u64, progress),
+            move |(file, sent, progress)| async move {
+                let mut file = file?;
+                let mut buf = vec![0u8; UPLOAD_CHUNK];
+                match file.read(&mut buf).await {
+                    Ok(0) => None,
+                    Ok(n) => {
+                        buf.truncate(n);
+                        let sent = sent + n as u64;
+                        progress(sent, total);
+                        Some((Ok::<_, std::io::Error>(buf), (Some(file), sent, progress)))
+                    }
+                    // Yield the error once, then end the body.
+                    Err(e) => Some((Err(e), (None, sent, progress))),
+                }
+            },
+        );
+        let part =
+            reqwest::multipart::Part::stream_with_length(reqwest::Body::wrap_stream(chunks), total)
+                .file_name(file_name)
+                .mime_str("application/zip")
+                .map_err(|e| NetError::Decode(e.to_string()))?;
+        let form = reqwest::multipart::Form::new()
+            .text("name", name.to_string())
+            .text("make_default", if make_default { "true" } else { "false" })
+            .part("file", part);
+        let response = self
+            .request(Method::POST, "/datasets")
+            .timeout(TRANSFER_TIMEOUT)
+            .multipart(form)
+            .send()
+            .await
+            .map_err(|e| NetError::from_reqwest(e, &self.base))?;
+        let status = response.status();
+        let text = response
+            .text()
+            .await
+            .map_err(|e| NetError::from_reqwest(e, &self.base))?;
+        let data = serde_json::from_str(&text).unwrap_or(Value::String(text));
+        if !status.is_success() {
+            return Err(NetError::Http {
+                status: status.as_u16(),
+                detail: detail_of(Some(&data), status.as_u16()),
+            });
+        }
+        Ok(data)
+    }
+
+    /// Authenticated `GET route` saved into `dir` (created if needed) as
+    /// `file_name` (made safe), or, when that is empty, under the server's
+    /// `Content-Disposition` name; never overwriting an existing file. Written to `.part` and renamed when
+    /// complete. Returns the final path. `route` must be on the allowlist
+    /// (`/runs/{id}/artifact`, `/runs/{id}/weights.bin`, `/datasets/{id}/download`).
+    pub async fn download_file<F>(
+        &self,
+        route: &str,
+        dir: &Path,
+        file_name: &str,
+        on_progress: F,
+    ) -> Result<PathBuf>
+    where
+        F: FnMut(u64, Option<u64>),
+    {
+        if !allowed(route) {
+            return Err(NetError::Blocked(format!("GET {route}")));
+        }
+        let response = self
+            .request(Method::GET, route)
+            .timeout(TRANSFER_TIMEOUT)
+            .send()
+            .await
+            .map_err(|e| NetError::from_reqwest(e, &self.base))?;
+        let status = response.status();
+        if status.as_u16() == 204 {
+            return Err(NetError::Http {
+                status: 204,
+                detail: "There is nothing to download yet.".into(),
+            });
+        }
+        if !status.is_success() {
+            let body = response.json::<Value>().await.ok();
+            return Err(NetError::Http {
+                status: status.as_u16(),
+                detail: detail_of(body.as_ref(), status.as_u16()),
+            });
+        }
+        let name = safe_file_name(file_name)
+            .or_else(|| {
+                response
+                    .headers()
+                    .get(reqwest::header::CONTENT_DISPOSITION)
+                    .and_then(|v| v.to_str().ok())
+                    .and_then(disposition_name)
+                    .and_then(|n| safe_file_name(&n))
+            })
+            .unwrap_or_else(|| "download.bin".into());
+        tokio::fs::create_dir_all(dir).await?;
+        let target = unique_path(dir, &name);
+        save_response(response, &self.base, &target, on_progress).await?;
+        Ok(target)
+    }
+
     /// `GET /policy` → `{"policy": {...}, "defaults": {...}}`.
     pub async fn policy(&self) -> Result<Value> {
         self.get("/policy").await
@@ -392,6 +594,9 @@ mod tests {
             "/datasets/standard",
             "/datasets/d1",
             "/datasets/d1/default",
+            "/datasets/d1/download",
+            "/runs/r1/artifact",
+            "/runs/r1/weights.bin",
             "/models",
             "/policy",
             "/nodes/n1",
@@ -410,13 +615,41 @@ mod tests {
             "/events",
             "/register_node",
             "/nodes/n1/x",
-            "/datasets/d1/download",
+            "/datasets/d1/bundle",
+            "/runs/r1/weights",
+            "/runs/r1/shards",
             "/token",
             "/policy/",
             "//health",
         ] {
             assert!(!allowed(bad), "{bad}");
         }
+    }
+
+    #[test]
+    fn file_names_are_safe() {
+        assert_eq!(safe_file_name("COCO8.zip").as_deref(), Some("COCO8.zip"));
+        assert_eq!(
+            safe_file_name("../../etc/passwd").as_deref(),
+            Some("passwd")
+        );
+        assert_eq!(
+            safe_file_name("C:\\x\\run 1.pt").as_deref(),
+            Some("run 1.pt")
+        );
+        assert_eq!(safe_file_name("a:b*c?.zip").as_deref(), Some("a-b-c-.zip"));
+        assert_eq!(safe_file_name(".."), None);
+        assert_eq!(
+            disposition_name(r#"attachment; filename="COCO8.zip""#).as_deref(),
+            Some("COCO8.zip")
+        );
+        assert_eq!(disposition_name("attachment"), None);
+        let dir = std::env::temp_dir().join(format!("gm-unique-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        std::fs::write(dir.join("w.pt"), b"x").unwrap();
+        assert_eq!(unique_path(&dir, "w.pt"), dir.join("w (1).pt"));
+        assert_eq!(unique_path(&dir, "new.pt"), dir.join("new.pt"));
+        let _ = std::fs::remove_dir_all(dir);
     }
 
     #[test]

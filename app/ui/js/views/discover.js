@@ -1,10 +1,12 @@
 // Discover & join: the v5 radar, showing meshes instead of devices. Radius is
 // the measured /health round trip; angle is a hash of the mesh id, so a mesh
-// keeps its seat between sweeps. Below it, joining by address or invite link.
+// keeps its seat between sweeps. Below it, the other GradApps on this network
+// (invite them when hosting), then joining by address or invite link.
 
 import { api } from "../api.js";
 import { store, subscribe, refreshStatus, contributing } from "../store.js";
 import { h, clear, busy, icon, initials, angleFor, meter, toast } from "../ui.js";
+import { renderPeersPanel } from "./peers.js";
 
 const RING = { close: 0.3, nearby: 0.55, far: 0.78, unknown: 0.93 };
 const RING_LABEL = { close: "Same link", nearby: "Nearby", far: "Distant", unknown: "Not measurable" };
@@ -40,6 +42,7 @@ export function renderDiscover(root, { go }) {
   let selected = null;
   const radar = h("div", { class: "radar" });
   const side = h("div", { class: "radar-side" });
+  const peersRoot = h("div", { class: "peers-root" });
   const address = h("input", { class: "input mono", placeholder: "192.168.1.42, lab-pc.local or gradapp://join?…", spellcheck: false, autocomplete: "off", "aria-label": "Address or invite link" });
   const joinForm = h(
     "form",
@@ -68,6 +71,7 @@ export function renderDiscover(root, { go }) {
       h("div", {}, h("h1", { class: "page-title" }, "Discover & join"), h("p", { class: "lead" }, "Meshes on this Wi-Fi announce themselves. GradApp also asks by name and sweeps the network for hosts that cannot announce."))
     ),
     h("div", { class: "radar-wrap" }, radar, side),
+    peersRoot,
     h(
       "section",
       { class: "panel" },
@@ -192,11 +196,13 @@ export function renderDiscover(root, { go }) {
   }
 
   start(false);
+  const offPeers = renderPeersPanel(peersRoot, { go });
   const off = subscribe((r) => {
     if (r.has("meshes")) (drawRadar(), drawSide());
   });
   return () => {
     off();
+    offPeers();
     api.discoverStop().catch(() => {});
   };
 }

@@ -49,6 +49,15 @@ pub enum Error {
         message: String,
     },
 
+    /// Not enough free disk for the port (checked before anything is
+    /// downloaded, and recognised in uv's output if it runs out mid-install).
+    #[error("not enough disk space in {path}: {needed_gb:.1} GB needed, {free_gb:.1} GB free. Free up space on that drive and try again.")]
+    DiskFull {
+        path: PathBuf,
+        needed_gb: f64,
+        free_gb: f64,
+    },
+
     #[error("{0}")]
     Other(String),
 }

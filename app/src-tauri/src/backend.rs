@@ -347,6 +347,7 @@ impl AppBackend {
         let current = self.settings();
         next.last_invite = current.last_invite;
         next.rejoin_on_start = current.rejoin_on_start;
+        next.blocked_peers = current.blocked_peers; // changed by peers.rs only
         self.save_settings(next)
     }
 
@@ -378,6 +379,14 @@ impl AppBackend {
 
     pub fn is_hosting(&self) -> bool {
         self.lock().hosting.is_some()
+    }
+
+    /// The mesh id this app's worker is in, if contributing (peers.rs).
+    pub(crate) fn joined_mesh_id(&self) -> Option<String> {
+        self.lock()
+            .worker_session
+            .as_ref()
+            .map(|s| s.mesh_id.clone())
     }
 
     pub fn logs(&self) -> Vec<LogEntry> {
@@ -1338,7 +1347,21 @@ impl AppBackend {
             .with_timeout(Duration::from_secs(5))
     }
 
-    async fn self_info(&self) -> SelfInfo {
+    /// The coordinator of the mesh this app is in (loopback for a mesh hosted
+    /// here) and whether this app is that mesh's host. The host manages
+    /// datasets and runs; a contributor watches. Used by `runs.rs` and
+    /// `datasets.rs`.
+    pub(crate) fn mesh_access(&self) -> Option<(CoordinatorClient, bool)> {
+        let target = self.mesh_target()?;
+        let host = self
+            .lock()
+            .hosting
+            .as_ref()
+            .is_some_and(|h| local_url(&h.coordinator) == target.api);
+        Some((Self::client(&target), host))
+    }
+
+    pub(crate) async fn self_info(&self) -> SelfInfo {
         let facts = self.facts().await;
         let device = self.device().await;
         let (node_id, contributing, name) = {

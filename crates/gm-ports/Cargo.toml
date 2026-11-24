@@ -23,6 +23,7 @@ flate2 = "1"
 tar = "0.4"
 zip = { version = "9", default-features = false, features = ["deflate"] }
 gethostname = "1"
+fs4 = "0.13"
 
 [dev-dependencies]
 tempfile.workspace = true

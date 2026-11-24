@@ -1,0 +1,218 @@
+/* Runs and Datasets: per-machine compute share, round timeline, run form,
+   transfers. Vendor hues come from tokens.css (--vendor-*); color follows the
+   machine's vendor everywhere, and every segment also carries a name (legend,
+   label or tooltip), so identity is never color alone. */
+
+.danger-text { color: var(--danger); }
+.modal-sm { max-width: 440px; }
+.port-chip {
+  font-size: 0.72rem;
+  padding: 1px 7px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  color: var(--text-dim);
+}
+
+/* --------------------------------------------------------- share split bar */
+
+.share-split {
+  display: flex;
+  gap: 2px;
+  width: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.04);
+}
+.share-seg {
+  position: relative;
+  min-width: 3px;
+  display: flex;
+  align-items: center;
+  background: var(--vendor-cpu);
+  transition: flex-grow 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.share-seg.vendor-nvidia { background: rgba(163, 214, 92, 0.78); }
+.share-seg.vendor-intel { background: rgba(78, 168, 255, 0.8); }
+.share-seg.vendor-apple { background: rgba(211, 213, 222, 0.72); }
+.share-seg.vendor-cpu { background: rgba(125, 134, 153, 0.7); }
+/* Two machines of one vendor side by side: the second is a shade darker. */
+.share-seg.is-alt,
+.vendor-dot.is-alt,
+.share-fill.is-alt { filter: brightness(0.7); }
+.share-seg.is-self { box-shadow: inset 0 0 0 2px var(--accent); }
+.share-seg-label {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  min-width: 0;
+  padding: 0 8px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: #0b0d12;
+  white-space: nowrap;
+}
+.share-legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-dim);
+}
+
+/* ------------------------------------------------------------ device table */
+
+.share-table { display: flex; flex-direction: column; margin-top: 6px; }
+.share-row {
+  display: grid;
+  grid-template-columns: minmax(200px, 1.35fr) minmax(150px, 1fr) 100px minmax(170px, 1fr);
+  gap: 18px;
+  align-items: center;
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--line);
+  border-radius: 8px;
+}
+.share-row:last-child { border-bottom: none; }
+.share-row.share-head { padding: 4px 10px 8px; text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.68rem; }
+.share-row.is-self {
+  background: rgba(91, 124, 250, 0.08);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.share-row.is-out { opacity: 0.55; }
+.share-who { display: flex; gap: 10px; align-items: flex-start; min-width: 0; }
+.share-who > .vendor-dot { margin-top: 7px; }
+.self-badge { font-size: 0.68rem; }
+.share-pct { font-size: 1.3rem; letter-spacing: -0.01em; }
+.share-track {
+  height: 8px;
+  margin-top: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+.share-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--vendor-cpu);
+  transition: width 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.share-fill.vendor-nvidia { background: var(--vendor-nvidia); }
+.share-fill.vendor-intel { background: var(--vendor-intel); }
+.share-fill.vendor-apple { background: var(--vendor-apple); }
+.share-speed { display: flex; flex-direction: column; gap: 2px; }
+.share-ips { font-size: 1.05rem; }
+.share-progress { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.shard-track.mini { height: 6px; border-radius: 999px; }
+.shard-track.mini .shard-fill { border-radius: 999px; }
+
+/* ---------------------------------------------------------------- timeline */
+
+.timeline { display: flex; flex-direction: column; gap: 8px; }
+.tl-row {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) 110px;
+  gap: 10px;
+  align-items: center;
+}
+.tl-row > .tl-bar { min-width: 12px; grid-column: 2; }
+.tl-row .tl-bar .share-split { border-radius: 4px; }
+.tl-label { color: var(--text-faint); font-size: 0.78rem; grid-column: 1; grid-row: 1; }
+.tl-meta { color: var(--text-dim); text-align: right; grid-column: 3; grid-row: 1; }
+.tl-row.is-live .tl-label { color: var(--accent); }
+.tl-row.is-live .share-split { opacity: 0.85; animation: tl-pulse 1.6s ease-in-out infinite; }
+@keyframes tl-pulse { 50% { opacity: 0.55; } }
+/* The bar column is a track the bar sits in, so lengths compare across rows. */
+.tl-row { position: relative; }
+.tl-row::before {
+  content: "";
+  grid-column: 2;
+  grid-row: 1;
+  height: 16px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.03);
+}
+.tl-row > .tl-bar { grid-row: 1; }
+
+/* ---------------------------------------------------------------- run form */
+
+.run-form .grid-3 { gap: 14px 18px; }
+.run-form { margin-bottom: 2px; }
+
+/* --------------------------------------------------------------- transfers */
+
+.transfer-list { display: flex; flex-direction: column; gap: 8px; }
+.transfer-list:empty { display: none; }
+.transfer {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.02);
+}
+.transfer.is-running, .transfer.is-processing { border-color: rgba(91, 124, 250, 0.35); }
+.transfer.is-failed { border-color: rgba(247, 107, 107, 0.4); }
+.transfer-icon { color: var(--accent); flex: none; }
+.transfer-track {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+.transfer-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--cyan));
+  transition: width 300ms ease;
+}
+.transfer.is-done .transfer-fill { background: var(--live); }
+.transfer.is-failed .transfer-fill, .transfer.is-cancelled .transfer-fill { background: var(--text-faint); }
+.transfer-fill.is-processing {
+  background: repeating-linear-gradient(-45deg, rgba(91, 124, 250, 0.9) 0 10px, rgba(34, 211, 238, 0.7) 10px 20px);
+  background-size: 28px 28px;
+  animation: stripes 900ms linear infinite;
+}
+@keyframes stripes { to { background-position: 28px 0; } }
+
+.upload-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 14px 18px;
+  align-items: end;
+}
+.upload-form > label.row { grid-column: 1 / -1; }
+.dataset-card.is-default { border-color: rgba(91, 124, 250, 0.4); }
+.dataset-card.is-importing { border-color: rgba(34, 211, 238, 0.4); }
+
+@media (max-width: 1100px) {
+  .share-row { grid-template-columns: minmax(170px, 1.2fr) minmax(120px, 1fr) 84px; }
+  .share-row > .share-progress { grid-column: 1 / -1; }
+  .share-row.share-head > span:last-child { display: none; }
+}
+
+/* ------------------------------------------------- runs: strip + full width */
+/* The live view is the point of this screen, so it gets the full width; the
+   runs sit above it as a strip of cards (scrolls sideways when there are many). */
+.runs-layout { grid-template-columns: minmax(0, 1fr); }
+.runs-layout > .panel-flush:first-child {
+  display: flex;
+  align-items: stretch;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.runs-layout > .panel-flush:first-child > .panel-header {
+  flex: none;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 4px;
+  min-width: 120px;
+  border-bottom: none;
+  border-right: 1px solid var(--line);
+}
+.runs-layout > .panel-flush:first-child > .run-row {
+  flex: 0 0 290px;
+  border-bottom: none;
+  border-right: 1px solid var(--line);
+}
+.runs-layout > .panel-flush:first-child > .run-row.is-open { box-shadow: inset 0 -2px 0 var(--accent); }
+.runs-layout > .panel-flush:first-child > .empty-state { flex: 1; }

@@ -162,6 +162,11 @@ pub struct Settings {
     /// This machine was contributing when GradApp last ran (set on join,
     /// cleared on an explicit leave). Auto-rejoin only acts when it is set.
     pub rejoin_on_start: bool,
+    /// Announce this computer to other GradApps on the LAN and accept their
+    /// invites (Settings › Visible to other GradApps on this network).
+    pub visible_on_lan: bool,
+    /// Device ids whose invites are refused ("Block this device").
+    pub blocked_peers: Vec<String>,
 }
 
 impl Default for Settings {
@@ -178,6 +183,8 @@ impl Default for Settings {
             preferred_backend: None,
             last_invite: None,
             rejoin_on_start: false,
+            visible_on_lan: true,
+            blocked_peers: Vec::new(),
         }
     }
 }

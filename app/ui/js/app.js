@@ -13,6 +13,7 @@ import { renderDevice } from "./views/device.js";
 import { renderActivity } from "./views/activity.js";
 import { renderInvite } from "./views/invite.js";
 import { renderSettings } from "./views/settings.js";
+import { watchInvites } from "./views/peers.js";
 
 export const VIEWS = [
   { id: "home", label: "Home", icon: "home", render: renderHome, key: "1", group: "This machine" },
@@ -450,6 +451,7 @@ async function start() {
     }
   });
   await boot();
+  watchInvites(); // another GradApp's invite, on any screen
   let initial = location.hash.replace(/^#\/?/, "");
   if (!initial) {
     try {

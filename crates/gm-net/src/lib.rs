@@ -8,6 +8,7 @@
 //! * [`join`]: the join surface on port 3000 (v1 `beacon.js`), byte-compatible.
 //! * [`client`]: the coordinator API (v1 `api.js`), incl. the SSE event stream.
 //! * [`download`]: streaming download to `.part` then atomic rename.
+//! * [`peers`]: other GradApps on the LAN (presence) and invites between them.
 
 pub mod address;
 pub mod beacon;
@@ -18,6 +19,7 @@ mod error;
 pub mod invite;
 pub mod join;
 pub mod lan;
+pub mod peers;
 
 pub use address::{
     encode_uri_component, invite_link, parse_address, parse_address_with, AddressDefaults,
@@ -30,4 +32,5 @@ pub use error::{NetError, Result};
 pub use invite::{lan_client, probe_health, read_invite, HealthHit, InviteInfo, InviteKind};
 pub use join::{JoinConfig, JoinInfo, JoinSurface, AGENT_FILES};
 pub use lan::{lan_addresses, primary_lan_address, LanAddress};
+pub use peers::{MeshOffer, PeerConfig, PeerNode};
 pub use tokio_util::sync::CancellationToken;

@@ -47,7 +47,19 @@ export function renderSettings(root, { checkForUpdates }) {
           "This computer",
           null,
           line("Name in the mesh", "What other machines see in their list.", name),
-          line("Preferred backend", "Leave on automatic unless support asks you to change it. A forced backend that cannot run here is shown as blocked on Device & ports.", backend)
+          line("Preferred backend", "Leave on automatic unless support asks you to change it. A forced backend that cannot run here is shown as blocked on Device & ports.", backend),
+          line(
+            "Visible to other GradApps on this network",
+            "Other GradApps list this computer on Discover and can invite it into their mesh. Nothing joins without your OK. Never shares a mesh token.",
+            toggle(s.visible_on_lan !== false, (v) => save({ visible_on_lan: v }, v ? "Visible to other GradApps on this network." : "Hidden. Other GradApps no longer list or invite this computer."), "Visible to other GradApps")
+          ),
+          s.blocked_peers?.length
+            ? line(
+                "Blocked devices",
+                `${s.blocked_peers.length} device${s.blocked_peers.length === 1 ? "" : "s"} cannot invite this computer.`,
+                h("button", { class: "btn btn-sm", type: "button", onclick: (e) => busy(e.currentTarget, async () => (await api.peersUnblockAll(), (store.settings = await api.getSettings()), toast("Unblocked.", "ok"), renderSettings(root, { checkForUpdates }))) }, h("span", {}, "Unblock all"))
+              )
+            : null
         ),
         group(
           "Running in the background",

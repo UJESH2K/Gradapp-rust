@@ -4,6 +4,8 @@
 // 4070 laptop on Windows, a lab mesh of four mixed-vendor machines, runs with
 // per-round metrics, and an update to 2.0.1 arriving a few seconds in.
 
+import { runsMock } from "./mock-runs.js";
+
 const params = new URLSearchParams(location.search);
 const now = () => Date.now() / 1000;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -57,6 +59,20 @@ const MESHES = [
   { mesh_id: "m-21be0d77", hostname: "studio-m3max.local", coordinator: "http://192.168.1.57:8000", web: "http://192.168.1.57:3000", version: "5.1.1", protocol: 5, nodes_active: 2, torch_ready: true, local: false, source: "mdns", token: null, mesh_name: "Studio", latency_ms: 14 },
   { mesh_id: "m-90aa1f04", hostname: "192.168.1.88", coordinator: "http://192.168.1.88:8000", web: "http://192.168.1.88:3000", version: "5.0.4", protocol: 5, nodes_active: 1, torch_ready: false, local: false, source: "sweep", token: null, mesh_name: null, latency_ms: 41 },
 ];
+
+// Other GradApps on this LAN (presence). Invented but plausible: the owner's
+// field report had an MSI laptop; the rest is a lab with mixed vendors.
+const PEERS = [
+  { device_id: "a91c4e7d2b6f4f0e8d1c3b5a79e2f604", name: "MSI-Katana", os: "windows", gpu: "NVIDIA GeForce RTX 3050 Laptop GPU", backend: "cuda", port_state: "ready", status: "idle", mesh_id: null, mesh_name: null, app_version: "2.0.1", invite_port: 47801, address: "192.168.1.23" },
+  { device_id: "0f9e8d7c6b5a49382716a5b4c3d2e1f0", name: "studio-m3max", os: "macos", gpu: "Apple M3 Max (40-core GPU)", backend: "mps", port_state: "ready", status: "contributing", mesh_id: "m-7f3a91c2", mesh_name: "Vision lab", app_version: "2.0.1", invite_port: 47801, address: "192.168.1.57" },
+  { device_id: "5d4c3b2a19087f6e5d4c3b2a1908aa11", name: "lab-rtx3090", os: "linux", gpu: "NVIDIA GeForce RTX 3090", backend: "cuda", port_state: "ready", status: "hosting", mesh_id: "m-7f3a91c2", mesh_name: "Vision lab", app_version: "2.0.1", invite_port: 47801, address: "192.168.1.42" },
+  { device_id: "c0ffee00a770400b9e1d2c3b4a596877", name: "arc-a770-tower", os: "windows", gpu: "Intel Arc A770 16GB", backend: "xpu", port_state: "not_installed", status: "idle", mesh_id: null, mesh_name: null, app_version: "2.0.1", invite_port: 47801, address: "192.168.1.61" },
+  { device_id: "77aa66bb55cc44dd33ee22ff11009988", name: "priya-xps15", os: "windows", gpu: "NVIDIA GeForce RTX 4060 Laptop GPU", backend: "cuda", port_state: "installing", status: "idle", mesh_id: null, mesh_name: null, app_version: "2.0.1", invite_port: 47801, address: "192.168.1.74" },
+  { device_id: "1e2d3c4b5a6978877665544332211000", name: "hallway-nuc", os: "linux", gpu: null, backend: "cpu", port_state: "ready", status: "idle", mesh_id: null, mesh_name: null, app_version: "2.0.0", invite_port: 0, address: "192.168.1.88" },
+];
+// What each invited peer does in the mock, and after how long.
+const PEER_ANSWERS = { "MSI-Katana": ["accepted", 2600], "arc-a770-tower": ["declined", 4200], "priya-xps15": ["timed_out", 7000], "studio-m3max": ["accepted", 3200], "lab-rtx3090": ["declined", 3000] };
+const HOSTED_MESH = "m-4be21f60";
 
 function nodes(selfActive) {
   return [
@@ -132,6 +148,8 @@ export function createMock(dispatch, dispatchChannel) {
       update_channel: "stable",
       data_dir: "C:\\Users\\ujesh\\AppData\\Local\\GradApp",
       preferred_backend: null,
+      visible_on_lan: true,
+      blocked_peers: [],
       last_invite: "gradapp://join?host=192.168.1.42&port=8000&token=c41d8e0f9b2a7731&name=Vision%20lab",
     },
     joined: null,
@@ -142,6 +160,8 @@ export function createMock(dispatch, dispatchChannel) {
     logs: [],
     update: null,
     discovering: false,
+    peers: new Map(),
+    invites: new Map(),
   };
 
   const emit = (event) => setTimeout(() => dispatch(event), 0);
@@ -179,11 +199,11 @@ export function createMock(dispatch, dispatchChannel) {
     state.joined = { hostname: "192.168.1.42", coordinator: "http://192.168.1.42:8000", web: "http://192.168.1.42:3000", token: "c41d8e0f9b2a7731", mesh_name: "Vision lab" };
     state.worker = { ...state.worker, state: "running", pid: 18244, last_line: "round 12: training" };
   }
-  if (startState === "hosting") hostStart("Vision lab");
+  if (startState === "hosting") hostStart(params.get("mesh") || "Vision lab");
 
   function hostStart(name) {
     state.hosting = {
-      mesh_id: "m-7f3a91c2",
+      mesh_id: HOSTED_MESH,
       mesh_name: name || "ujesh-zephyrus's mesh",
       coordinator: "http://192.168.1.31:8000",
       web: "http://192.168.1.31:3000",
@@ -323,6 +343,79 @@ export function createMock(dispatch, dispatchChannel) {
     }, updateMode === "later" ? 200 : 3000);
   }
 
+  // GradApps on this network appear over the first few seconds, as presence arrives.
+  PEERS.forEach((peer, i) =>
+    setTimeout(() => {
+      state.peers.set(peer.device_id, { ...peer });
+      emit({ kind: "peer_seen", peer });
+    }, 300 + i * 450)
+  );
+
+  function me() {
+    return {
+      device_id: "3f2a9c1be0d74c55a8f61e2d9b7c4a10",
+      name: state.settings.device_name || FACTS.hostname,
+      os: "windows",
+      gpu: PROFILE.gpu_name,
+      backend: PROFILE.backend,
+      port_state: state.portStates[PROFILE.port] || "not_installed",
+      status: state.hosting ? "hosting" : state.joined ? "contributing" : "idle",
+      mesh_id: state.hosting ? state.hosting.mesh_id : state.joined ? "m-7f3a91c2" : null,
+      mesh_name: state.hosting?.mesh_name || state.joined?.mesh_name || null,
+      app_version: "2.0.1",
+      invite_port: 47801,
+    };
+  }
+
+  function invitePeers(deviceIds) {
+    if (!state.hosting) throw new Error("Host a mesh first; invites bring machines into the mesh this computer hosts.");
+    return deviceIds.map((id) => {
+      const peer = state.peers.get(id);
+      if (!peer) return { device_id: id, nonce: null, error: "That GradApp is no longer on this network." };
+      if (!peer.invite_port) {
+        const error = `${peer.name} cannot receive invites (its invite port is closed). Send it the invite link instead.`;
+        emit({ kind: "invite_result", nonce: "", device_id: id, incoming: false, outcome: "failed", detail: error });
+        return { device_id: id, nonce: null, error };
+      }
+      const nonce = Math.random().toString(16).slice(2).padEnd(32, "0");
+      emit({ kind: "invite_result", nonce, device_id: id, incoming: false, outcome: "sent", detail: null });
+      log("coordinator", `Invited ${peer.name} to ${state.hosting.mesh_name}`);
+      const [outcome, after] = PEER_ANSWERS[peer.name] || ["accepted", 3000];
+      setTimeout(() => {
+        if (!state.hosting) return;
+        emit({ kind: "invite_result", nonce, device_id: id, incoming: false, outcome, detail: null });
+        if (outcome === "accepted") {
+          Object.assign(peer, { status: "contributing", mesh_id: state.hosting.mesh_id, mesh_name: state.hosting.mesh_name });
+          emit({ kind: "peer_seen", peer: { ...peer } });
+          log("coordinator", `${peer.name} accepted the invite and joined`);
+        }
+      }, after);
+      return { device_id: id, nonce, error: null };
+    });
+  }
+
+  // ?invite=1: another GradApp invites this one a few seconds in.
+  if (params.get("invite")) {
+    setTimeout(() => {
+      const invite = {
+        from_device: PEERS[0].device_id,
+        from_name: "MSI-Katana",
+        mesh_name: "MSI-Katana's mesh",
+        mesh_id: "m-0b9d33e1",
+        coordinator: "http://192.168.1.23:8000",
+        token: "",
+        sent_at: now(),
+        nonce: "5e1f0c2d9a8b47c6b3a2918d7e6f5a40",
+        reply_port: 47801,
+        from_address: "192.168.1.23",
+        nodes_active: 3,
+      };
+      state.invites.set(invite.nonce, invite);
+      log("worker", `Invite from ${invite.from_name} (${invite.from_address}) to contribute to ${invite.mesh_name}`);
+      emit({ kind: "invite_received", invite });
+    }, Number(params.get("invite")) > 1 ? Number(params.get("invite")) : 3000);
+  }
+
   if (params.get("install")) setTimeout(() => installPort(params.get("install") === "1" ? "cuda-cu126" : params.get("install")), 300);
 
   // Live feeling while joined: progress ticks and the odd line.
@@ -413,7 +506,35 @@ export function createMock(dispatch, dispatchChannel) {
     open_data_dir: () => emit({ kind: "notice", level: "info", title: "Data folder", body: state.settings.data_dir }),
     hide_window: () => {},
     quit_app: () => {},
+    peers_state: () => ({
+      running: true,
+      listening: true,
+      visible: state.settings.visible_on_lan !== false,
+      invite_port: 47801,
+      me: me(),
+      peers: [...state.peers.values()],
+      incoming: [...state.invites.values()],
+      outgoing: [],
+      blocked: state.settings.blocked_peers.length,
+    }),
+    peer_invite: ({ deviceIds }) => invitePeers(deviceIds),
+    invite_respond: async ({ nonce, action }) => {
+      const invite = state.invites.get(nonce);
+      if (!invite) throw new Error("This invite has expired or was already answered.");
+      let joined = null;
+      if (action === "join") joined = await commands.join({ invite: `gradapp://join?server=${encodeURIComponent(invite.coordinator)}&token=mock&name=${encodeURIComponent(invite.mesh_name)}` });
+      if (action === "block") state.settings.blocked_peers.push(invite.from_device);
+      state.invites.delete(nonce);
+      emit({ kind: "invite_result", nonce, device_id: invite.from_device, incoming: true, outcome: action === "join" ? "accepted" : "declined", detail: null });
+      return joined;
+    },
+    peers_unblock_all: () => {
+      state.settings.blocked_peers = [];
+    },
   };
+
+  // Datasets and runs (host controls, live run view): mock-runs.js.
+  Object.assign(commands, runsMock({ state, emit, channel: dispatchChannel }));
 
   return async (cmd, args = {}) => {
     const fn = commands[cmd];

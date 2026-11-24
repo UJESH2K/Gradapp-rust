@@ -4,7 +4,6 @@ use std::path::Path;
 use std::time::Duration;
 
 use gm_types::{PortLock, PortSpec, PortState, PortStatus};
-use tokio::process::Command;
 
 use crate::error::{Error, Result};
 use crate::paths::{env_dir, env_python, LOCK_FILE, PORT_MARKER, VERIFY_FILE};
@@ -28,7 +27,7 @@ pub(crate) async fn python_starts(python: &Path) -> bool {
     if !python.is_file() {
         return false;
     }
-    let mut cmd = Command::new(python);
+    let mut cmd = crate::spawn::hidden(python);
     cmd.args(["-c", "import sys; print(sys.version_info[0])"])
         .stdin(std::process::Stdio::null())
         .kill_on_drop(true);

@@ -16,6 +16,87 @@ Format:
 
 ---
 
+## 2026-11-25 — First real install, and 2.0.1 (2.0.1)
+
+### Field report (owner's Windows laptop, RTX 3050 Laptop GPU, 4 GB)
+GradApp 2.0.0 installed from gradapp.ujesh.in, picked port `cuda-cu130`,
+installed private CPython 3.12.13 + torch 2.13.0+cu130 with uv, **verified a
+real CUDA kernel** ("cuda-cu130 ready: torch 2.13.0+cu130 on NVIDIA GeForce
+RTX 3050 Laptop GPU"), hosted "MSI's mesh", announced it on the LAN, and its
+own worker joined (2.8 TFLOP/s measured). The first end-to-end proof of ports
+on real hardware. The install log also showed three bugs, and the owner
+found the host could not actually *do* anything with the mesh.
+
+### Installer fixes (gm-ports)
+- **Console windows on Windows.** uv and python were started without
+  `CREATE_NO_WINDOW`, so every install step flashed a console window, and
+  closing one killed the step with STATUS_CONTROL_C_EXIT (`exit -1073741510`,
+  seen three times in the log). All gm-ports processes now start through
+  `spawn::hidden` (gm-probe and gm-supervisor already did this).
+- **Disk full looked like a network problem.** The torch wheel (1.8 GB,
+  ~4.5 GB unpacked) filled drive C:, uv said "Failed to download … not
+  enough space on the disk (os error 112)" and we retried it as a network
+  failure four times. Now: a free-space check *before* downloading
+  (`disk_needed_bytes`: CUDA 9 GB, ROCm 12, XPU 7, MPS 3, CPU 3), and disk-full
+  in uv's output stops at once with "X GB needed, Y GB free" (`Error::DiskFull`).
+- **Windows venv launcher lock.** `uv venv` sometimes failed with "Failed to
+  update Windows PE resources … (os error -2147024786)" while antivirus scans
+  the new launcher; the same step worked seconds later. Now retried quietly.
+- Tests built from the exact lines in the field log.
+
+### Host controls: datasets and runs (were missing in 2.0.0)
+GradApp 1 could import datasets and start runs; 2.0.0 only said "the host
+starts runs from its GradMesh dashboard". Now, from the app (details:
+`docs/devlog/runs-datasets.md`):
+- **Datasets:** import a standard dataset from the coordinator's real
+  catalogue (COCO8, COCO128, African Wildlife, Global Wheat, VisDrone, COCO,
+  DOTA — there is no VOC; the 2.0.0 card was wrong), upload a YOLO .zip
+  (native file picker, streamed from Rust with progress, tested at 1.8 GB),
+  set default, delete, download.
+- **Runs:** New run (dataset, model, rounds, image size, batch…), stop,
+  delete, download weights (also mid-run: the coordinator writes the `.pt`
+  after every round).
+- **Live run view:** per-machine share of the round as bars and rows, from
+  the coordinator's own shard plan (`plan`, `live_shards`, `round_history`).
+  "Compute share" = the machine's share of the round's images, which the
+  scheduler sizes from measured speed; there is no per-GPU utilisation figure
+  in the API, and the screen says so. Speed-up vs one machine, efficiency,
+  round timeline, metrics. Contributors see it read-only with their row
+  highlighted.
+- Change commands refuse unless this app hosts that mesh.
+
+### GradApps on this network + invite nudges
+Owner's ask: see every device on the LAN, pick some, send an invite they get
+as a notification. Details and the trust model: `docs/devlog/peers-invites.md`.
+- Every open GradApp 2 announces itself (UDP 47800, every 3 s, answers a
+  query at once; no token in presence). Settings: "Visible to other
+  GradApps on this network" (default on), "Unblock all".
+- Host selects one or many → **Invite**; the other app shows an OS
+  notification and a dialog (Join / Not now / Block this device). It never
+  joins by itself; the invite is dropped unless the coordinator answers
+  `/health` with protocol 5 and the named mesh. Invites are accepted only from
+  private/link-local/this-computer addresses, 1 per sender per 30 s, max 5
+  waiting, 2-minute timeout; the inviter's card shows the outcome.
+- Machines without GradApp 2 open can't be nudged; the panel says so and
+  offers the invite link / QR beside the list.
+- Windows Firewall now asks on first launch (invite endpoint TCP 47801),
+  not only when hosting.
+
+### Verified
+- fmt, clippy `-D warnings`, `cargo test --workspace`: **207 passed**, 0 failed.
+- Live under Xvfb with the real coordinator: dataset import/upload/delete/
+  download, new run → live view with 4 *synthetic* workers on the real worker
+  protocol (shares 49/23/17/11 %, 3.86× speed-up), contributor view; two real
+  app instances found each other, invited, joined, and the inviter's card
+  updated. Screenshots: `docs/screenshots/v201-*.png`.
+- Not verified: real multi-GPU training, two physical machines, real
+  Windows firewall prompt and file dialog.
+
+### Noticed, not changed
+- The field log shows the worker leaving and re-joining within a second at
+  21:08:30; probably a click on "Join" for the mesh it was already in. Watch
+  for it in 2.0.1.
+
 ## 2026-11-25 — GradApp 2.0.0 goes stable (2.0.0)
 
 ### What

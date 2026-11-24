@@ -9,7 +9,6 @@ use std::path::{Path, PathBuf};
 use std::time::Duration;
 
 use sha2::{Digest, Sha256};
-use tokio::process::Command;
 
 use crate::error::{Error, Result};
 
@@ -49,7 +48,7 @@ impl Uv {
 
     /// `uv --version`, e.g. "uv 0.11.32 (...)".
     pub async fn version(&self) -> Result<String> {
-        let out = Command::new(&self.path)
+        let out = crate::spawn::hidden(&self.path)
             .arg("--version")
             .kill_on_drop(true)
             .output()

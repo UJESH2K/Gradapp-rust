@@ -4,8 +4,11 @@
 
 mod backend;
 mod commands;
+mod datasets;
 mod mesh;
 mod model;
+mod peers;
+mod runs;
 mod tray;
 
 use std::path::Path;
@@ -90,10 +93,12 @@ pub fn run() {
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(backend)
         .manage(commands::PendingUpdate::default())
         .manage(tray::TrayState::default())
+        .manage(peers::Peers::default())
         .invoke_handler(tauri::generate_handler![
             commands::app_status,
             commands::logs,
@@ -118,10 +123,32 @@ pub fn run() {
             commands::open_url,
             commands::hide_window,
             commands::quit_app,
+            peers::peers_state,
+            peers::peer_invite,
+            peers::invite_respond,
+            peers::peers_unblock_all,
+            datasets::datasets_overview,
+            datasets::dataset_import,
+            datasets::dataset_upload,
+            datasets::dataset_set_default,
+            datasets::dataset_delete,
+            datasets::dataset_download,
+            datasets::pick_dataset_zip,
+            datasets::pick_folder,
+            datasets::transfers,
+            datasets::transfer_cancel,
+            runs::run_options,
+            runs::run_create,
+            runs::run_stop,
+            runs::run_delete,
+            runs::run_live,
+            runs::run_download_weights,
         ])
         .setup(move |app| {
             let handle = app.handle().clone();
             tray::build(&handle)?;
+            // Announce this GradApp on the LAN and list the others (Discover).
+            peers::start(&handle);
 
             let settings = app.state::<AppBackend>().settings();
             if !(started_hidden || settings.start_hidden) {
@@ -210,6 +237,7 @@ pub fn run() {
             if let RunEvent::Exit = event {
                 let app = app.clone();
                 tauri::async_runtime::block_on(async move {
+                    peers::stop(&app).await;
                     let backend = app.state::<AppBackend>();
                     if tokio::time::timeout(Duration::from_secs(15), backend.shutdown(&app))
                         .await

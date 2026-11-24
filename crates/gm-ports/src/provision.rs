@@ -135,6 +135,48 @@ struct Provisioner<'a> {
 }
 
 /// Text in uv's output that means "the network let us down, try again".
+/// The disk filled up (Windows error 112, POSIX ENOSPC). Retrying cannot help.
+fn looks_like_disk_full(text: &str) -> bool {
+    let t = text.to_ascii_lowercase();
+    t.contains("not enough space on the disk")
+        || t.contains("os error 112")
+        || t.contains("no space left on device")
+        || t.contains("os error 28")
+        || t.contains("disk quota exceeded")
+}
+
+/// Windows briefly locks a freshly written .exe (antivirus scanning, the
+/// search indexer), so uv's venv launcher step can fail with "Failed to
+/// update Windows PE resources" / ERROR_OPEN_FAILED (-2147024786) or a
+/// sharing violation. Seen on a real 2.0.0 install; the same step succeeded
+/// seconds later. Worth a few quiet retries.
+fn looks_like_transient_file_lock(text: &str) -> bool {
+    let t = text.to_ascii_lowercase();
+    t.contains("failed to update windows pe resources")
+        || t.contains("os error -2147024786")
+        || t.contains("being used by another process")
+        || t.contains("os error 32")
+        || t.contains("access is denied. (os error 5)")
+}
+
+/// Disk a port needs while installing: the downloaded wheels, their unpacked
+/// copy in uv's cache and the environment (hard-linked from the cache where
+/// the file system allows, so this is the upper bound). CUDA torch alone is a
+/// 1.8 GB wheel that unpacks to ~4.5 GB.
+pub fn disk_needed_bytes(spec: &gm_types::PortSpec) -> u64 {
+    const GB: u64 = 1024 * 1024 * 1024;
+    if spec.torch.trim().is_empty() {
+        return GB / 2;
+    }
+    match spec.backend {
+        gm_types::Backend::Cuda => 9 * GB,
+        gm_types::Backend::Rocm => 12 * GB,
+        gm_types::Backend::Xpu => 7 * GB,
+        gm_types::Backend::Mps => 3 * GB,
+        gm_types::Backend::Cpu => 3 * GB,
+    }
+}
+
 fn looks_like_network_failure(text: &str) -> bool {
     let t = text.to_ascii_lowercase();
     [
@@ -177,7 +219,7 @@ impl Provisioner<'_> {
     }
 
     fn uv_command(&self) -> Command {
-        let mut cmd = Command::new(&self.uv.path);
+        let mut cmd = crate::spawn::hidden(&self.uv.path);
         cmd.env("UV_PYTHON_INSTALL_DIR", python_install_dir(self.env_root))
             // Never the machine's Python: that is what broke v1.
             .env("UV_PYTHON_PREFERENCE", "only-managed")
@@ -213,6 +255,29 @@ impl Provisioner<'_> {
                 return Ok(tail);
             }
             let text = tail.join("\n");
+            if looks_like_disk_full(&text) {
+                let free = crate::spawn::free_bytes(self.env_root).unwrap_or(0);
+                return Err(Error::DiskFull {
+                    path: self.env_root.to_path_buf(),
+                    needed_gb: disk_needed_bytes(self.spec) as f64 / 1e9,
+                    free_gb: free as f64 / 1e9,
+                });
+            }
+            if attempt < self.opts.retries && looks_like_transient_file_lock(&text) {
+                attempt += 1;
+                self.emit(
+                    sink,
+                    step,
+                    Some(pct.0),
+                    Some(format!(
+                        "Windows is still scanning a new file; retrying (attempt {} of {})",
+                        attempt + 1,
+                        self.opts.retries + 1
+                    )),
+                );
+                tokio::time::sleep(Duration::from_millis(1500 * attempt as u64)).await;
+                continue;
+            }
             if attempt < self.opts.retries && looks_like_network_failure(&text) {
                 let wait = self.opts.backoff * 2u32.pow(attempt);
                 attempt += 1;
@@ -326,6 +391,22 @@ impl Provisioner<'_> {
             std::fs::remove_dir_all(&dir).map_err(|e| Error::io(&dir, e))?;
         }
 
+        // 0. Enough disk? Checked before anything is downloaded: a full disk
+        // half way through a 1.8 GB torch wheel looked like a network failure
+        // and was retried four times on a real install.
+        if !reusable && std::env::var_os("GRADAPP_SKIP_DISK_CHECK").is_none() {
+            let needed = disk_needed_bytes(spec);
+            if let Some(free) = crate::spawn::free_bytes(self.env_root) {
+                if free < needed {
+                    return Err(Error::DiskFull {
+                        path: self.env_root.to_path_buf(),
+                        needed_gb: needed as f64 / 1e9,
+                        free_gb: free as f64 / 1e9,
+                    });
+                }
+            }
+        }
+
         // 1. Private CPython.
         self.run_step(&mut sink, "python", (2.0, 10.0), || {
             let mut c = self.uv_command();
@@ -429,7 +510,7 @@ impl Provisioner<'_> {
                 .to_ascii_lowercase()
                 .starts_with("ultralytics")
         });
-        let mut cmd = Command::new(python);
+        let mut cmd = crate::spawn::hidden(python);
         cmd.args(["-c", VERIFY_SNIPPET, if check_ultra { "1" } else { "0" }])
             .env("PYTHONIOENCODING", "utf-8")
             .env_remove("PYTHONHOME")
@@ -555,5 +636,40 @@ mod tests {
             p = n;
         }
         assert_eq!(p, 85.0);
+    }
+}
+
+#[cfg(test)]
+mod field_report_tests {
+    //! Lines from a real GradApp 2.0.0 install on Windows (RTX 3050 laptop).
+    use super::*;
+
+    #[test]
+    fn windows_disk_full_is_not_a_network_problem() {
+        let line = "failed to flush file `C:\\Users\\a\\AppData\\Local\\uv\\cache\\.tmp\\torch/include/x.h`: There is not enough space on the disk. (os error 112)";
+        assert!(looks_like_disk_full(line));
+        let linux = "error: No space left on device (os error 28)";
+        assert!(looks_like_disk_full(linux));
+        assert!(!looks_like_disk_full(
+            "Failed to download `torch`: connection reset"
+        ));
+    }
+
+    #[test]
+    fn windows_venv_launcher_lock_is_retried() {
+        let line = "Caused by: Failed to update Windows PE resources: C:\\Users\\a\\AppData\\Local\\Temp\\.tmp8KBQyi\\uv-trampoline-14200.exe\n  Caused by: The system cannot open the device or file specified. (os error -2147024786)";
+        assert!(looks_like_transient_file_lock(line));
+        assert!(!looks_like_transient_file_lock(
+            "No solution found when resolving dependencies"
+        ));
+    }
+
+    #[test]
+    fn disk_budget_by_backend() {
+        let reg = crate::Registry::builtin();
+        let gb = |id: &str| disk_needed_bytes(reg.require(id).unwrap()) / (1024 * 1024 * 1024);
+        assert!(gb("cuda-cu130") >= 8);
+        assert!(gb("mps") < gb("cuda-cu130"));
+        assert!(gb("cpu") >= 2);
     }
 }
