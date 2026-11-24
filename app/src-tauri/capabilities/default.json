@@ -1,0 +1,18 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "What the GradApp window may do: its own commands, the gm://event stream, notifications, opening links and folders, restarting after an update.",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "core:event:default",
+    "core:window:allow-hide",
+    "core:window:allow-show",
+    "core:window:allow-set-focus",
+    "notification:default",
+    "opener:default",
+    "process:allow-restart",
+    "updater:default",
+    "autostart:default"
+  ]
+}

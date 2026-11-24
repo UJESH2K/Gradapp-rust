@@ -1,8 +1,44 @@
 [package]
 name = "gradapp"
+description = "GradApp 2: join this machine's GPU to a federated-training mesh on the local network."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+authors.workspace = true
+repository.workspace = true
+default-run = "gradapp"
+
+[lib]
+name = "gradapp_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[[bin]]
+name = "gradapp"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
 
 [dependencies]
 gm-types.workspace = true
+# INTEGRATE: uncomment as the crates land (see src/backend.rs).
+# gm-probe.workspace = true
+# gm-ports.workspace = true
+# gm-net.workspace = true
+# gm-update.workspace = true
+# gm-supervisor.workspace = true
+
+tauri = { version = "2", features = ["tray-icon", "image-png"] }
+tauri-plugin-updater = "2"
+tauri-plugin-notification = "2"
+tauri-plugin-single-instance = "2"
+tauri-plugin-autostart = "2"
+tauri-plugin-process = "2"
+tauri-plugin-opener = "2"
+
+serde.workspace = true
+serde_json.workspace = true
+tokio = { workspace = true }
+dirs.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true

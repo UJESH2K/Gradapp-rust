@@ -7,3 +7,15 @@ license.workspace = true
 
 [dependencies]
 gm-types.workspace = true
+gm-probe.workspace = true
+gm-ports.workspace = true
+gm-net.workspace = true
+gm-update.workspace = true
+gm-supervisor.workspace = true
+clap.workspace = true
+tokio.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true

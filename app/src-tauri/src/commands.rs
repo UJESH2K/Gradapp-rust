@@ -1,0 +1,216 @@
+//! The window's API. `app/ui/js/api.js` is the only caller; every name here
+//! has a twin in its mock backend. All commands are async so a slow probe or
+//! network call never blocks the window's main thread.
+
+use std::sync::Mutex;
+
+use gm_types::{AppEvent, UpdateInfo, APP_VERSION};
+use tauri::{AppHandle, Manager, State};
+use tauri_plugin_autostart::ManagerExt as _;
+use tauri_plugin_opener::OpenerExt as _;
+use tauri_plugin_updater::UpdaterExt as _;
+
+use crate::backend::{emit, AppBackend};
+use crate::model::*;
+
+type Res<T> = Result<T, String>;
+
+/// The update found by the last `check_update`, kept for `install_update`.
+#[derive(Default)]
+pub struct PendingUpdate(pub Mutex<Option<tauri_plugin_updater::Update>>);
+
+const STABLE_FEED: &str = "https://github.com/UJESH2K/gradapp/releases/latest/download/latest.json";
+const BETA_FEED: &str = "https://github.com/UJESH2K/gradapp/releases/download/beta/latest.json";
+
+#[tauri::command]
+pub async fn app_status(state: State<'_, AppBackend>) -> Res<AppStatus> {
+    Ok(state.status())
+}
+
+#[tauri::command]
+pub async fn logs(state: State<'_, AppBackend>) -> Res<Vec<LogEntry>> {
+    Ok(state.logs())
+}
+
+#[tauri::command]
+pub async fn get_device(state: State<'_, AppBackend>) -> Res<DeviceReport> {
+    Ok(state.device())
+}
+
+#[tauri::command]
+pub async fn get_ports(state: State<'_, AppBackend>) -> Res<Vec<PortEntry>> {
+    Ok(state.ports())
+}
+
+#[tauri::command]
+pub async fn install_port(app: AppHandle, state: State<'_, AppBackend>, port_id: String) -> Res<gm_types::PortStatus> {
+    state.install_port(&app, port_id)
+}
+
+#[tauri::command]
+pub async fn discover_start(app: AppHandle, state: State<'_, AppBackend>) -> Res<()> {
+    state.discover_start(&app);
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn discover_stop(state: State<'_, AppBackend>) -> Res<()> {
+    state.discover_stop();
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn join(app: AppHandle, state: State<'_, AppBackend>, invite: String) -> Res<gm_types::Invite> {
+    state.join(&app, &invite)
+}
+
+#[tauri::command]
+pub async fn leave(app: AppHandle, state: State<'_, AppBackend>) -> Res<()> {
+    state.leave(&app);
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn host_start(app: AppHandle, state: State<'_, AppBackend>, mesh_name: Option<String>) -> Res<HostInfo> {
+    state.host_start(&app, mesh_name)
+}
+
+#[tauri::command]
+pub async fn host_stop(app: AppHandle, state: State<'_, AppBackend>) -> Res<()> {
+    state.host_stop(&app);
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn mesh_snapshot(state: State<'_, AppBackend>) -> Res<Option<MeshSnapshot>> {
+    Ok(state.mesh_snapshot())
+}
+
+#[tauri::command]
+pub async fn runs(state: State<'_, AppBackend>) -> Res<Vec<RunSummary>> {
+    Ok(state.runs())
+}
+
+#[tauri::command]
+pub async fn datasets(state: State<'_, AppBackend>) -> Res<Vec<Dataset>> {
+    Ok(state.datasets())
+}
+
+/// Ask the release feed for a newer build. Uses Tauri's signed updater, so a
+/// found update is always installable in place.
+#[tauri::command]
+pub async fn check_update(app: AppHandle, state: State<'_, AppBackend>, pending: State<'_, PendingUpdate>) -> Res<UpdateInfo> {
+    // INTEGRATE: gm-update can add a link-only fallback (installable=false) for builds
+    // the signed updater cannot replace, e.g. distro packages.
+    let feed = if state.settings().update_channel == "beta" { BETA_FEED } else { STABLE_FEED };
+    let url = tauri::Url::parse(feed).map_err(|e| e.to_string())?;
+    let updater = app
+        .updater_builder()
+        .endpoints(vec![url])
+        .map_err(|e| e.to_string())?
+        .build()
+        .map_err(|e| e.to_string())?;
+    let found = updater.check().await.map_err(|e| format!("Could not check for updates: {e}"))?;
+    let info = match &found {
+        Some(update) => UpdateInfo {
+            available: true,
+            current: APP_VERSION.to_string(),
+            latest: Some(update.version.clone()),
+            notes: update.body.clone(),
+            url: Some("https://github.com/UJESH2K/gradapp/releases/latest".into()),
+            published_at: update.date.map(|d| d.to_string()),
+            installable: true,
+        },
+        None => UpdateInfo {
+            available: false,
+            current: APP_VERSION.to_string(),
+            latest: None,
+            notes: None,
+            url: None,
+            published_at: None,
+            installable: false,
+        },
+    };
+    *pending.0.lock().unwrap_or_else(|p| p.into_inner()) = found;
+    state.set_update(info.available.then(|| info.clone()));
+    if info.available {
+        emit(&app, AppEvent::Update { info: info.clone() });
+    }
+    Ok(info)
+}
+
+/// Download and install the pending update, streaming UpdateProgress events.
+/// The UI then offers `restart_app`.
+#[tauri::command]
+pub async fn install_update(app: AppHandle, state: State<'_, AppBackend>, pending: State<'_, PendingUpdate>) -> Res<()> {
+    let taken = pending.0.lock().unwrap_or_else(|p| p.into_inner()).take();
+    let update = match taken {
+        Some(update) => update,
+        None => {
+            check_update(app.clone(), state.clone(), pending.clone()).await?;
+            pending.0.lock().unwrap_or_else(|p| p.into_inner()).take().ok_or("GradApp is already up to date.")?
+        }
+    };
+    let mut downloaded: u64 = 0;
+    let progress_app = app.clone();
+    update
+        .download_and_install(
+            move |chunk, total| {
+                downloaded += chunk as u64;
+                emit(&progress_app, AppEvent::UpdateProgress { downloaded, total });
+            },
+            || {},
+        )
+        .await
+        .map_err(|e| format!("The update could not be installed: {e}"))?;
+    state.set_update(None);
+    Ok(())
+}
+
+#[tauri::command]
+pub fn restart_app(app: AppHandle) {
+    app.restart();
+}
+
+#[tauri::command]
+pub async fn get_settings(state: State<'_, AppBackend>) -> Res<Settings> {
+    Ok(state.settings())
+}
+
+#[tauri::command]
+pub async fn set_settings(app: AppHandle, state: State<'_, AppBackend>, settings: Settings) -> Res<Settings> {
+    let before = state.settings();
+    if before.start_at_login != settings.start_at_login {
+        let launcher = app.autolaunch();
+        let result = if settings.start_at_login { launcher.enable() } else { launcher.disable() };
+        result.map_err(|e| format!("Could not change start at login: {e}"))?;
+    }
+    state.save_settings(settings)
+}
+
+#[tauri::command]
+pub async fn open_data_dir(app: AppHandle, state: State<'_, AppBackend>) -> Res<()> {
+    let dir = std::path::PathBuf::from(state.settings().data_dir);
+    std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+    app.opener().open_path(dir.to_string_lossy(), None::<&str>).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub async fn open_url(app: AppHandle, url: String) -> Res<()> {
+    if !(url.starts_with("https://") || url.starts_with("http://")) {
+        return Err("Only web links can be opened.".into());
+    }
+    app.opener().open_url(url, None::<&str>).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub fn hide_window(app: AppHandle) {
+    if let Some(window) = app.get_webview_window("main") {
+        let _ = window.hide();
+    }
+}
+
+#[tauri::command]
+pub fn quit_app(app: AppHandle) {
+    app.exit(0);
+}
