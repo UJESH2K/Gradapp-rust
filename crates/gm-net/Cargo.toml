@@ -3,6 +3,24 @@ name = "gm-net"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+description = "GradApp networking: LAN discovery (beacon, mDNS, sweep), invites, join surface, coordinator client"
 
 [dependencies]
 gm-types.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+reqwest.workspace = true
+axum.workspace = true
+if-addrs.workspace = true
+url.workspace = true
+futures.workspace = true
+tracing.workspace = true
+tokio-util = "0.7.13"
+socket2 = { version = "0.5", features = ["all"] }
+mdns-sd = "0.13"
+percent-encoding = "2"
+
+[dev-dependencies]
+tempfile.workspace = true

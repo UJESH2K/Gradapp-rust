@@ -1,0 +1,6275 @@
+{
+ "cases": [
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 12.0,
+      "cores": null,
+      "driver": "590.44.01",
+      "index": 0,
+      "memory_mb": 32607,
+      "name": "NVIDIA GeForce RTX 5090",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 5090",
+    "label": "PyTorch CUDA 13.0 build",
+    "name": "cuda-cu130",
+    "port": "cuda-cu130",
+    "reason": "NVIDIA GeForce RTX 5090 is compute 12.0 (Blackwell), which needs CUDA 12.8 or newer",
+    "reference": true,
+    "requirements": "requirements-train-cu130.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "blackwell-driver-590/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 5090",
+    "label": "PyTorch CUDA 13.0 build",
+    "name": "cuda-cu130",
+    "port": "cuda-cu130",
+    "reason": "NVIDIA GeForce RTX 5090 is compute 12.0 (Blackwell), which needs CUDA 12.8 or newer",
+    "reference": true,
+    "requirements": "requirements-train-cu130.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 12.0,
+      "cores": null,
+      "driver": "590.44.01",
+      "index": 0,
+      "memory_mb": 32607,
+      "name": "NVIDIA GeForce RTX 5090",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 5090",
+    "label": "PyTorch CUDA 13.0 build",
+    "name": "cuda-cu130",
+    "port": "cuda-cu130",
+    "reason": "NVIDIA GeForce RTX 5090 is compute 12.0 (Blackwell), which needs CUDA 12.8 or newer",
+    "reference": true,
+    "requirements": "requirements-train-cu130.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "blackwell-driver-590/cuda",
+   "prefer": "cuda",
+   "select": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 5090",
+    "label": "PyTorch CUDA 13.0 build",
+    "name": "cuda-cu130",
+    "port": "cuda-cu130",
+    "reason": "NVIDIA GeForce RTX 5090 is compute 12.0 (Blackwell), which needs CUDA 12.8 or newer",
+    "reference": true,
+    "requirements": "requirements-train-cu130.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 12.0,
+      "cores": null,
+      "driver": "575.64",
+      "index": 0,
+      "memory_mb": 32607,
+      "name": "NVIDIA GeForce RTX 5090",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 5090",
+    "label": "PyTorch CUDA 12.8 build (fallback)",
+    "name": "cuda-cu128",
+    "port": "cuda-cu128",
+    "reason": "NVIDIA GeForce RTX 5090 is Blackwell and driver 575.64 predates CUDA 13.0",
+    "reference": false,
+    "requirements": "requirements-train-cu128.txt",
+    "torch": "2.11.0",
+    "warnings": [
+     "this machine is on torch 2.11 rather than the reference 2.13.0, because its driver is older than R580. Update the NVIDIA driver to keep cross-vendor results comparable."
+    ]
+   },
+   "name": "blackwell-driver-575-windows/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 5090",
+    "label": "PyTorch CUDA 12.8 build (fallback)",
+    "name": "cuda-cu128",
+    "port": "cuda-cu128",
+    "reason": "NVIDIA GeForce RTX 5090 is Blackwell and driver 575.64 predates CUDA 13.0",
+    "reference": false,
+    "requirements": "requirements-train-cu128.txt",
+    "torch": "2.11.0",
+    "warnings": [
+     "this machine is on torch 2.11 rather than the reference 2.13.0, because its driver is older than R580. Update the NVIDIA driver to keep cross-vendor results comparable."
+    ]
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 12.0,
+      "cores": null,
+      "driver": "560.94",
+      "index": 0,
+      "memory_mb": 32607,
+      "name": "NVIDIA GeForce RTX 5090",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "the GPU cannot be used yet, so the host installs the CPU build for aggregation",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "NVIDIA GeForce RTX 5090 needs NVIDIA driver 570 or newer; this machine has 560.94. Install NVIDIA driver 580 or newer from https://www.nvidia.com/Download/index.aspx, reboot, then run this again."
+    ]
+   },
+   "name": "blackwell-driver-560-windows/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cpu",
+    "blocked": "NVIDIA GeForce RTX 5090 needs NVIDIA driver 570 or newer; this machine has 560.94.",
+    "can_train": false,
+    "fix": "Install NVIDIA driver 580 or newer from https://www.nvidia.com/Download/index.aspx, reboot, then run this again.",
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 5090",
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "Blackwell needs driver 570 or newer, this machine has 560.94",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 12.0,
+      "cores": null,
+      "driver": "[N/A]",
+      "index": 0,
+      "memory_mb": 32607,
+      "name": "NVIDIA GeForce RTX 5090",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 5090",
+    "label": "PyTorch CUDA 13.0 build",
+    "name": "cuda-cu130",
+    "port": "cuda-cu130",
+    "reason": "NVIDIA GeForce RTX 5090 is compute 12.0 (Blackwell), which needs CUDA 12.8 or newer",
+    "reference": true,
+    "requirements": "requirements-train-cu130.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "blackwell-driver-na/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 5090",
+    "label": "PyTorch CUDA 13.0 build",
+    "name": "cuda-cu130",
+    "port": "cuda-cu130",
+    "reason": "NVIDIA GeForce RTX 5090 is compute 12.0 (Blackwell), which needs CUDA 12.8 or newer",
+    "reference": true,
+    "requirements": "requirements-train-cu130.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "arm64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 12.1,
+      "cores": null,
+      "driver": "580.95.05",
+      "index": 0,
+      "memory_mb": null,
+      "name": "NVIDIA GB10",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GB10",
+    "label": "PyTorch CUDA 13.0 build",
+    "name": "cuda-cu130",
+    "port": "cuda-cu130",
+    "reason": "NVIDIA GB10 is compute 12.1 (Blackwell), which needs CUDA 12.8 or newer",
+    "reference": true,
+    "requirements": "requirements-train-cu130.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "blackwell-gb10-no-memory/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GB10",
+    "label": "PyTorch CUDA 13.0 build",
+    "name": "cuda-cu130",
+    "port": "cuda-cu130",
+    "reason": "NVIDIA GB10 is compute 12.1 (Blackwell), which needs CUDA 12.8 or newer",
+    "reference": true,
+    "requirements": "requirements-train-cu130.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 12.0,
+      "cores": null,
+      "driver": "520.61.05",
+      "index": 0,
+      "memory_mb": 32607,
+      "name": "NVIDIA GeForce RTX 5090",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "the GPU cannot be used yet, so the host installs the CPU build for aggregation",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "The NVIDIA driver on this machine (520.61.05) is too old for any current PyTorch build. Install NVIDIA driver 580 or newer from https://www.nvidia.com/Download/index.aspx, reboot, then run this again."
+    ]
+   },
+   "name": "blackwell-driver-520-linux/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cpu",
+    "blocked": "The NVIDIA driver on this machine (520.61.05) is too old for any current PyTorch build.",
+    "can_train": false,
+    "fix": "Install NVIDIA driver 580 or newer from https://www.nvidia.com/Download/index.aspx, reboot, then run this again.",
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 5090",
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "NVIDIA driver 520.61.05 is too old for CUDA 12",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 7.5,
+      "cores": null,
+      "driver": "580.65.06",
+      "index": 0,
+      "memory_mb": 11264,
+      "name": "NVIDIA GeForce RTX 2080 Ti",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 2080 Ti",
+    "label": "PyTorch CUDA 13.0 build",
+    "name": "cuda-cu130",
+    "port": "cuda-cu130",
+    "reason": "NVIDIA GeForce RTX 2080 Ti is compute 7.5 with driver 580.65.06",
+    "reference": true,
+    "requirements": "requirements-train-cu130.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "turing-r580/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 2080 Ti",
+    "label": "PyTorch CUDA 13.0 build",
+    "name": "cuda-cu130",
+    "port": "cuda-cu130",
+    "reason": "NVIDIA GeForce RTX 2080 Ti is compute 7.5 with driver 580.65.06",
+    "reference": true,
+    "requirements": "requirements-train-cu130.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 7.5,
+      "cores": null,
+      "driver": "575.51",
+      "index": 0,
+      "memory_mb": 11264,
+      "name": "NVIDIA GeForce RTX 2080 Ti",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 2080 Ti",
+    "label": "PyTorch CUDA 12.6 build",
+    "name": "cuda-cu126",
+    "port": "cuda-cu126",
+    "reason": "NVIDIA GeForce RTX 2080 Ti is compute 7.5 with driver 575.51",
+    "reference": true,
+    "requirements": "requirements-train-cu126.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "turing-r575/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 2080 Ti",
+    "label": "PyTorch CUDA 12.6 build",
+    "name": "cuda-cu126",
+    "port": "cuda-cu126",
+    "reason": "NVIDIA GeForce RTX 2080 Ti is compute 7.5 with driver 575.51",
+    "reference": true,
+    "requirements": "requirements-train-cu126.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 6.1,
+      "cores": null,
+      "driver": "581.29",
+      "index": 0,
+      "memory_mb": 11264,
+      "name": "NVIDIA GeForce GTX 1080 Ti",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce GTX 1080 Ti",
+    "label": "PyTorch CUDA 12.6 build",
+    "name": "cuda-cu126",
+    "port": "cuda-cu126",
+    "reason": "NVIDIA GeForce GTX 1080 Ti is compute 6.1 with driver 581.29",
+    "reference": true,
+    "requirements": "requirements-train-cu126.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "pascal-r580/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce GTX 1080 Ti",
+    "label": "PyTorch CUDA 12.6 build",
+    "name": "cuda-cu126",
+    "port": "cuda-cu126",
+    "reason": "NVIDIA GeForce GTX 1080 Ti is compute 6.1 with driver 581.29",
+    "reference": true,
+    "requirements": "requirements-train-cu126.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 3.7,
+      "cores": null,
+      "driver": "470.256.02",
+      "index": 0,
+      "memory_mb": 11441,
+      "name": "Tesla K80",
+      "vendor": "nvidia"
+     },
+     {
+      "compute_capability": 3.7,
+      "cores": null,
+      "driver": "470.256.02",
+      "index": 1,
+      "memory_mb": 11441,
+      "name": "Tesla K80",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Tesla K80",
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "Tesla K80 at compute 3.7 is older than any current PyTorch CUDA build supports",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "kepler-k80/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Tesla K80",
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "Tesla K80 at compute 3.7 is older than any current PyTorch CUDA build supports",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 3.7,
+      "cores": null,
+      "driver": "470.256.02",
+      "index": 0,
+      "memory_mb": 11441,
+      "name": "Tesla K80",
+      "vendor": "nvidia"
+     },
+     {
+      "compute_capability": 3.7,
+      "cores": null,
+      "driver": "470.256.02",
+      "index": 1,
+      "memory_mb": 11441,
+      "name": "Tesla K80",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Tesla K80",
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "Tesla K80 at compute 3.7 is older than any current PyTorch CUDA build supports",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "kepler-k80/cuda",
+   "prefer": "cuda",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Tesla K80",
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "Tesla K80 at compute 3.7 is older than any current PyTorch CUDA build supports",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 5.0,
+      "cores": null,
+      "driver": "535.183.01",
+      "index": 0,
+      "memory_mb": 4096,
+      "name": "NVIDIA GeForce GTX 980",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce GTX 980",
+    "label": "PyTorch CUDA 12.6 build",
+    "name": "cuda-cu126",
+    "port": "cuda-cu126",
+    "reason": "NVIDIA GeForce GTX 980 is compute 5.0 with driver 535.183.01",
+    "reference": true,
+    "requirements": "requirements-train-cu126.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "maxwell-cc50-edge/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce GTX 980",
+    "label": "PyTorch CUDA 12.6 build",
+    "name": "cuda-cu126",
+    "port": "cuda-cu126",
+    "reason": "NVIDIA GeForce GTX 980 is compute 5.0 with driver 535.183.01",
+    "reference": true,
+    "requirements": "requirements-train-cu126.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": "580.95.05",
+      "index": 0,
+      "memory_mb": 10240,
+      "name": "NVIDIA GeForce RTX 3080",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 3080",
+    "label": "PyTorch CUDA 12.6 build",
+    "name": "cuda-cu126",
+    "port": "cuda-cu126",
+    "reason": "NVIDIA GeForce RTX 3080 is unknown compute capability with driver 580.95.05",
+    "reference": true,
+    "requirements": "requirements-train-cu126.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "unknown-cc-r580/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 3080",
+    "label": "PyTorch CUDA 12.6 build",
+    "name": "cuda-cu126",
+    "port": "cuda-cu126",
+    "reason": "NVIDIA GeForce RTX 3080 is unknown compute capability with driver 580.95.05",
+    "reference": true,
+    "requirements": "requirements-train-cu126.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": "[N/A]",
+      "index": 0,
+      "memory_mb": null,
+      "name": "NVIDIA A100-SXM4-40GB",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA A100-SXM4-40GB",
+    "label": "PyTorch CUDA 12.6 build",
+    "name": "cuda-cu126",
+    "port": "cuda-cu126",
+    "reason": "NVIDIA A100-SXM4-40GB is unknown compute capability with driver [N/A]",
+    "reference": true,
+    "requirements": "requirements-train-cu126.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "unknown-cc-driver-na/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA A100-SXM4-40GB",
+    "label": "PyTorch CUDA 12.6 build",
+    "name": "cuda-cu126",
+    "port": "cuda-cu126",
+    "reason": "NVIDIA A100-SXM4-40GB is unknown compute capability with driver [N/A]",
+    "reference": true,
+    "requirements": "requirements-train-cu126.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 0.0,
+      "cores": null,
+      "driver": "550.54",
+      "index": 0,
+      "memory_mb": null,
+      "name": "NVIDIA Mystery",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA Mystery",
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "NVIDIA Mystery at unknown compute capability is older than any current PyTorch CUDA build supports",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "zero-cc/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA Mystery",
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "NVIDIA Mystery at unknown compute capability is older than any current PyTorch CUDA build supports",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 8.6,
+      "cores": null,
+      "driver": "525.60.13",
+      "index": 0,
+      "memory_mb": 24576,
+      "name": "NVIDIA GeForce RTX 3090",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 3090",
+    "label": "PyTorch CUDA 12.6 build",
+    "name": "cuda-cu126",
+    "port": "cuda-cu126",
+    "reason": "NVIDIA GeForce RTX 3090 is compute 8.6 with driver 525.60.13",
+    "reference": true,
+    "requirements": "requirements-train-cu126.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "ampere-525-linux-ok/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 3090",
+    "label": "PyTorch CUDA 12.6 build",
+    "name": "cuda-cu126",
+    "port": "cuda-cu126",
+    "reason": "NVIDIA GeForce RTX 3090 is compute 8.6 with driver 525.60.13",
+    "reference": true,
+    "requirements": "requirements-train-cu126.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 8.6,
+      "cores": null,
+      "driver": "525.60",
+      "index": 0,
+      "memory_mb": 24576,
+      "name": "NVIDIA GeForce RTX 3090",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "the GPU cannot be used yet, so the host installs the CPU build for aggregation",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "The NVIDIA driver on this machine (525.60) is too old for any current PyTorch build. Install NVIDIA driver 580 or newer from https://www.nvidia.com/Download/index.aspx, reboot, then run this again."
+    ]
+   },
+   "name": "ampere-525-windows-blocked/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cpu",
+    "blocked": "The NVIDIA driver on this machine (525.60) is too old for any current PyTorch build.",
+    "can_train": false,
+    "fix": "Install NVIDIA driver 580 or newer from https://www.nvidia.com/Download/index.aspx, reboot, then run this again.",
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 3090",
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "NVIDIA driver 525.60 is too old for CUDA 12",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 8.6,
+      "cores": null,
+      "driver": "527.56",
+      "index": 0,
+      "memory_mb": 24576,
+      "name": "NVIDIA GeForce RTX 3090",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "the GPU cannot be used yet, so the host installs the CPU build for aggregation",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "The NVIDIA driver on this machine (527.56) is too old for any current PyTorch build. Install NVIDIA driver 580 or newer from https://www.nvidia.com/Download/index.aspx, reboot, then run this again."
+    ]
+   },
+   "name": "ampere-527-windows-blocked/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cpu",
+    "blocked": "The NVIDIA driver on this machine (527.56) is too old for any current PyTorch build.",
+    "can_train": false,
+    "fix": "Install NVIDIA driver 580 or newer from https://www.nvidia.com/Download/index.aspx, reboot, then run this again.",
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 3090",
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "NVIDIA driver 527.56 is too old for CUDA 12",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 8.6,
+      "cores": null,
+      "driver": "528.02",
+      "index": 0,
+      "memory_mb": 24576,
+      "name": "NVIDIA GeForce RTX 3090",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 3090",
+    "label": "PyTorch CUDA 12.6 build",
+    "name": "cuda-cu126",
+    "port": "cuda-cu126",
+    "reason": "NVIDIA GeForce RTX 3090 is compute 8.6 with driver 528.02",
+    "reference": true,
+    "requirements": "requirements-train-cu126.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "ampere-528-windows-ok/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 3090",
+    "label": "PyTorch CUDA 12.6 build",
+    "name": "cuda-cu126",
+    "port": "cuda-cu126",
+    "reason": "NVIDIA GeForce RTX 3090 is compute 8.6 with driver 528.02",
+    "reference": true,
+    "requirements": "requirements-train-cu126.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 8.6,
+      "cores": null,
+      "driver": "520.61.05",
+      "index": 0,
+      "memory_mb": 24576,
+      "name": "NVIDIA GeForce RTX 3090",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "the GPU cannot be used yet, so the host installs the CPU build for aggregation",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "The NVIDIA driver on this machine (520.61.05) is too old for any current PyTorch build. Install NVIDIA driver 580 or newer from https://www.nvidia.com/Download/index.aspx, reboot, then run this again."
+    ]
+   },
+   "name": "ampere-520-linux-blocked/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cpu",
+    "blocked": "The NVIDIA driver on this machine (520.61.05) is too old for any current PyTorch build.",
+    "can_train": false,
+    "fix": "Install NVIDIA driver 580 or newer from https://www.nvidia.com/Download/index.aspx, reboot, then run this again.",
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 3090",
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "NVIDIA driver 520.61.05 is too old for CUDA 12",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 8.6,
+      "cores": null,
+      "driver": "570.133.07",
+      "index": 0,
+      "memory_mb": 24576,
+      "name": "NVIDIA GeForce RTX 3090",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 3090",
+    "label": "PyTorch CUDA 12.6 build",
+    "name": "cuda-cu126",
+    "port": "cuda-cu126",
+    "reason": "NVIDIA GeForce RTX 3090 is compute 8.6 with driver 570.133.07",
+    "reference": true,
+    "requirements": "requirements-train-cu126.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "ampere-570-cu126/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 3090",
+    "label": "PyTorch CUDA 12.6 build",
+    "name": "cuda-cu126",
+    "port": "cuda-cu126",
+    "reason": "NVIDIA GeForce RTX 3090 is compute 8.6 with driver 570.133.07",
+    "reference": true,
+    "requirements": "requirements-train-cu126.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 6.1,
+      "cores": null,
+      "driver": "580.95.05",
+      "index": 0,
+      "memory_mb": 11264,
+      "name": "NVIDIA GeForce GTX 1080 Ti",
+      "vendor": "nvidia"
+     },
+     {
+      "compute_capability": 8.9,
+      "cores": null,
+      "driver": "580.95.05",
+      "index": 1,
+      "memory_mb": 24564,
+      "name": "NVIDIA GeForce RTX 4090",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 1,
+    "gpu_name": "NVIDIA GeForce RTX 4090",
+    "label": "PyTorch CUDA 13.0 build",
+    "name": "cuda-cu130",
+    "port": "cuda-cu130",
+    "reason": "NVIDIA GeForce RTX 4090 is compute 8.9 with driver 580.95.05",
+    "reference": true,
+    "requirements": "requirements-train-cu130.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "this machine has GPUs of different generations; GradMesh trains on GPU 1 (NVIDIA GeForce RTX 4090)"
+    ]
+   },
+   "name": "mixed-pascal-ada/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 1,
+    "gpu_name": "NVIDIA GeForce RTX 4090",
+    "label": "PyTorch CUDA 13.0 build",
+    "name": "cuda-cu130",
+    "port": "cuda-cu130",
+    "reason": "NVIDIA GeForce RTX 4090 is compute 8.9 with driver 580.95.05",
+    "reference": true,
+    "requirements": "requirements-train-cu130.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "this machine has GPUs of different generations; GradMesh trains on GPU 1 (NVIDIA GeForce RTX 4090)"
+    ]
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 6.1,
+      "cores": null,
+      "driver": "580.95.05",
+      "index": 0,
+      "memory_mb": 11264,
+      "name": "NVIDIA GeForce GTX 1080 Ti",
+      "vendor": "nvidia"
+     },
+     {
+      "compute_capability": 8.9,
+      "cores": null,
+      "driver": "580.95.05",
+      "index": 1,
+      "memory_mb": 24564,
+      "name": "NVIDIA GeForce RTX 4090",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 1,
+    "gpu_name": "NVIDIA GeForce RTX 4090",
+    "label": "PyTorch CUDA 13.0 build",
+    "name": "cuda-cu130",
+    "port": "cuda-cu130",
+    "reason": "NVIDIA GeForce RTX 4090 is compute 8.9 with driver 580.95.05",
+    "reference": true,
+    "requirements": "requirements-train-cu130.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "this machine has GPUs of different generations; GradMesh trains on GPU 1 (NVIDIA GeForce RTX 4090)"
+    ]
+   },
+   "name": "mixed-pascal-ada/cuda",
+   "prefer": "cuda",
+   "select": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 1,
+    "gpu_name": "NVIDIA GeForce RTX 4090",
+    "label": "PyTorch CUDA 13.0 build",
+    "name": "cuda-cu130",
+    "port": "cuda-cu130",
+    "reason": "NVIDIA GeForce RTX 4090 is compute 8.9 with driver 580.95.05",
+    "reference": true,
+    "requirements": "requirements-train-cu130.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "this machine has GPUs of different generations; GradMesh trains on GPU 1 (NVIDIA GeForce RTX 4090)"
+    ]
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 6.1,
+      "cores": null,
+      "driver": "575.64",
+      "index": 0,
+      "memory_mb": 11264,
+      "name": "NVIDIA GeForce GTX 1080 Ti",
+      "vendor": "nvidia"
+     },
+     {
+      "compute_capability": 12.0,
+      "cores": null,
+      "driver": "575.64",
+      "index": 1,
+      "memory_mb": 32607,
+      "name": "NVIDIA GeForce RTX 5090",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 1,
+    "gpu_name": "NVIDIA GeForce RTX 5090",
+    "label": "PyTorch CUDA 12.8 build (fallback)",
+    "name": "cuda-cu128",
+    "port": "cuda-cu128",
+    "reason": "NVIDIA GeForce RTX 5090 is Blackwell and driver 575.64 predates CUDA 13.0",
+    "reference": false,
+    "requirements": "requirements-train-cu128.txt",
+    "torch": "2.11.0",
+    "warnings": [
+     "this machine has GPUs of different generations; GradMesh trains on GPU 1 (NVIDIA GeForce RTX 5090)",
+     "this machine is on torch 2.11 rather than the reference 2.13.0, because its driver is older than R580. Update the NVIDIA driver to keep cross-vendor results comparable."
+    ]
+   },
+   "name": "mixed-blackwell-pascal-575/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 1,
+    "gpu_name": "NVIDIA GeForce RTX 5090",
+    "label": "PyTorch CUDA 12.8 build (fallback)",
+    "name": "cuda-cu128",
+    "port": "cuda-cu128",
+    "reason": "NVIDIA GeForce RTX 5090 is Blackwell and driver 575.64 predates CUDA 13.0",
+    "reference": false,
+    "requirements": "requirements-train-cu128.txt",
+    "torch": "2.11.0",
+    "warnings": [
+     "this machine has GPUs of different generations; GradMesh trains on GPU 1 (NVIDIA GeForce RTX 5090)",
+     "this machine is on torch 2.11 rather than the reference 2.13.0, because its driver is older than R580. Update the NVIDIA driver to keep cross-vendor results comparable."
+    ]
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 6.1,
+      "cores": null,
+      "driver": "560.94",
+      "index": 0,
+      "memory_mb": 11264,
+      "name": "NVIDIA GeForce GTX 1080 Ti",
+      "vendor": "nvidia"
+     },
+     {
+      "compute_capability": 12.0,
+      "cores": null,
+      "driver": "560.94",
+      "index": 1,
+      "memory_mb": 32607,
+      "name": "NVIDIA GeForce RTX 5090",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "the GPU cannot be used yet, so the host installs the CPU build for aggregation",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "this machine has GPUs of different generations; GradMesh trains on GPU 1 (NVIDIA GeForce RTX 5090)",
+     "NVIDIA GeForce RTX 5090 needs NVIDIA driver 570 or newer; this machine has 560.94. Install NVIDIA driver 580 or newer from https://www.nvidia.com/Download/index.aspx, reboot, then run this again."
+    ]
+   },
+   "name": "mixed-blackwell-pascal-560/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cpu",
+    "blocked": "NVIDIA GeForce RTX 5090 needs NVIDIA driver 570 or newer; this machine has 560.94.",
+    "can_train": false,
+    "fix": "Install NVIDIA driver 580 or newer from https://www.nvidia.com/Download/index.aspx, reboot, then run this again.",
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 5090",
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "Blackwell needs driver 570 or newer, this machine has 560.94",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "this machine has GPUs of different generations; GradMesh trains on GPU 1 (NVIDIA GeForce RTX 5090)"
+    ]
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 8.6,
+      "cores": null,
+      "driver": "580.95.05",
+      "index": 0,
+      "memory_mb": 24576,
+      "name": "NVIDIA GeForce RTX 3090",
+      "vendor": "nvidia"
+     },
+     {
+      "compute_capability": 8.6,
+      "cores": null,
+      "driver": "580.95.05",
+      "index": 1,
+      "memory_mb": 24576,
+      "name": "NVIDIA GeForce RTX 3090",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 3090",
+    "label": "PyTorch CUDA 13.0 build",
+    "name": "cuda-cu130",
+    "port": "cuda-cu130",
+    "reason": "NVIDIA GeForce RTX 3090 is compute 8.6 with driver 580.95.05",
+    "reference": true,
+    "requirements": "requirements-train-cu130.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "twin-3090-tie/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 3090",
+    "label": "PyTorch CUDA 13.0 build",
+    "name": "cuda-cu130",
+    "port": "cuda-cu130",
+    "reason": "NVIDIA GeForce RTX 3090 is compute 8.6 with driver 580.95.05",
+    "reference": true,
+    "requirements": "requirements-train-cu130.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 8.6,
+      "cores": null,
+      "driver": "580.95.05",
+      "index": 0,
+      "memory_mb": 16376,
+      "name": "NVIDIA RTX A4000",
+      "vendor": "nvidia"
+     },
+     {
+      "compute_capability": 8.6,
+      "cores": null,
+      "driver": "580.95.05",
+      "index": 1,
+      "memory_mb": 49140,
+      "name": "NVIDIA RTX A6000",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 1,
+    "gpu_name": "NVIDIA RTX A6000",
+    "label": "PyTorch CUDA 13.0 build",
+    "name": "cuda-cu130",
+    "port": "cuda-cu130",
+    "reason": "NVIDIA RTX A6000 is compute 8.6 with driver 580.95.05",
+    "reference": true,
+    "requirements": "requirements-train-cu130.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "same-cc-more-memory-wins/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 1,
+    "gpu_name": "NVIDIA RTX A6000",
+    "label": "PyTorch CUDA 13.0 build",
+    "name": "cuda-cu130",
+    "port": "cuda-cu130",
+    "reason": "NVIDIA RTX A6000 is compute 8.6 with driver 580.95.05",
+    "reference": true,
+    "requirements": "requirements-train-cu130.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": "580.95.05",
+      "index": 0,
+      "memory_mb": 99999,
+      "name": "NVIDIA Card A",
+      "vendor": "nvidia"
+     },
+     {
+      "compute_capability": 7.0,
+      "cores": null,
+      "driver": "580.95.05",
+      "index": 1,
+      "memory_mb": 16384,
+      "name": "NVIDIA Card B",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 1,
+    "gpu_name": "NVIDIA Card B",
+    "label": "PyTorch CUDA 12.6 build",
+    "name": "cuda-cu126",
+    "port": "cuda-cu126",
+    "reason": "NVIDIA Card B is compute 7.0 with driver 580.95.05",
+    "reference": true,
+    "requirements": "requirements-train-cu126.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "this machine has GPUs of different generations; GradMesh trains on GPU 1 (NVIDIA Card B)"
+    ]
+   },
+   "name": "cc-known-vs-unknown/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 1,
+    "gpu_name": "NVIDIA Card B",
+    "label": "PyTorch CUDA 12.6 build",
+    "name": "cuda-cu126",
+    "port": "cuda-cu126",
+    "reason": "NVIDIA Card B is compute 7.0 with driver 580.95.05",
+    "reference": true,
+    "requirements": "requirements-train-cu126.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "this machine has GPUs of different generations; GradMesh trains on GPU 1 (NVIDIA Card B)"
+    ]
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "NVIDIA Corporation AD102 [GeForce RTX 4090]",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "the GPU cannot be used yet, so the host installs the CPU build for aggregation",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "This machine has an NVIDIA GPU, but nvidia-smi is missing, so the driver is not installed. Install the NVIDIA driver from https://www.nvidia.com/Download/index.aspx (on Linux: your distribution's nvidia-driver package), reboot, then run this again."
+    ]
+   },
+   "name": "nvidia-no-driver-linux/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cpu",
+    "blocked": "This machine has an NVIDIA GPU, but nvidia-smi is missing, so the driver is not installed.",
+    "can_train": false,
+    "fix": "Install the NVIDIA driver from https://www.nvidia.com/Download/index.aspx (on Linux: your distribution's nvidia-driver package), reboot, then run this again.",
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA Corporation AD102 [GeForce RTX 4090]",
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "an NVIDIA GPU is present but its driver is not installed",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "NVIDIA Corporation AD102 [GeForce RTX 4090]",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "the GPU cannot be used yet, so the host installs the CPU build for aggregation",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "This machine has an NVIDIA GPU, but nvidia-smi is missing, so the driver is not installed. Install the NVIDIA driver from https://www.nvidia.com/Download/index.aspx (on Linux: your distribution's nvidia-driver package), reboot, then run this again."
+    ]
+   },
+   "name": "nvidia-no-driver-linux/cuda",
+   "prefer": "cuda",
+   "select": {
+    "backend": "cpu",
+    "blocked": "This machine has an NVIDIA GPU, but nvidia-smi is missing, so the driver is not installed.",
+    "can_train": false,
+    "fix": "Install the NVIDIA driver from https://www.nvidia.com/Download/index.aspx (on Linux: your distribution's nvidia-driver package), reboot, then run this again.",
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA Corporation AD102 [GeForce RTX 4090]",
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "an NVIDIA GPU is present but its driver is not installed",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "NVIDIA Corporation AD102 [GeForce RTX 4090]",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "XPU was requested but no Intel GPU was found",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "nvidia-no-driver-linux/xpu",
+   "prefer": "xpu",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "XPU was requested but no Intel GPU was found",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "NVIDIA Corporation AD102 [GeForce RTX 4090]",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "MPS is only available on Apple Silicon Macs",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "nvidia-no-driver-linux/mps",
+   "prefer": "mps",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "MPS is only available on Apple Silicon Macs",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "NVIDIA Corporation AD102 [GeForce RTX 4090]",
+      "vendor": "nvidia"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "no supported GPU was detected",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "nvidia-no-driver-linux/rocm",
+   "prefer": "rocm",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "no supported GPU was detected",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "vendor": "nvidia"
+     },
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel(R) Iris(R) Xe Graphics",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel(R) Iris(R) Xe Graphics",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel(R) Iris(R) Xe Graphics trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "Intel(R) Iris(R) Xe Graphics is not on Intel's supported list for PyTorch XPU. It is installed and verified; if the runtime does not start, the machine joins without a GPU."
+    ]
+   },
+   "name": "nvidia-no-driver-plus-iris/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel(R) Iris(R) Xe Graphics",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel(R) Iris(R) Xe Graphics trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "Intel(R) Iris(R) Xe Graphics is not on Intel's supported list for PyTorch XPU. It is installed and verified; if the runtime does not start, the machine joins without a GPU."
+    ]
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "vendor": "nvidia"
+     },
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel(R) Iris(R) Xe Graphics",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "CUDA was requested but no NVIDIA GPU with a driver was found",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "nvidia-no-driver-plus-iris/cuda",
+   "prefer": "cuda",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "CUDA was requested but no NVIDIA GPU with a driver was found",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "vendor": "nvidia"
+     },
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel(R) Iris(R) Xe Graphics",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel(R) Iris(R) Xe Graphics",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel(R) Iris(R) Xe Graphics trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "nvidia-no-driver-plus-iris/xpu",
+   "prefer": "xpu",
+   "select": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel(R) Iris(R) Xe Graphics",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel(R) Iris(R) Xe Graphics trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "NVIDIA GeForce GTX 1650",
+      "vendor": "nvidia"
+     },
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel(R) UHD Graphics 630",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "no supported GPU was detected",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "nvidia-no-driver-plus-uhd/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "no supported GPU was detected",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "NVIDIA GeForce GTX 1650",
+      "vendor": "nvidia"
+     },
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel(R) UHD Graphics 630",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "CUDA was requested but no NVIDIA GPU with a driver was found",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "nvidia-no-driver-plus-uhd/cuda",
+   "prefer": "cuda",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "CUDA was requested but no NVIDIA GPU with a driver was found",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": 16288,
+      "name": "Intel(R) Arc(TM) A770 Graphics",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel(R) Arc(TM) A770 Graphics",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel(R) Arc(TM) A770 Graphics trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "arc-a770-windows/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel(R) Arc(TM) A770 Graphics",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel(R) Arc(TM) A770 Graphics trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": 16288,
+      "name": "Intel(R) Arc(TM) A770 Graphics",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel(R) Arc(TM) A770 Graphics",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel(R) Arc(TM) A770 Graphics trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "arc-a770-windows/xpu",
+   "prefer": "xpu",
+   "select": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel(R) Arc(TM) A770 Graphics",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel(R) Arc(TM) A770 Graphics trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": 16288,
+      "name": "Intel(R) Arc(TM) A770 Graphics",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "CUDA was requested but no NVIDIA GPU with a driver was found",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "arc-a770-windows/cuda",
+   "prefer": "cuda",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "CUDA was requested but no NVIDIA GPU with a driver was found",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel(R) Arc(TM) Graphics",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel(R) Arc(TM) Graphics",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel(R) Arc(TM) Graphics trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "core-ultra-arc/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel(R) Arc(TM) Graphics",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel(R) Arc(TM) Graphics trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel Corporation Meteor Lake-P [Intel Arc Graphics]",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel Corporation Meteor Lake-P [Intel Arc Graphics]",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel Corporation Meteor Lake-P [Intel Arc Graphics] trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "meteor-lake-linux/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel Corporation Meteor Lake-P [Intel Arc Graphics]",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel Corporation Meteor Lake-P [Intel Arc Graphics] trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel(R) Iris(R) Xe Graphics",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel(R) Iris(R) Xe Graphics",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel(R) Iris(R) Xe Graphics trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "Intel(R) Iris(R) Xe Graphics is not on Intel's supported list for PyTorch XPU. It is installed and verified; if the runtime does not start, the machine joins without a GPU."
+    ]
+   },
+   "name": "iris-xe/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel(R) Iris(R) Xe Graphics",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel(R) Iris(R) Xe Graphics trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "Intel(R) Iris(R) Xe Graphics is not on Intel's supported list for PyTorch XPU. It is installed and verified; if the runtime does not start, the machine joins without a GPU."
+    ]
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel(R) Iris(R) Xe Graphics",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel(R) Iris(R) Xe Graphics",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel(R) Iris(R) Xe Graphics trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "iris-xe/xpu",
+   "prefer": "xpu",
+   "select": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel(R) Iris(R) Xe Graphics",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel(R) Iris(R) Xe Graphics trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel(R) UHD Graphics 630",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "no supported GPU was detected",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "uhd-630/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "no supported GPU was detected",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel(R) UHD Graphics 630",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel(R) UHD Graphics 630",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel(R) UHD Graphics 630 trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "uhd-630/xpu",
+   "prefer": "xpu",
+   "select": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel(R) UHD Graphics 630",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel(R) UHD Graphics 630 trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel(R) UHD Graphics 630",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "MPS is only available on Apple Silicon Macs",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "uhd-630/mps",
+   "prefer": "mps",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "MPS is only available on Apple Silicon Macs",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel(R) Iris(R) Xe Graphics",
+      "vendor": "intel"
+     },
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 1,
+      "memory_mb": null,
+      "name": "Intel Corporation DG2 [Arc A750]",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel Corporation DG2 [Arc A750]",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel Corporation DG2 [Arc A750] trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "iris-plus-a750/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel Corporation DG2 [Arc A750]",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel Corporation DG2 [Arc A750] trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel(R) Iris(R) Xe Graphics",
+      "vendor": "intel"
+     },
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 1,
+      "memory_mb": null,
+      "name": "Intel Corporation DG2 [Arc A750]",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel Corporation DG2 [Arc A750]",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel Corporation DG2 [Arc A750] trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "iris-plus-a750/xpu",
+   "prefer": "xpu",
+   "select": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel Corporation DG2 [Arc A750]",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel Corporation DG2 [Arc A750] trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel(R) UHD Graphics 630",
+      "vendor": "intel"
+     },
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel Corporation Meteor Lake-P [Intel Arc Graphics]",
+      "vendor": "intel"
+     },
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": 16288,
+      "name": "Intel(R) Arc(TM) A770 Graphics",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel(R) Arc(TM) A770 Graphics",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel(R) Arc(TM) A770 Graphics trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "uhd-plus-meteor-plus-a770/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel(R) Arc(TM) A770 Graphics",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel(R) Arc(TM) A770 Graphics trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel(R) Arc(TM) B580 Graphics",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel(R) Arc(TM) B580 Graphics",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel(R) Arc(TM) B580 Graphics trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "battlemage-b580/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel(R) Arc(TM) B580 Graphics",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel(R) Arc(TM) B580 Graphics trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel(R) Data Center GPU Max 1550",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel(R) Data Center GPU Max 1550",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel(R) Data Center GPU Max 1550 trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "data-center-max/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel(R) Data Center GPU Max 1550",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel(R) Data Center GPU Max 1550 trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 8.9,
+      "cores": null,
+      "driver": "566.36",
+      "index": 0,
+      "memory_mb": 8188,
+      "name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+      "vendor": "nvidia"
+     },
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel(R) Arc(TM) Graphics",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "label": "PyTorch CUDA 12.6 build",
+    "name": "cuda-cu126",
+    "port": "cuda-cu126",
+    "reason": "NVIDIA GeForce RTX 4060 Laptop GPU is compute 8.9 with driver 566.36",
+    "reference": true,
+    "requirements": "requirements-train-cu126.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "arc-igpu-plus-4060-laptop/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "label": "PyTorch CUDA 12.6 build",
+    "name": "cuda-cu126",
+    "port": "cuda-cu126",
+    "reason": "NVIDIA GeForce RTX 4060 Laptop GPU is compute 8.9 with driver 566.36",
+    "reference": true,
+    "requirements": "requirements-train-cu126.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 8.9,
+      "cores": null,
+      "driver": "566.36",
+      "index": 0,
+      "memory_mb": 8188,
+      "name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+      "vendor": "nvidia"
+     },
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel(R) Arc(TM) Graphics",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "label": "PyTorch CUDA 12.6 build",
+    "name": "cuda-cu126",
+    "port": "cuda-cu126",
+    "reason": "NVIDIA GeForce RTX 4060 Laptop GPU is compute 8.9 with driver 566.36",
+    "reference": true,
+    "requirements": "requirements-train-cu126.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "arc-igpu-plus-4060-laptop/cuda",
+   "prefer": "cuda",
+   "select": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "label": "PyTorch CUDA 12.6 build",
+    "name": "cuda-cu126",
+    "port": "cuda-cu126",
+    "reason": "NVIDIA GeForce RTX 4060 Laptop GPU is compute 8.9 with driver 566.36",
+    "reference": true,
+    "requirements": "requirements-train-cu126.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 8.9,
+      "cores": null,
+      "driver": "566.36",
+      "index": 0,
+      "memory_mb": 8188,
+      "name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+      "vendor": "nvidia"
+     },
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel(R) Arc(TM) Graphics",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel(R) Arc(TM) Graphics",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel(R) Arc(TM) Graphics trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "arc-igpu-plus-4060-laptop/xpu",
+   "prefer": "xpu",
+   "select": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel(R) Arc(TM) Graphics",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel(R) Arc(TM) Graphics trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 8.9,
+      "cores": null,
+      "driver": "566.36",
+      "index": 0,
+      "memory_mb": 8188,
+      "name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+      "vendor": "nvidia"
+     },
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel(R) Arc(TM) Graphics",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "MPS is only available on Apple Silicon Macs",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "arc-igpu-plus-4060-laptop/mps",
+   "prefer": "mps",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "MPS is only available on Apple Silicon Macs",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 8.9,
+      "cores": null,
+      "driver": "566.36",
+      "index": 0,
+      "memory_mb": 8188,
+      "name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+      "vendor": "nvidia"
+     },
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel(R) Arc(TM) Graphics",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "CPU was requested explicitly",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "arc-igpu-plus-4060-laptop/cpu",
+   "prefer": "cpu",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "CPU was requested explicitly",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 8.9,
+      "cores": null,
+      "driver": "566.36",
+      "index": 0,
+      "memory_mb": 8188,
+      "name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+      "vendor": "nvidia"
+     },
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel(R) Arc(TM) Graphics",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "no supported GPU was detected",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "arc-igpu-plus-4060-laptop/rocm",
+   "prefer": "rocm",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "no supported GPU was detected",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 8.6,
+      "cores": null,
+      "driver": "550.120",
+      "index": 0,
+      "memory_mb": null,
+      "name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "vendor": "nvidia"
+     },
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel(R) Iris(R) Xe Graphics",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+    "label": "PyTorch CUDA 12.6 build",
+    "name": "cuda-cu126",
+    "port": "cuda-cu126",
+    "reason": "NVIDIA GeForce RTX 3050 Laptop GPU is compute 8.6 with driver 550.120",
+    "reference": true,
+    "requirements": "requirements-train-cu126.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "iris-plus-3050-linux/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cuda",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+    "label": "PyTorch CUDA 12.6 build",
+    "name": "cuda-cu126",
+    "port": "cuda-cu126",
+    "reason": "NVIDIA GeForce RTX 3050 Laptop GPU is compute 8.6 with driver 550.120",
+    "reference": true,
+    "requirements": "requirements-train-cu126.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 8.6,
+      "cores": null,
+      "driver": "550.120",
+      "index": 0,
+      "memory_mb": null,
+      "name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "vendor": "nvidia"
+     },
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel(R) Iris(R) Xe Graphics",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel(R) Iris(R) Xe Graphics",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel(R) Iris(R) Xe Graphics trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "iris-plus-3050-linux/xpu",
+   "prefer": "xpu",
+   "select": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel(R) Iris(R) Xe Graphics",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel(R) Iris(R) Xe Graphics trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 7.5,
+      "cores": null,
+      "driver": "472.12",
+      "index": 0,
+      "memory_mb": null,
+      "name": "NVIDIA GeForce GTX 1650",
+      "vendor": "nvidia"
+     },
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel(R) UHD Graphics 630",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "the GPU cannot be used yet, so the host installs the CPU build for aggregation",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "The NVIDIA driver on this machine (472.12) is too old for any current PyTorch build. Install NVIDIA driver 580 or newer from https://www.nvidia.com/Download/index.aspx, reboot, then run this again."
+    ]
+   },
+   "name": "uhd-plus-old-driver-blocked/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cpu",
+    "blocked": "The NVIDIA driver on this machine (472.12) is too old for any current PyTorch build.",
+    "can_train": false,
+    "fix": "Install NVIDIA driver 580 or newer from https://www.nvidia.com/Download/index.aspx, reboot, then run this again.",
+    "gpu_index": 0,
+    "gpu_name": "NVIDIA GeForce GTX 1650",
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "NVIDIA driver 472.12 is too old for CUDA 12",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": 7.5,
+      "cores": null,
+      "driver": "472.12",
+      "index": 0,
+      "memory_mb": null,
+      "name": "NVIDIA GeForce GTX 1650",
+      "vendor": "nvidia"
+     },
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel(R) UHD Graphics 630",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel(R) UHD Graphics 630",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel(R) UHD Graphics 630 trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "uhd-plus-old-driver-blocked/xpu",
+   "prefer": "xpu",
+   "select": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel(R) UHD Graphics 630",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel(R) UHD Graphics 630 trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "arm64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": 40,
+      "driver": null,
+      "index": 0,
+      "memory_mb": 8192,
+      "name": "Apple M1, 8-core GPU",
+      "vendor": "apple"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "macos",
+    "os_version": "14.6.1",
+    "python": "3.12.7",
+    "ram_mb": 8192,
+    "translated": false
+   },
+   "host": {
+    "backend": "mps",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Apple M1, 8-core GPU",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon (Apple M1, 8-core GPU) trains on the Metal backend",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "8 GB of unified memory is shared by macOS, every open app and the GPU. GradMesh sizes this Mac's batches to what Metal grants and stops training from paging to the SSD; quit browsers and other large apps before a run."
+    ]
+   },
+   "name": "m1-8gb-macos14/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "mps",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Apple M1, 8-core GPU",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon (Apple M1, 8-core GPU) trains on the Metal backend",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "8 GB of unified memory is shared by macOS, every open app and the GPU. GradMesh sizes this Mac's batches to what Metal grants and stops training from paging to the SSD; quit browsers and other large apps before a run."
+    ]
+   }
+  },
+  {
+   "facts": {
+    "arch": "arm64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": 40,
+      "driver": null,
+      "index": 0,
+      "memory_mb": 8192,
+      "name": "Apple M1, 8-core GPU",
+      "vendor": "apple"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "macos",
+    "os_version": "14.6.1",
+    "python": "3.12.7",
+    "ram_mb": 8192,
+    "translated": false
+   },
+   "host": {
+    "backend": "mps",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Apple M1, 8-core GPU",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon (Apple M1, 8-core GPU) trains on the Metal backend",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "8 GB of unified memory is shared by macOS, every open app and the GPU. GradMesh sizes this Mac's batches to what Metal grants and stops training from paging to the SSD; quit browsers and other large apps before a run."
+    ]
+   },
+   "name": "m1-8gb-macos14/cuda",
+   "prefer": "cuda",
+   "select": {
+    "backend": "mps",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Apple M1, 8-core GPU",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon (Apple M1, 8-core GPU) trains on the Metal backend",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "8 GB of unified memory is shared by macOS, every open app and the GPU. GradMesh sizes this Mac's batches to what Metal grants and stops training from paging to the SSD; quit browsers and other large apps before a run."
+    ]
+   }
+  },
+  {
+   "facts": {
+    "arch": "arm64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": 40,
+      "driver": null,
+      "index": 0,
+      "memory_mb": 8192,
+      "name": "Apple M1, 8-core GPU",
+      "vendor": "apple"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "macos",
+    "os_version": "14.6.1",
+    "python": "3.12.7",
+    "ram_mb": 8192,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch macOS build",
+    "name": "cpu",
+    "port": "mps",
+    "reason": "CPU was requested explicitly",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "m1-8gb-macos14/cpu",
+   "prefer": "cpu",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch macOS build",
+    "name": "cpu",
+    "port": "mps",
+    "reason": "CPU was requested explicitly",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "arm64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": 40,
+      "driver": null,
+      "index": 0,
+      "memory_mb": 8192,
+      "name": "Apple M1, 8-core GPU",
+      "vendor": "apple"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "macos",
+    "os_version": "14.6.1",
+    "python": "3.12.7",
+    "ram_mb": 8192,
+    "translated": false
+   },
+   "host": {
+    "backend": "mps",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Apple M1, 8-core GPU",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon (Apple M1, 8-core GPU) trains on the Metal backend",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "8 GB of unified memory is shared by macOS, every open app and the GPU. GradMesh sizes this Mac's batches to what Metal grants and stops training from paging to the SSD; quit browsers and other large apps before a run."
+    ]
+   },
+   "name": "m1-8gb-macos14/mps",
+   "prefer": "mps",
+   "select": {
+    "backend": "mps",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Apple M1, 8-core GPU",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon (Apple M1, 8-core GPU) trains on the Metal backend",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "8 GB of unified memory is shared by macOS, every open app and the GPU. GradMesh sizes this Mac's batches to what Metal grants and stops training from paging to the SSD; quit browsers and other large apps before a run."
+    ]
+   }
+  },
+  {
+   "facts": {
+    "arch": "arm64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": 40,
+      "driver": null,
+      "index": 0,
+      "memory_mb": 8704,
+      "name": "Apple M1, 7-core GPU",
+      "vendor": "apple"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "macos",
+    "os_version": "14.0",
+    "python": "3.12.7",
+    "ram_mb": 8704,
+    "translated": false
+   },
+   "host": {
+    "backend": "mps",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Apple M1, 7-core GPU",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon (Apple M1, 7-core GPU) trains on the Metal backend",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "8 GB of unified memory is shared by macOS, every open app and the GPU. GradMesh sizes this Mac's batches to what Metal grants and stops training from paging to the SSD; quit browsers and other large apps before a run."
+    ]
+   },
+   "name": "m1-8gb-edge-8704/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "mps",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Apple M1, 7-core GPU",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon (Apple M1, 7-core GPU) trains on the Metal backend",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "8 GB of unified memory is shared by macOS, every open app and the GPU. GradMesh sizes this Mac's batches to what Metal grants and stops training from paging to the SSD; quit browsers and other large apps before a run."
+    ]
+   }
+  },
+  {
+   "facts": {
+    "arch": "arm64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": 40,
+      "driver": null,
+      "index": 0,
+      "memory_mb": 8705,
+      "name": "Apple M1, 7-core GPU",
+      "vendor": "apple"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "macos",
+    "os_version": "14.0",
+    "python": "3.12.7",
+    "ram_mb": 8705,
+    "translated": false
+   },
+   "host": {
+    "backend": "mps",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Apple M1, 7-core GPU",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon (Apple M1, 7-core GPU) trains on the Metal backend",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "m1-8705mb-no-warning/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "mps",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Apple M1, 7-core GPU",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon (Apple M1, 7-core GPU) trains on the Metal backend",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "arm64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": 40,
+      "driver": null,
+      "index": 0,
+      "memory_mb": 65536,
+      "name": "Apple M3 Max, 40-core GPU",
+      "vendor": "apple"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "macos",
+    "os_version": "15.1",
+    "python": "3.12.7",
+    "ram_mb": 65536,
+    "translated": false
+   },
+   "host": {
+    "backend": "mps",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Apple M3 Max, 40-core GPU",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon (Apple M3 Max, 40-core GPU) trains on the Metal backend",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "m3-max-macos15/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "mps",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Apple M3 Max, 40-core GPU",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon (Apple M3 Max, 40-core GPU) trains on the Metal backend",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "arm64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": 40,
+      "driver": null,
+      "index": 0,
+      "memory_mb": 65536,
+      "name": "Apple M3 Max, 40-core GPU",
+      "vendor": "apple"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "macos",
+    "os_version": "15.1",
+    "python": "3.12.7",
+    "ram_mb": 65536,
+    "translated": false
+   },
+   "host": {
+    "backend": "mps",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Apple M3 Max, 40-core GPU",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon (Apple M3 Max, 40-core GPU) trains on the Metal backend",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "m3-max-macos15/xpu",
+   "prefer": "xpu",
+   "select": {
+    "backend": "mps",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Apple M3 Max, 40-core GPU",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon (Apple M3 Max, 40-core GPU) trains on the Metal backend",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "arm64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": 40,
+      "driver": null,
+      "index": 0,
+      "memory_mb": 65536,
+      "name": "Apple M3 Max, 40-core GPU",
+      "vendor": "apple"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "macos",
+    "os_version": "15.1",
+    "python": "3.12.7",
+    "ram_mb": 65536,
+    "translated": false
+   },
+   "host": {
+    "backend": "mps",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Apple M3 Max, 40-core GPU",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon (Apple M3 Max, 40-core GPU) trains on the Metal backend",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "m3-max-macos15/rocm",
+   "prefer": "rocm",
+   "select": {
+    "backend": "mps",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Apple M3 Max, 40-core GPU",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon (Apple M3 Max, 40-core GPU) trains on the Metal backend",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "arm64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": 40,
+      "driver": null,
+      "index": 0,
+      "memory_mb": 16384,
+      "name": "Apple M2, 10-core GPU",
+      "vendor": "apple"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "macos",
+    "os_version": "13.6.7",
+    "python": "3.12.7",
+    "ram_mb": 16384,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch macOS build",
+    "name": "cpu",
+    "port": "mps",
+    "reason": "the GPU cannot be used yet, so the host installs the CPU build for aggregation",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "PyTorch 2.13.0 needs macOS 14 Sonoma or newer; this Mac runs 13.6.7. Update macOS from System Settings > General > Software Update, then run this again."
+    ]
+   },
+   "name": "m2-macos13-blocked/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "mps",
+    "blocked": "PyTorch 2.13.0 needs macOS 14 Sonoma or newer; this Mac runs 13.6.7.",
+    "can_train": true,
+    "fix": "Update macOS from System Settings > General > Software Update, then run this again.",
+    "gpu_index": 0,
+    "gpu_name": "Apple M2, 10-core GPU",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon on macOS 13.6.7",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "arm64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": 40,
+      "driver": null,
+      "index": 0,
+      "memory_mb": 16384,
+      "name": "Apple M2, 10-core GPU",
+      "vendor": "apple"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "macos",
+    "os_version": "13.6.7",
+    "python": "3.12.7",
+    "ram_mb": 16384,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch macOS build",
+    "name": "cpu",
+    "port": "mps",
+    "reason": "CPU was requested explicitly",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "m2-macos13-blocked/cpu",
+   "prefer": "cpu",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch macOS build",
+    "name": "cpu",
+    "port": "mps",
+    "reason": "CPU was requested explicitly",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "arm64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": 40,
+      "driver": null,
+      "index": 0,
+      "memory_mb": 32768,
+      "name": "Apple M2 Pro, 19-core GPU",
+      "vendor": "apple"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "macos",
+    "os_version": "14",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "mps",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Apple M2 Pro, 19-core GPU",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon (Apple M2 Pro, 19-core GPU) trains on the Metal backend",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "macos-version-14/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "mps",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Apple M2 Pro, 19-core GPU",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon (Apple M2 Pro, 19-core GPU) trains on the Metal backend",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "arm64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": 40,
+      "driver": null,
+      "index": 0,
+      "memory_mb": 16384,
+      "name": "Apple M4, 10-core GPU",
+      "vendor": "apple"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "macos",
+    "os_version": "26.0",
+    "python": "3.12.7",
+    "ram_mb": 16384,
+    "translated": false
+   },
+   "host": {
+    "backend": "mps",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Apple M4, 10-core GPU",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon (Apple M4, 10-core GPU) trains on the Metal backend",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "macos-tahoe-26/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "mps",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Apple M4, 10-core GPU",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon (Apple M4, 10-core GPU) trains on the Metal backend",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "arm64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": 40,
+      "driver": null,
+      "index": 0,
+      "memory_mb": 16384,
+      "name": "Apple M1",
+      "vendor": "apple"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "macos",
+    "os_version": "",
+    "python": "3.12.7",
+    "ram_mb": 16384,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch macOS build",
+    "name": "cpu",
+    "port": "mps",
+    "reason": "the GPU cannot be used yet, so the host installs the CPU build for aggregation",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "PyTorch 2.13.0 needs macOS 14 Sonoma or newer; this Mac runs . Update macOS from System Settings > General > Software Update, then run this again."
+    ]
+   },
+   "name": "macos-empty-version/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "mps",
+    "blocked": "PyTorch 2.13.0 needs macOS 14 Sonoma or newer; this Mac runs .",
+    "can_train": true,
+    "fix": "Update macOS from System Settings > General > Software Update, then run this again.",
+    "gpu_index": 0,
+    "gpu_name": "Apple M1",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon on macOS ",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "arm64",
+    "cpu_count": 16,
+    "gpus": [],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "macos",
+    "os_version": "14.5",
+    "python": "3.12.7",
+    "ram_mb": 16384,
+    "translated": false
+   },
+   "host": {
+    "backend": "mps",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Apple Silicon",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon (arm64) trains on the Metal backend",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "macos-no-gpu-listed/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "mps",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Apple Silicon",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon (arm64) trains on the Metal backend",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "arm64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": 40,
+      "driver": null,
+      "index": 0,
+      "memory_mb": 2560,
+      "name": "Apple M1",
+      "vendor": "apple"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "macos",
+    "os_version": "14.5",
+    "python": "3.12.7",
+    "ram_mb": 2560,
+    "translated": false
+   },
+   "host": {
+    "backend": "mps",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Apple M1",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon (Apple M1) trains on the Metal backend",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "2 GB of unified memory is shared by macOS, every open app and the GPU. GradMesh sizes this Mac's batches to what Metal grants and stops training from paging to the SSD; quit browsers and other large apps before a run."
+    ]
+   },
+   "name": "mac-ram-2560-bankers/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "mps",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Apple M1",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon (Apple M1) trains on the Metal backend",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "2 GB of unified memory is shared by macOS, every open app and the GPU. GradMesh sizes this Mac's batches to what Metal grants and stops training from paging to the SSD; quit browsers and other large apps before a run."
+    ]
+   }
+  },
+  {
+   "facts": {
+    "arch": "arm64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": 40,
+      "driver": null,
+      "index": 0,
+      "memory_mb": 4608,
+      "name": "Apple M1",
+      "vendor": "apple"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "macos",
+    "os_version": "14.5",
+    "python": "3.12.7",
+    "ram_mb": 4608,
+    "translated": false
+   },
+   "host": {
+    "backend": "mps",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Apple M1",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon (Apple M1) trains on the Metal backend",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "4 GB of unified memory is shared by macOS, every open app and the GPU. GradMesh sizes this Mac's batches to what Metal grants and stops training from paging to the SSD; quit browsers and other large apps before a run."
+    ]
+   },
+   "name": "mac-ram-4608-bankers/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "mps",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Apple M1",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon (Apple M1) trains on the Metal backend",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "4 GB of unified memory is shared by macOS, every open app and the GPU. GradMesh sizes this Mac's batches to what Metal grants and stops training from paging to the SSD; quit browsers and other large apps before a run."
+    ]
+   }
+  },
+  {
+   "facts": {
+    "arch": "arm64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": 40,
+      "driver": null,
+      "index": 0,
+      "memory_mb": 7680,
+      "name": "Apple M1",
+      "vendor": "apple"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "macos",
+    "os_version": "14.5",
+    "python": "3.12.7",
+    "ram_mb": 7680,
+    "translated": false
+   },
+   "host": {
+    "backend": "mps",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Apple M1",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon (Apple M1) trains on the Metal backend",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "8 GB of unified memory is shared by macOS, every open app and the GPU. GradMesh sizes this Mac's batches to what Metal grants and stops training from paging to the SSD; quit browsers and other large apps before a run."
+    ]
+   },
+   "name": "mac-ram-7680/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "mps",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Apple M1",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon (Apple M1) trains on the Metal backend",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "8 GB of unified memory is shared by macOS, every open app and the GPU. GradMesh sizes this Mac's batches to what Metal grants and stops training from paging to the SSD; quit browsers and other large apps before a run."
+    ]
+   }
+  },
+  {
+   "facts": {
+    "arch": "arm64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": 40,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Apple M1",
+      "vendor": "apple"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "macos",
+    "os_version": "14.5",
+    "python": "3.12.7",
+    "ram_mb": null,
+    "translated": false
+   },
+   "host": {
+    "backend": "mps",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Apple M1",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon (Apple M1) trains on the Metal backend",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "mac-ram-unknown/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "mps",
+    "blocked": null,
+    "can_train": true,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "Apple M1",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon (Apple M1) trains on the Metal backend",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": 40,
+      "driver": null,
+      "index": 0,
+      "memory_mb": 16384,
+      "name": "Apple M2, 10-core GPU",
+      "vendor": "apple"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "macos",
+    "os_version": "14.5",
+    "python": "3.12.7",
+    "ram_mb": 16384,
+    "translated": true
+   },
+   "host": {
+    "backend": "mps",
+    "blocked": "This Mac has Apple Silicon, but the Python that ran this is an Intel (x86_64) build running under Rosetta, and PyTorch publishes no Intel-Mac builds. The GPU is fine; the Python is the wrong one.",
+    "can_train": true,
+    "fix": "Install the Apple Silicon Python with Homebrew (brew install python@3.12, which lives in /opt/homebrew) or the python.org macOS installer, then run the join command again. If Terminal itself is set to open using Rosetta, turn that off in its Get Info window first.",
+    "gpu_index": 0,
+    "gpu_name": "Apple M2, 10-core GPU",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon, but this Python is an Intel build running under Rosetta",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "rosetta/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "mps",
+    "blocked": "This Mac has Apple Silicon, but the Python that ran this is an Intel (x86_64) build running under Rosetta, and PyTorch publishes no Intel-Mac builds. The GPU is fine; the Python is the wrong one.",
+    "can_train": true,
+    "fix": "Install the Apple Silicon Python with Homebrew (brew install python@3.12, which lives in /opt/homebrew) or the python.org macOS installer, then run the join command again. If Terminal itself is set to open using Rosetta, turn that off in its Get Info window first.",
+    "gpu_index": 0,
+    "gpu_name": "Apple M2, 10-core GPU",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon, but this Python is an Intel build running under Rosetta",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": 40,
+      "driver": null,
+      "index": 0,
+      "memory_mb": 16384,
+      "name": "Apple M2, 10-core GPU",
+      "vendor": "apple"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "macos",
+    "os_version": "14.5",
+    "python": "3.12.7",
+    "ram_mb": 16384,
+    "translated": true
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch macOS build",
+    "name": "cpu",
+    "port": "mps",
+    "reason": "CPU was requested explicitly",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "rosetta/cpu",
+   "prefer": "cpu",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch macOS build",
+    "name": "cpu",
+    "port": "mps",
+    "reason": "CPU was requested explicitly",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "macos",
+    "os_version": "14.5",
+    "python": "3.12.7",
+    "ram_mb": 16384,
+    "translated": true
+   },
+   "host": {
+    "backend": "mps",
+    "blocked": "This Mac has Apple Silicon, but the Python that ran this is an Intel (x86_64) build running under Rosetta, and PyTorch publishes no Intel-Mac builds. The GPU is fine; the Python is the wrong one.",
+    "can_train": true,
+    "fix": "Install the Apple Silicon Python with Homebrew (brew install python@3.12, which lives in /opt/homebrew) or the python.org macOS installer, then run the join command again. If Terminal itself is set to open using Rosetta, turn that off in its Get Info window first.",
+    "gpu_index": 0,
+    "gpu_name": "Apple Silicon",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon, but this Python is an Intel build running under Rosetta",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "rosetta-no-gpu-listed/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "mps",
+    "blocked": "This Mac has Apple Silicon, but the Python that ran this is an Intel (x86_64) build running under Rosetta, and PyTorch publishes no Intel-Mac builds. The GPU is fine; the Python is the wrong one.",
+    "can_train": true,
+    "fix": "Install the Apple Silicon Python with Homebrew (brew install python@3.12, which lives in /opt/homebrew) or the python.org macOS installer, then run the join command again. If Terminal itself is set to open using Rosetta, turn that off in its Get Info window first.",
+    "gpu_index": 0,
+    "gpu_name": "Apple Silicon",
+    "label": "PyTorch macOS build (Metal)",
+    "name": "mps",
+    "port": "mps",
+    "reason": "Apple Silicon, but this Python is an Intel build running under Rosetta",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel UHD Graphics 630",
+      "vendor": "intel"
+     },
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 1,
+      "memory_mb": null,
+      "name": "AMD Radeon Pro 5500M",
+      "vendor": "amd"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "macos",
+    "os_version": "13.7",
+    "python": "3.12.7",
+    "ram_mb": 16384,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": "PyTorch stopped publishing builds for Intel Macs after version 2.2, so this Mac cannot run the GradMesh training stack.",
+    "can_train": false,
+    "fix": "Contribute an Apple Silicon Mac, or a Windows or Linux machine with an NVIDIA or Intel GPU.",
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "Intel Macs have no current PyTorch builds",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "intel-mac/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cpu",
+    "blocked": "PyTorch stopped publishing builds for Intel Macs after version 2.2, so this Mac cannot run the GradMesh training stack.",
+    "can_train": false,
+    "fix": "Contribute an Apple Silicon Mac, or a Windows or Linux machine with an NVIDIA or Intel GPU.",
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch macOS build",
+    "name": "cpu",
+    "port": "mps",
+    "reason": "Intel Macs have no current PyTorch builds",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel UHD Graphics 630",
+      "vendor": "intel"
+     },
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 1,
+      "memory_mb": null,
+      "name": "AMD Radeon Pro 5500M",
+      "vendor": "amd"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "macos",
+    "os_version": "13.7",
+    "python": "3.12.7",
+    "ram_mb": 16384,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": "PyTorch stopped publishing builds for Intel Macs after version 2.2, so this Mac cannot run the GradMesh training stack.",
+    "can_train": false,
+    "fix": "Contribute an Apple Silicon Mac, or a Windows or Linux machine with an NVIDIA or Intel GPU.",
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "Intel Macs have no current PyTorch builds",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "intel-mac/xpu",
+   "prefer": "xpu",
+   "select": {
+    "backend": "cpu",
+    "blocked": "PyTorch stopped publishing builds for Intel Macs after version 2.2, so this Mac cannot run the GradMesh training stack.",
+    "can_train": false,
+    "fix": "Contribute an Apple Silicon Mac, or a Windows or Linux machine with an NVIDIA or Intel GPU.",
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch macOS build",
+    "name": "cpu",
+    "port": "mps",
+    "reason": "Intel Macs have no current PyTorch builds",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel UHD Graphics 630",
+      "vendor": "intel"
+     },
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 1,
+      "memory_mb": null,
+      "name": "AMD Radeon Pro 5500M",
+      "vendor": "amd"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "macos",
+    "os_version": "13.7",
+    "python": "3.12.7",
+    "ram_mb": 16384,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch macOS build",
+    "name": "cpu",
+    "port": "mps",
+    "reason": "CPU was requested explicitly",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "intel-mac/cpu",
+   "prefer": "cpu",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch macOS build",
+    "name": "cpu",
+    "port": "mps",
+    "reason": "CPU was requested explicitly",
+    "reference": true,
+    "requirements": "requirements-mps.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "AMD Radeon RX 7900 XTX",
+      "vendor": "amd"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "AMD Radeon RX 7900 XTX",
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "AMD Radeon RX 7900 XTX is an AMD GPU, which GradMesh 5 does not train on yet",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "amd-only-linux/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "AMD Radeon RX 7900 XTX",
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "AMD Radeon RX 7900 XTX is an AMD GPU, which GradMesh 5 does not train on yet",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "AMD Radeon RX 7900 XTX",
+      "vendor": "amd"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "AMD Radeon RX 7900 XTX",
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "AMD Radeon RX 7900 XTX is an AMD GPU, which GradMesh 5 does not train on yet",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "amd-only-linux/rocm",
+   "prefer": "rocm",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "AMD Radeon RX 7900 XTX",
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "AMD Radeon RX 7900 XTX is an AMD GPU, which GradMesh 5 does not train on yet",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "AMD Radeon RX 7900 XTX",
+      "vendor": "amd"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "CUDA was requested but no NVIDIA GPU with a driver was found",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "amd-only-linux/cuda",
+   "prefer": "cuda",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "CUDA was requested but no NVIDIA GPU with a driver was found",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "AMD Radeon RX 7900 XTX",
+      "vendor": "amd"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "AMD Radeon RX 7900 XTX",
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "AMD Radeon RX 7900 XTX is an AMD GPU, which GradMesh 5 does not train on yet",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "amd-only-windows/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "AMD Radeon RX 7900 XTX",
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "AMD Radeon RX 7900 XTX is an AMD GPU, which GradMesh 5 does not train on yet",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel(R) UHD Graphics 630",
+      "vendor": "intel"
+     },
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "AMD Radeon RX 7900 XTX",
+      "vendor": "amd"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "AMD Radeon RX 7900 XTX",
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "AMD Radeon RX 7900 XTX is an AMD GPU, which GradMesh 5 does not train on yet",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "amd-plus-uhd/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": "AMD Radeon RX 7900 XTX",
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "AMD Radeon RX 7900 XTX is an AMD GPU, which GradMesh 5 does not train on yet",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "AMD Radeon RX 7900 XTX",
+      "vendor": "amd"
+     },
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Intel(R) Iris(R) Xe Graphics",
+      "vendor": "intel"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel(R) Iris(R) Xe Graphics",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel(R) Iris(R) Xe Graphics trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "Intel(R) Iris(R) Xe Graphics is not on Intel's supported list for PyTorch XPU. It is installed and verified; if the runtime does not start, the machine joins without a GPU."
+    ]
+   },
+   "name": "amd-plus-iris/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "xpu",
+    "blocked": null,
+    "can_train": true,
+    "fix": "If the XPU runtime does not start, install the latest Intel graphics driver from https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html (on Linux: Intel's compute runtime packages, intel-opencl-icd and level-zero).",
+    "gpu_index": 0,
+    "gpu_name": "Intel(R) Iris(R) Xe Graphics",
+    "label": "PyTorch Intel XPU build",
+    "name": "xpu",
+    "port": "xpu",
+    "reason": "Intel(R) Iris(R) Xe Graphics trains on the Intel XPU backend",
+    "reference": true,
+    "requirements": "requirements-xpu.txt",
+    "torch": "2.13.0",
+    "warnings": [
+     "Intel(R) Iris(R) Xe Graphics is not on Intel's supported list for PyTorch XPU. It is installed and verified; if the runtime does not start, the machine joins without a GPU."
+    ]
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "no supported GPU was detected",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "no-gpu-linux/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "no supported GPU was detected",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "CUDA was requested but no NVIDIA GPU with a driver was found",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "no-gpu-linux/cuda",
+   "prefer": "cuda",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "CUDA was requested but no NVIDIA GPU with a driver was found",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "XPU was requested but no Intel GPU was found",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "no-gpu-linux/xpu",
+   "prefer": "xpu",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "XPU was requested but no Intel GPU was found",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "MPS is only available on Apple Silicon Macs",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "no-gpu-linux/mps",
+   "prefer": "mps",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "MPS is only available on Apple Silicon Macs",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "CPU was requested explicitly",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "no-gpu-linux/cpu",
+   "prefer": "cpu",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "CPU was requested explicitly",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "linux",
+    "os_version": "6.8.0-45-generic",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "no supported GPU was detected",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "no-gpu-linux/rocm",
+   "prefer": "rocm",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "no supported GPU was detected",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "no supported GPU was detected",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "no-gpu-windows/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "no supported GPU was detected",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  },
+  {
+   "facts": {
+    "arch": "x86_64",
+    "cpu_count": 16,
+    "gpus": [
+     {
+      "compute_capability": null,
+      "cores": null,
+      "driver": null,
+      "index": 0,
+      "memory_mb": null,
+      "name": "Microsoft Basic Display Adapter",
+      "vendor": "unknown"
+     }
+    ],
+    "hostname": "case-host",
+    "notes": [],
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "python": "3.12.7",
+    "ram_mb": 32768,
+    "translated": false
+   },
+   "host": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "no supported GPU was detected",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   },
+   "name": "unknown-vendor-only/auto",
+   "prefer": "auto",
+   "select": {
+    "backend": "cpu",
+    "blocked": null,
+    "can_train": false,
+    "fix": null,
+    "gpu_index": 0,
+    "gpu_name": null,
+    "label": "PyTorch CPU build",
+    "name": "cpu",
+    "port": "cpu",
+    "reason": "no supported GPU was detected",
+    "reference": true,
+    "requirements": "requirements-train-cpu.txt",
+    "torch": "2.13.0",
+    "warnings": []
+   }
+  }
+ ],
+ "generator": "crates/gm-probe/tests/fixtures/gen_parity.py",
+ "reference_torch": "2.13.0",
+ "source": "desktop/engine/hardware.py"
+}

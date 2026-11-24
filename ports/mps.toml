@@ -1,0 +1,33 @@
+# Apple Silicon, stock macOS build with the Metal (MPS) backend.
+# Mirrors desktop/engine/requirements-mps.txt.
+id = "mps"
+backend = "mps"
+label = "PyTorch Metal (MPS) build"
+python = "3.12"
+torch = "2.13.0"
+torchvision = "0.28.0"
+# No extra index: PyPI's macOS arm64 wheel is the Metal build, with no local suffix.
+local_suffix = ""
+platforms = ["macos-arm64"]
+reference = true
+notes = """
+Apple Silicon only, macOS 14 Sonoma or newer, which is what the PyTorch 2.13 \
+wheels are built for (macosx_14_0_arm64). Must run natively, never under Rosetta."""
+
+packages = [
+    # requirements-control.txt: the control plane (coordinator boots on these alone)
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2.8",
+    "python-multipart>=0.0.9",
+    "pyyaml>=6.0",
+    "requests>=2.32",
+    "psutil>=5.9",
+    "zeroconf>=0.132",
+    # requirements-common.txt: the training plane apart from PyTorch
+    "ultralytics==8.4.46",
+    "numpy>=1.26,<3",
+    "opencv-python>=4.9",
+    "scipy>=1.11",
+    "matplotlib>=3.8",
+]

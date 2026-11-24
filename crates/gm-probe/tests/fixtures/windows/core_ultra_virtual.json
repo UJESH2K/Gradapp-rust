@@ -1,0 +1,17 @@
+[
+    {
+        "Name":  "Intel(R) Arc(TM) Graphics",
+        "AdapterRAM":  2147483648,
+        "DriverVersion":  "32.0.101.6078"
+    },
+    {
+        "Name":  "Parsec Virtual Display Adapter",
+        "AdapterRAM":  null,
+        "DriverVersion":  "0.45.0.0"
+    },
+    {
+        "Name":  "Meta Virtual Monitor",
+        "AdapterRAM":  null,
+        "DriverVersion":  "17.12.55.198"
+    }
+]

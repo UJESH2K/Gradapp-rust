@@ -1,0 +1,35 @@
+# Intel Arc / Core Ultra, PyTorch XPU build.
+# Mirrors desktop/engine/requirements-xpu.txt.
+id = "xpu"
+backend = "xpu"
+label = "PyTorch XPU build (Intel Arc)"
+python = "3.12"
+torch = "2.13.0"
+torchvision = "0.28.0"
+index_url = "https://download.pytorch.org/whl/xpu"
+local_suffix = "+xpu"
+platforms = ["windows-x86_64", "linux-x86_64"]
+reference = true
+notes = """
+Arc discrete GPUs (A and B series) and Core Ultra processors with Arc Graphics. \
+The +xpu pins stop the resolver swapping in a CPU or CUDA wheel. Since PyTorch 2.7 \
+the XPU wheels pull the SYCL and oneMKL runtimes from PyPI, so only the Intel \
+graphics driver is needed on the machine, not a oneAPI install."""
+
+packages = [
+    # requirements-control.txt: the control plane (coordinator boots on these alone)
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2.8",
+    "python-multipart>=0.0.9",
+    "pyyaml>=6.0",
+    "requests>=2.32",
+    "psutil>=5.9",
+    "zeroconf>=0.132",
+    # requirements-common.txt: the training plane apart from PyTorch
+    "ultralytics==8.4.46",
+    "numpy>=1.26,<3",
+    "opencv-python>=4.9",
+    "scipy>=1.11",
+    "matplotlib>=3.8",
+]

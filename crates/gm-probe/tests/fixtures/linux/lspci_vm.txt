@@ -1,0 +1,2 @@
+00:01.0 "VGA compatible controller" "Red Hat, Inc." "Virtio 1.0 GPU" -r01 "Red Hat, Inc." "Device 1100"
+00:02.0 "VGA compatible controller" "Microsoft Corporation" "Hyper-V virtual VGA" "" ""

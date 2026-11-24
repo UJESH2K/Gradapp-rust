@@ -1,0 +1,85 @@
+# Checks for GradApp 2 (the Rust workspace). No packaging here; releases
+# come from release-v2.yml on v2.* tags.
+#
+# `cargo` at the workspace root builds the default members only (every
+# crate except the Tauri app in app/src-tauri, which needs the platform
+# webview SDK). The app itself is built by release-v2.yml.
+
+name: ci-v2
+
+on:
+  push:
+    branches: [v2-rust, main]
+  pull_request:
+    branches: [v2-rust, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-v2-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: "1"
+
+jobs:
+  lint:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: swatinem/rust-cache@v2
+        with:
+          key: lint
+      - name: cargo fmt
+        run: cargo fmt --all --check
+      - name: cargo clippy (default members)
+        run: cargo clippy --all-targets -- -D warnings
+
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: swatinem/rust-cache@v2
+        with:
+          key: test-${{ matrix.os }}
+      # gm-supervisor's tests start real python3 children where available.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: cargo test (default members)
+        run: cargo test
+
+  # gm-probe's port selection is pinned to engine/hardware.py by a fixture the
+  # Python generates. Regenerate it and fail if it drifted, so a change to
+  # hardware.py cannot silently diverge from the Rust app.
+  probe-parity:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Regenerate parity fixtures and compare
+        shell: bash
+        run: |
+          gen=crates/gm-probe/tests/fixtures/gen_parity.py
+          if [ ! -f "$gen" ]; then
+            echo "no parity generator in this tree; skipping"
+            exit 0
+          fi
+          python3 -I "$gen"
+          if ! git diff --exit-code -- crates/gm-probe/tests/fixtures; then
+            echo "::error::gm-probe parity fixtures are stale: run 'python3 -I $gen' and commit the result (then make cargo test -p gm-probe pass)."
+            exit 1
+          fi

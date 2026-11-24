@@ -1,0 +1,3 @@
+00:02.0 "VGA compatible controller" "Intel Corporation" "Alder Lake-P GT2 [Iris Xe Graphics]" -r0c "Lenovo" "Device 3b0c"
+00:14.0 "USB controller" "Intel Corporation" "Alder Lake PCH USB 3.2 xHCI Host Controller" -r01 "Lenovo" "Device 3b0c"
+01:00.0 "3D controller" "NVIDIA Corporation" "GA107M [GeForce RTX 3050 Mobile]" -ra1 "Lenovo" "Device 3b0c"

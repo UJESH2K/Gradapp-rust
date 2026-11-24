@@ -1,0 +1,34 @@
+# CPU-only build. Coordinator hosts whose GPU cannot train, and machines with no
+# supported accelerator. Mirrors desktop/engine/requirements-train-cpu.txt.
+id = "cpu"
+backend = "cpu"
+label = "PyTorch CPU build"
+python = "3.12"
+torch = "2.13.0"
+torchvision = "0.28.0"
+index_url = "https://download.pytorch.org/whl/cpu"
+local_suffix = "+cpu"
+platforms = ["windows-x86_64", "windows-arm64", "linux-x86_64", "linux-arm64"]
+reference = true
+notes = """
+Aggregates weights and is measured, but is not given training shards. PyPI has \
+no torch wheel for windows-arm64; that platform relies on the +cpu wheels on \
+the PyTorch CPU index. macOS uses the mps port instead."""
+
+packages = [
+    # requirements-control.txt: the control plane (coordinator boots on these alone)
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2.8",
+    "python-multipart>=0.0.9",
+    "pyyaml>=6.0",
+    "requests>=2.32",
+    "psutil>=5.9",
+    "zeroconf>=0.132",
+    # requirements-common.txt: the training plane apart from PyTorch
+    "ultralytics==8.4.46",
+    "numpy>=1.26,<3",
+    "opencv-python>=4.9",
+    "scipy>=1.11",
+    "matplotlib>=3.8",
+]

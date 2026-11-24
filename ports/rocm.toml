@@ -1,0 +1,38 @@
+# AMD Radeon / Instinct, PyTorch ROCm build. EXPERIMENTAL: v1 never shipped a
+# ROCm requirements file, and no ROCm machine has run the reference benchmark.
+id = "rocm"
+backend = "rocm"
+label = "PyTorch ROCm 7.2 build (experimental)"
+python = "3.12"
+torch = "2.13.0"
+torchvision = "0.28.0"
+# The PyTorch 2.13 release published ROCm 7.1 and 7.2 indexes; 7.2 is the one
+# the 2.13 release blog uses in its install example.
+index_url = "https://download.pytorch.org/whl/rocm7.2"
+local_suffix = "+rocm7.2"
+platforms = ["linux-x86_64"]
+reference = false
+experimental = true
+notes = """
+Linux x86_64 only (PyTorch publishes no ROCm wheels for Windows or macOS). Needs \
+the ROCm 7.x kernel driver (amdgpu) and a GPU on the ROCm support list. torch \
+reports the GPU through torch.cuda (HIP). Off the reference stack until a ROCm \
+machine has been benchmarked against NVIDIA, Intel and Apple."""
+
+packages = [
+    # requirements-control.txt: the control plane (coordinator boots on these alone)
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2.8",
+    "python-multipart>=0.0.9",
+    "pyyaml>=6.0",
+    "requests>=2.32",
+    "psutil>=5.9",
+    "zeroconf>=0.132",
+    # requirements-common.txt: the training plane apart from PyTorch
+    "ultralytics==8.4.46",
+    "numpy>=1.26,<3",
+    "opencv-python>=4.9",
+    "scipy>=1.11",
+    "matplotlib>=3.8",
+]

@@ -1,0 +1,36 @@
+# NVIDIA, CUDA 13.0 build. The default port for NVIDIA.
+# Mirrors desktop/engine/requirements-train-cu130.txt.
+id = "cuda-cu130"
+backend = "cuda"
+label = "PyTorch CUDA 13.0 build"
+python = "3.12"
+torch = "2.13.0"
+torchvision = "0.28.0"
+index_url = "https://download.pytorch.org/whl/cu130"
+local_suffix = "+cu130"
+platforms = ["windows-x86_64", "linux-x86_64", "linux-arm64"]
+reference = true
+min_driver = 580
+notes = """
+Turing through Blackwell: compute capability 7.5 to 12.x (RTX 20 series onward, \
+including the RTX 50 series). Needs NVIDIA driver R580 or newer. CUDA 13 dropped \
+Maxwell, Pascal and Volta, which stay on cuda-cu126. linux-arm64 covers Grace \
+(GH200/GB200) and DGX Spark class machines."""
+
+packages = [
+    # requirements-control.txt: the control plane (coordinator boots on these alone)
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2.8",
+    "python-multipart>=0.0.9",
+    "pyyaml>=6.0",
+    "requests>=2.32",
+    "psutil>=5.9",
+    "zeroconf>=0.132",
+    # requirements-common.txt: the training plane apart from PyTorch
+    "ultralytics==8.4.46",
+    "numpy>=1.26,<3",
+    "opencv-python>=4.9",
+    "scipy>=1.11",
+    "matplotlib>=3.8",
+]

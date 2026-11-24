@@ -20,6 +20,20 @@
     "linux-deb": "GradApp-linux-amd64.deb",
     "linux-rpm": "GradApp-linux-x86_64.rpm",
   };
+
+  // GradApp 2 (Tauri, release-v2.yml) names its installers with the version
+  // in them (GradApp_2.0.1_x64-setup.exe), so /latest/download/<fixed name>
+  // cannot reach them. When the latest release has no v1 file for a button,
+  // the GitHub lookup below finds the v2 file by pattern and links to it
+  // directly. v1 releases keep working exactly as before. No v2 equivalent:
+  // the portable exe and the mac zip (those buttons fall back to the release page).
+  var ASSETS_V2 = {
+    "windows-exe": /^GradApp_[^_]+_x64-setup\.exe$/,
+    "mac-dmg": /^GradApp_[^_]+_universal\.dmg$/,
+    "linux-appimage": /^GradApp_[^_]+_amd64\.AppImage$/,
+    "linux-deb": /^GradApp_[^_]+_amd64\.deb$/,
+    "linux-rpm": /^GradApp-[^-]+-\d+\.x86_64\.rpm$/,
+  };
   var PRIMARY = { windows: "windows-exe", mac: "mac-dmg", linux: "linux-appimage" };
   var NAMES = { windows: "Windows", mac: "macOS", linux: "Linux" };
   var ICONS = {
@@ -163,6 +177,31 @@
         var sizes = {};
         (release.assets || []).forEach(function (asset) {
           sizes[asset.name] = asset.size;
+        });
+        // v1 file name first; else the v2 (Tauri) file, linked directly.
+        function v2Asset(key) {
+          if (sizes[ASSETS[key]] || !ASSETS_V2[key]) return null;
+          var found = null;
+          (release.assets || []).forEach(function (asset) {
+            if (!found && ASSETS_V2[key].test(asset.name) && asset.browser_download_url) found = asset;
+          });
+          return found;
+        }
+        if (visitor.os) {
+          var mine = v2Asset(PRIMARY[visitor.os]);
+          if (mine) {
+            primaries.forEach(function (btn) {
+              btn.href = mine.browser_download_url;
+            });
+          }
+        }
+        links.forEach(function (link) {
+          var key = link.getAttribute("data-asset");
+          var v2 = v2Asset(key);
+          if (v2) {
+            link.href = v2.browser_download_url;
+            sizes[ASSETS[key]] = v2.size;
+          }
         });
         links.forEach(function (link) {
           if (!link.classList.contains("dl")) return;

@@ -1,0 +1,2 @@
+02:00.0 "VGA compatible controller" "ASPEED Technology, Inc." "ASPEED Graphics Family" -r52 "ASPEED Technology, Inc." "ASPEED Graphics Family"
+41:00.0 "3D controller" "NVIDIA Corporation" "GH100 [H100 PCIe]" -ra1 "NVIDIA Corporation" "Device 1839"

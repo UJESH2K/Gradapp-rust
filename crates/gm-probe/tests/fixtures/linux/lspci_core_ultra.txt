@@ -1,0 +1,1 @@
+00:02.0 "VGA compatible controller" "Intel Corporation" "Meteor Lake-P [Intel Arc Graphics]" -r08 "Dell" "Device 0c11"

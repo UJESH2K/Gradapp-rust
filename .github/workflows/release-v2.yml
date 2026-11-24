@@ -1,0 +1,220 @@
+# Builds and publishes GradApp 2 (Rust + Tauri 2) for Windows, macOS and Linux.
+#
+#   Push a tag like v2.0.1 or v2.1.0-beta.1 -> builds all three, uploads the
+#   installers, their updater signatures and latest.json (the Tauri updater
+#   manifest), then publishes the GitHub release "GradApp v<version>".
+#   Tags with a "-" (v2.1.0-beta.1) are published as pre-releases, which the
+#   in-app updater offers only on the Beta channel.
+#
+#   Actions tab -> "Run workflow" -> builds all three as downloadable
+#   artifacts without touching any release (unless "publish" is ticked).
+#
+# v1 (Electron) releases come from release.yml and only on v1.* tags.
+#
+# Secrets:
+#   TAURI_SIGNING_PRIVATE_KEY           output of `cargo tauri signer generate`
+#   TAURI_SIGNING_PRIVATE_KEY_PASSWORD  its password (may be empty)
+# The matching public key goes in app/src-tauri/tauri.conf.json
+# (plugins.updater.pubkey). Lose the private key and installed apps can no
+# longer verify updates: keep a copy outside GitHub.
+
+name: release-v2
+
+on:
+  push:
+    tags: ["v2.*"]
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: "Also create a GitHub release for the app's current version"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-v2-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  # One release, created up front as a draft, so the three builds upload into
+  # the same release instead of racing to create it. It is published (draft
+  # = false) only after every platform uploaded, so neither the website's
+  # /releases/latest links nor the updater ever see a half-filled release.
+  create-release:
+    if: github.event_name == 'push' || inputs.publish
+    runs-on: ubuntu-22.04
+    outputs:
+      release_id: ${{ steps.create.outputs.release_id }}
+      version: ${{ steps.version.outputs.version }}
+      tag: ${{ steps.version.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read the app version and check it against the tag
+        id: version
+        shell: bash
+        run: |
+          version=$(python3 - <<'PY'
+          import json, pathlib, tomllib
+          conf = pathlib.Path("app/src-tauri/tauri.conf.json")
+          v = json.loads(conf.read_text()).get("version") if conf.exists() else None
+          if v and v.endswith(".json"):  # "version": "../package.json"
+              v = json.loads((conf.parent / v).read_text())["version"]
+          if not v:
+              root = tomllib.loads(pathlib.Path("Cargo.toml").read_text())
+              v = root["workspace"]["package"]["version"]
+          print(v)
+          PY
+          )
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=v$version" >> "$GITHUB_OUTPUT"
+          if [[ "$GITHUB_REF" == refs/tags/* && "$GITHUB_REF_NAME" != "v$version" ]]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match the app version $version (tauri.conf.json / Cargo.toml). Bump the version first."
+            exit 1
+          fi
+      - name: Create the draft release
+        id: create
+        uses: actions/github-script@v7
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+          VERSION: ${{ steps.version.outputs.version }}
+        with:
+          script: |
+            const tag = process.env.TAG;
+            const version = process.env.VERSION;
+            const { owner, repo } = context.repo;
+            // Re-running the workflow reuses the release for this tag.
+            let release = null;
+            const all = await github.paginate(github.rest.repos.listReleases, { owner, repo, per_page: 100 });
+            release = all.find((r) => r.tag_name === tag) || null;
+            if (!release) {
+              ({ data: release } = await github.rest.repos.createRelease({
+                owner,
+                repo,
+                tag_name: tag,
+                target_commitish: context.sha,
+                name: `GradApp v${version}`,
+                body: `GradApp ${version}. See DEVLOG.md for what changed.\n\nInstall: Windows \`GradApp_${version}_x64-setup.exe\`, macOS \`GradApp_${version}_universal.dmg\`, Linux \`GradApp_${version}_amd64.AppImage\` or \`.deb\`.\nAlready on GradApp 2? The app updates itself.`,
+                draft: true,
+                prerelease: version.includes("-"),
+              }));
+            }
+            core.setOutput("release_id", String(release.id));
+
+  build:
+    needs: create-release
+    # Runs for manual builds without a release too (create-release skipped).
+    if: always() && (needs.create-release.result == 'success' || needs.create-release.result == 'skipped')
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: windows-latest
+            args: ""
+            rust_targets: ""
+          - platform: macos-latest
+            args: "--target universal-apple-darwin"
+            rust_targets: "aarch64-apple-darwin,x86_64-apple-darwin"
+          - platform: ubuntu-22.04
+            args: ""
+            rust_targets: ""
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Linux webview and packaging dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libssl-dev libgtk-3-dev
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.rust_targets }}
+
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: ". -> target"
+          key: release-${{ matrix.platform }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Frontend dependencies (if the app has a package.json)
+        shell: bash
+        run: |
+          if [ -f app/package.json ]; then
+            cd app && (npm ci || npm install)
+          fi
+
+      - name: Build (and upload to the release)
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          projectPath: app
+          # Works with or without an app/package.json.
+          tauriScript: npx --yes @tauri-apps/cli@^2
+          args: ${{ matrix.args }}
+          releaseId: ${{ needs.create-release.outputs.release_id }}
+          releaseName: "GradApp v__VERSION__"
+          releaseDraft: false
+          includeUpdaterJson: true
+          updaterJsonPreferNsis: true
+
+      - name: Keep the installers as workflow artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradapp-v2-${{ runner.os }}
+          path: |
+            target/release/bundle/**/*.exe
+            target/release/bundle/**/*.msi
+            target/release/bundle/**/*.AppImage
+            target/release/bundle/**/*.deb
+            target/release/bundle/**/*.rpm
+            target/release/bundle/**/*.sig
+            target/universal-apple-darwin/release/bundle/**/*.dmg
+            target/universal-apple-darwin/release/bundle/**/*.tar.gz
+            target/universal-apple-darwin/release/bundle/**/*.sig
+          if-no-files-found: warn
+
+  publish:
+    needs: [create-release, build]
+    if: needs.create-release.result == 'success' && needs.build.result == 'success'
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check latest.json covers every platform, then publish
+        uses: actions/github-script@v7
+        env:
+          RELEASE_ID: ${{ needs.create-release.outputs.release_id }}
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const release_id = Number(process.env.RELEASE_ID);
+            const { data: assets } = await github.rest.repos.listReleaseAssets({ owner, repo, release_id, per_page: 100 });
+            const manifest = assets.find((a) => a.name === "latest.json");
+            if (!manifest) core.setFailed("latest.json is missing from the release");
+            else {
+              // The three builds each merge their platform into latest.json;
+              // make sure none was lost to a race before anyone can update.
+              const res = await github.request("GET /repos/{owner}/{repo}/releases/assets/{asset_id}", {
+                owner, repo, asset_id: manifest.id, headers: { accept: "application/octet-stream" },
+              });
+              const text = typeof res.data === "string" ? res.data : Buffer.from(res.data).toString("utf8");
+              const platforms = Object.keys(JSON.parse(text).platforms || {});
+              const need = ["windows-x86_64", "darwin-aarch64", "darwin-x86_64", "linux-x86_64"];
+              const missing = need.filter((p) => !platforms.some((k) => k === p || k.startsWith(p + "-")));
+              if (missing.length) {
+                core.setFailed(`latest.json lacks ${missing.join(", ")} (has ${platforms.join(", ")}). Re-run the failed build job; the release stays a draft.`);
+              } else {
+                await github.rest.repos.updateRelease({ owner, repo, release_id, draft: false });
+                core.info(`Published with platforms: ${platforms.join(", ")}`);
+              }
+            }

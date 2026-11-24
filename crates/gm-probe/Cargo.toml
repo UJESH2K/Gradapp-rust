@@ -3,6 +3,15 @@ name = "gm-probe"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+description = "GradApp hardware detection and port selection (Rust port of engine/hardware.py)"
 
 [dependencies]
 gm-types.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+hex.workspace = true
+regex = { version = "1", default-features = false, features = ["std", "unicode", "perf"] }
+
+[dev-dependencies]
+serde_json.workspace = true

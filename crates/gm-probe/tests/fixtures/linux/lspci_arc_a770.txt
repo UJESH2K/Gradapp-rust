@@ -1,0 +1,2 @@
+00:02.0 "Display controller" "Intel Corporation" "Raptor Lake-S GT1 [UHD Graphics 770]" -r04 -p00 "ASRock Incorporation" "Device 4680"
+03:00.0 "VGA compatible controller" "Intel Corporation" "DG2 [Arc A770]" -r08 "Intel Corporation" "Device 1020"

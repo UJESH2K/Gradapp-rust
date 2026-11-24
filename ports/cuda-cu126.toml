@@ -1,0 +1,39 @@
+# NVIDIA, CUDA 12.6 build. Older cards and older drivers.
+# Mirrors desktop/engine/requirements-train-cu126.txt.
+id = "cuda-cu126"
+backend = "cuda"
+label = "PyTorch CUDA 12.6 build"
+python = "3.12"
+torch = "2.13.0"
+torchvision = "0.28.0"
+index_url = "https://download.pytorch.org/whl/cu126"
+local_suffix = "+cu126"
+platforms = ["windows-x86_64", "linux-x86_64"]
+reference = true
+# hardware.py: DRIVER_CU126_WINDOWS = 528, DRIVER_CU126_LINUX = 525. PortSpec has
+# one number, so this is the stricter (Windows) value; gm-probe applies 525 on Linux.
+min_driver = 528
+notes = """
+Maxwell through Hopper (compute capability 5.0 to 9.0) on drivers older than R580, \
+and every pre-Turing card regardless of driver. Does NOT cover Blackwell (compute \
+12.x, RTX 50 series): those cards fail every kernel launch on this build with \
+"no kernel image is available for execution on the device", so it is never \
+picked for them. Minimum driver R528 on Windows, R525 on Linux."""
+
+packages = [
+    # requirements-control.txt: the control plane (coordinator boots on these alone)
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2.8",
+    "python-multipart>=0.0.9",
+    "pyyaml>=6.0",
+    "requests>=2.32",
+    "psutil>=5.9",
+    "zeroconf>=0.132",
+    # requirements-common.txt: the training plane apart from PyTorch
+    "ultralytics==8.4.46",
+    "numpy>=1.26,<3",
+    "opencv-python>=4.9",
+    "scipy>=1.11",
+    "matplotlib>=3.8",
+]

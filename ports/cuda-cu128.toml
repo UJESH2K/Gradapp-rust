@@ -1,0 +1,36 @@
+# NVIDIA, CUDA 12.8 build. Fallback only, NOT on the reference stack.
+# Mirrors desktop/engine/requirements-train-cu128.txt.
+id = "cuda-cu128"
+backend = "cuda"
+label = "PyTorch CUDA 12.8 build (fallback)"
+python = "3.12"
+torch = "2.11.0"
+torchvision = "0.26.0"
+index_url = "https://download.pytorch.org/whl/cu128"
+local_suffix = "+cu128"
+platforms = ["windows-x86_64", "linux-x86_64"]
+reference = false
+min_driver = 570
+notes = """
+For a Blackwell card (RTX 50 series) whose driver is R570 to R579: new enough for \
+CUDA 12.8, too old for CUDA 13.0. PyTorch stopped publishing cu128 wheels at 2.11, \
+so this port runs torch 2.11 and its results are flagged as off the reference \
+stack. Updating the driver to R580 or newer moves the machine to cuda-cu130."""
+
+packages = [
+    # requirements-control.txt: the control plane (coordinator boots on these alone)
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2.8",
+    "python-multipart>=0.0.9",
+    "pyyaml>=6.0",
+    "requests>=2.32",
+    "psutil>=5.9",
+    "zeroconf>=0.132",
+    # requirements-common.txt: the training plane apart from PyTorch
+    "ultralytics==8.4.46",
+    "numpy>=1.26,<3",
+    "opencv-python>=4.9",
+    "scipy>=1.11",
+    "matplotlib>=3.8",
+]
