@@ -69,7 +69,7 @@ enum Cmd {
     },
     /// Check GitHub for a newer GradApp.
     UpdateCheck {
-        #[arg(long, default_value = "UJESH2K/gradapp")]
+        #[arg(long, default_value = "UJESH2K/Gradapp-rust")]
         repo: String,
         #[arg(long)]
         beta: bool,

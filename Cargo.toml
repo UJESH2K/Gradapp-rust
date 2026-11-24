@@ -28,7 +28,7 @@ edition = "2021"
 rust-version = "1.80"
 license = "MIT"
 authors = ["Ujesh Kumar Yadav"]
-repository = "https://github.com/UJESH2K/gradapp"
+repository = "https://github.com/UJESH2K/Gradapp-rust"
 
 [workspace.dependencies]
 gm-types = { path = "crates/gm-types" }

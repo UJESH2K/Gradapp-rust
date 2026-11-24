@@ -53,7 +53,7 @@
   "plugins": {
     "updater": {
       "endpoints": [
-        "https://github.com/UJESH2K/gradapp/releases/latest/download/latest.json"
+        "https://github.com/UJESH2K/Gradapp-rust/releases/latest/download/latest.json"
       ],
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDk3QzJDRTg0MEU2QUQyNzgKUldSNDBtb09oTTdDbDB4UEgxWkEvTmE2RVNGeEN5WThuY1BUMHVUdUF2b1NtQU8rdVY1OUE1TE0K",
       "windows": {

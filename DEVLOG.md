@@ -16,6 +16,36 @@ Format:
 
 ---
 
+## 2026-11-24 (night) — New home: UJESH2K/Gradapp-rust; the G logo in the window
+
+### What
+- The Rust app moves to its own repository, **github.com/UJESH2K/Gradapp-rust**
+  (full history kept, including GradApp 1, whose engine v2 still runs).
+  The updater feed (`tauri.conf.json`, `commands.rs`), `gm-update`'s default
+  repo, `gmctl update-check` and the workspace `repository` now point there.
+- New `README.md` for the Rust repo; the GradApp 1 README moved to
+  `docs/README-v1.md`.
+- The window's brand mark was still the GradMesh v5 hexagon-of-nodes. It is
+  now the **G logo from `main`** (`desktop/assets/logo.png`, commit
+  da38245 "Use the new G logo everywhere"), as `app/ui/brand/g-mark.png`;
+  `app/ui/logo.png` (favicon) regenerated from `desktop/assets/icon.png`.
+  App icons and tray icons were already generated from that artwork
+  (checked byte for byte against `desktop/assets/`).
+
+### Why
+- The owner created a dedicated repo for the Rust version, and releases must
+  come from the repo the installed app checks, or the update popup never fires.
+- The hexagon mark is retired; one logo everywhere.
+
+### Kept on purpose
+- The join page's "Get GradApp" link still points at `UJESH2K/gradapp`
+  releases: that page is byte-identical to v1's (fixture-tested), and today
+  only that repo has installers. Switch it when v2.0.0 ships.
+
+### Verified
+- fmt, clippy `-D warnings`, `cargo test --workspace`: 179 passed, 0 failed.
+- UI checked in Chrome: new mark renders, no console errors.
+
 ## 2026-11-24 — GradApp 2.0 begins: Electron → Rust (2.0.0-dev)
 
 ### What

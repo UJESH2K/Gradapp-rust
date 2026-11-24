@@ -311,7 +311,7 @@ export function createMock(dispatch, dispatchChannel) {
     current: "2.0.0",
     latest: "2.0.1",
     notes: NOTES,
-    url: "https://github.com/UJESH2K/gradapp/releases/latest",
+    url: "https://github.com/UJESH2K/Gradapp-rust/releases/latest",
     published_at: new Date(Date.now() - 3 * 3600 * 1000).toISOString(),
     installable: true,
   };

@@ -75,22 +75,19 @@ export function icon(name, size = 17) {
   return span;
 }
 
-/** The v5 mark: six vendors' worth of nodes around one model. */
+/** The GradApp "G" mark (same artwork as desktop/assets/logo.png, the logo on main). */
 export function logo(size = 22) {
   const span = document.createElement("span");
   span.className = "brand-mark";
   span.style.display = "inline-flex";
-  span.innerHTML = `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path d="M12 3.2 L20.2 7.6 L20.2 16.4 L12 20.8 L3.8 16.4 L3.8 7.6 Z" stroke="currentColor" stroke-opacity="0.35" stroke-width="1.2"/>
-    <circle cx="12" cy="12" r="3" fill="#5b7cfa"/>
-    <circle cx="12" cy="3.2" r="1.6" fill="currentColor" fill-opacity="0.9"/>
-    <circle cx="20.2" cy="7.6" r="1.6" fill="currentColor" fill-opacity="0.75"/>
-    <circle cx="20.2" cy="16.4" r="1.6" fill="currentColor" fill-opacity="0.6"/>
-    <circle cx="12" cy="20.8" r="1.6" fill="currentColor" fill-opacity="0.75"/>
-    <circle cx="3.8" cy="16.4" r="1.6" fill="currentColor" fill-opacity="0.6"/>
-    <circle cx="3.8" cy="7.6" r="1.6" fill="currentColor" fill-opacity="0.9"/>
-    <g stroke="#5b7cfa" stroke-opacity="0.55" stroke-width="1"><path d="M12 12 L12 3.2"/><path d="M12 12 L20.2 7.6"/><path d="M12 12 L3.8 7.6"/></g>
-  </svg>`;
+  const img = document.createElement("img");
+  img.src = "./brand/g-mark.png";
+  img.alt = "";
+  img.width = size;
+  img.height = size;
+  img.decoding = "async";
+  img.draggable = false;
+  span.appendChild(img);
   return span;
 }
 
