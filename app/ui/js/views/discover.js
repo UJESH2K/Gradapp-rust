@@ -160,7 +160,7 @@ export function renderDiscover(root, { go }) {
                 type: "button",
                 style: { justifyContent: "center" },
                 disabled: !active.token,
-                onclick: (e) => joinWith(`gradapp://join?host=${new URL(active.coordinator).hostname}&port=${new URL(active.coordinator).port || 8000}&token=${active.token}${active.mesh_name ? `&name=${encodeURIComponent(active.mesh_name)}` : ""}`, e.currentTarget),
+                onclick: (e) => joinWith(`gradapp://join?server=${encodeURIComponent(active.coordinator)}&token=${encodeURIComponent(active.token)}${active.mesh_name ? `&name=${encodeURIComponent(active.mesh_name)}` : ""}`, e.currentTarget),
               },
               `Join ${meshLabel(active)}`,
               h("span", { class: "arrow" }, "→")

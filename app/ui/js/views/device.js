@@ -6,12 +6,12 @@ import { store, subscribe, refreshDevice, selectedPort, saveSettings } from "../
 import { h, clear, icon, busy, panel, vendorBadge, fmtMemory, toast } from "../ui.js";
 
 const STATE_LABEL = { ready: "Ready", installing: "Installing", not_installed: "Not installed", stale: "Needs rebuild", failed: "Failed", blocked: "Not for this machine" };
+// gm-ports provision steps (Progress.step), in order; "lock" ends it.
 const STEPS = [
-  ["uv", "uv"],
+  ["prepare", "uv"],
   ["python", "Python"],
   ["venv", "Environment"],
-  ["torch", "PyTorch"],
-  ["packages", "Packages"],
+  ["install", "PyTorch & packages"],
   ["verify", "Test kernel"],
 ];
 

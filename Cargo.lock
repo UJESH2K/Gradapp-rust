@@ -1791,6 +1791,7 @@ name = "gmctl"
 version = "2.0.0"
 dependencies = [
  "anyhow",
+ "axum",
  "clap",
  "gm-net",
  "gm-ports",
@@ -1798,6 +1799,7 @@ dependencies = [
  "gm-supervisor",
  "gm-types",
  "gm-update",
+ "libc",
  "serde_json",
  "tempfile",
  "tokio",
@@ -1840,6 +1842,7 @@ dependencies = [
  "tracing",
  "tracing-appender",
  "tracing-subscriber",
+ "url",
 ]
 
 [[package]]

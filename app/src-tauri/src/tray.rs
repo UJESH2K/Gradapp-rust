@@ -51,19 +51,23 @@ pub fn build(app: &AppHandle) -> tauri::Result<()> {
             "open" => show_main(app),
             "quit" => app.exit(0),
             "toggle" => {
-                let backend = app.state::<AppBackend>();
-                if backend.contributing() {
-                    backend.leave(app);
-                } else if let Some(invite) = backend.settings().last_invite {
-                    if let Err(error) = backend.join(app, &invite) {
-                        tracing::warn!("rejoin from tray failed: {error}");
-                        show_main(app);
+                let app = app.clone();
+                tauri::async_runtime::spawn(async move {
+                    let backend = app.state::<AppBackend>();
+                    if backend.contributing() {
+                        backend.leave(&app).await;
+                    } else if let Some(invite) = backend.settings().last_invite {
+                        if let Err(error) = backend.join(&app, &invite).await {
+                            tracing::warn!("rejoin from tray failed: {error}");
+                            show_main(&app);
+                            let _ = app.emit("gm://navigate", "discover");
+                            crate::backend::notice(&app, "error", "Could not rejoin", &error);
+                        }
+                    } else {
+                        show_main(&app);
                         let _ = app.emit("gm://navigate", "discover");
                     }
-                } else {
-                    show_main(app);
-                    let _ = app.emit("gm://navigate", "discover");
-                }
+                });
             }
             _ => {}
         })
@@ -92,7 +96,7 @@ pub fn refresh(app: &AppHandle) {
     };
     let backend = app.state::<AppBackend>();
     let contributing = backend.contributing();
-    let active = contributing || backend.status().hosting.is_some();
+    let active = contributing || backend.is_hosting();
     if let Some(item) = state.toggle.lock().unwrap().as_ref() {
         let _ = item.set_text(if contributing {
             "Stop contributing"

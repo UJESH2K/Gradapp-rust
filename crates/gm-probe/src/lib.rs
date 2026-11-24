@@ -31,8 +31,8 @@ pub use detect::detect;
 pub use fingerprint::{machine_fingerprint, summary};
 pub use gm_types::{Arch, Backend, DeviceFacts, Gpu, Os, Profile, Vendor};
 pub use select::{
-    host_profile, host_profile_with, rocm_version, select_profile, select_profile_with, Prefer,
-    PreferParseError, ProbeOptions, DRIVER_CU126_LINUX, DRIVER_CU126_WINDOWS, DRIVER_CU128,
-    DRIVER_CU130, INTEL_DRIVERS_URL, NVIDIA_DRIVERS_URL, REFERENCE_TORCH, SMALL_UNIFIED_MEMORY_MB,
-    TORCH_CU128_FALLBACK,
+    host_profile, host_profile_with, platform, port_runs_on, rocm_version, select_profile,
+    select_profile_with, Prefer, PreferParseError, ProbeOptions, DRIVER_CU126_LINUX,
+    DRIVER_CU126_WINDOWS, DRIVER_CU128, DRIVER_CU130, INTEL_DRIVERS_URL, NVIDIA_DRIVERS_URL,
+    PORT_PLATFORMS, REFERENCE_TORCH, SMALL_UNIFIED_MEMORY_MB, TORCH_CU128_FALLBACK,
 };

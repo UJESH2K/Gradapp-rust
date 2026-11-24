@@ -158,7 +158,10 @@ pub fn select_profile(facts: &DeviceFacts, prefer: Prefer) -> Profile {
 
 /// [`select_profile`] with explicit options. Pure.
 pub fn select_profile_with(facts: &DeviceFacts, prefer: Prefer, options: &ProbeOptions) -> Profile {
-    fit_os(select_raw(facts, prefer, options), facts)
+    fit_os(
+        gate_platform(select_raw(facts, prefer, options), facts),
+        facts,
+    )
 }
 
 /// The port for a coordinator host: hardware.py `host_profile`.
@@ -174,7 +177,7 @@ pub fn host_profile(facts: &DeviceFacts, prefer: Prefer) -> Profile {
 
 /// [`host_profile`] with explicit options. Pure.
 pub fn host_profile_with(facts: &DeviceFacts, prefer: Prefer, options: &ProbeOptions) -> Profile {
-    let profile = select_raw(facts, prefer, options);
+    let profile = gate_platform(select_raw(facts, prefer, options), facts);
     if let Some(blocked) = &profile.blocked {
         if facts.os == Os::Macos && facts.arch != Arch::Arm64 {
             // Nothing installs on an Intel Mac, not even for aggregation.
@@ -192,7 +195,7 @@ pub fn host_profile_with(facts: &DeviceFacts, prefer: Prefer, options: &ProbeOpt
             None,
             warnings,
         );
-        return fit_os(fallback, facts);
+        return fit_os(gate_platform(fallback, facts), facts);
     }
     fit_os(profile, facts)
 }
@@ -332,6 +335,91 @@ fn mps(
         fix,
         warnings,
     }
+}
+
+/// Where each port has a PyTorch build: the `platforms` of `ports/<id>.toml`.
+/// gm-probe cannot read the manifests (gm-ports depends on nothing here), so
+/// the table is copied; `crates/gmctl/tests/e2e.rs` fails if it drifts from
+/// the registry.
+pub const PORT_PLATFORMS: &[(&str, &[&str])] = &[
+    (
+        "cuda-cu130",
+        &["windows-x86_64", "linux-x86_64", "linux-arm64"],
+    ),
+    ("cuda-cu126", &["windows-x86_64", "linux-x86_64"]),
+    ("cuda-cu128", &["windows-x86_64", "linux-x86_64"]),
+    ("xpu", &["windows-x86_64", "linux-x86_64"]),
+    ("mps", &["macos-arm64"]),
+    (
+        "cpu",
+        &[
+            "windows-x86_64",
+            "windows-arm64",
+            "linux-x86_64",
+            "linux-arm64",
+        ],
+    ),
+    ("rocm", &["linux-x86_64"]),
+];
+
+/// The port platform string for a machine (`linux-arm64`, ...), as gm-ports
+/// spells it; `None` for an OS/CPU pair no port supports (Intel Mac, 32-bit ARM, ...).
+pub fn platform(facts: &DeviceFacts) -> Option<&'static str> {
+    Some(match (facts.os, facts.arch) {
+        (Os::Windows, Arch::X86_64) => "windows-x86_64",
+        (Os::Windows, Arch::Arm64) => "windows-arm64",
+        (Os::Linux, Arch::X86_64) => "linux-x86_64",
+        (Os::Linux, Arch::Arm64) => "linux-arm64",
+        (Os::Macos, Arch::Arm64) => "macos-arm64",
+        _ => return None,
+    })
+}
+
+/// Does `port` have a build for `platform`?
+pub fn port_runs_on(port: &str, platform: &str) -> bool {
+    PORT_PLATFORMS
+        .iter()
+        .any(|(id, platforms)| *id == port && platforms.contains(&platform))
+}
+
+/// Blocks a profile whose port has no build for this machine's platform
+/// (new in 2.0; hardware.py let pip fail instead). Applied before `fit_os`,
+/// so a macOS "cpu" is checked as the "mps" it becomes.
+fn gate_platform(mut profile: Profile, facts: &DeviceFacts) -> Profile {
+    if profile.blocked.is_some() {
+        return profile;
+    }
+    let port = if facts.os == Os::Macos && profile.port == "cpu" {
+        "mps"
+    } else {
+        profile.port.as_str()
+    };
+    let here = platform(facts);
+    if here.is_some_and(|p| port_runs_on(port, p)) {
+        return profile;
+    }
+    let shown = here.map(str::to_string).unwrap_or_else(|| {
+        let os = match facts.os {
+            Os::Windows => "windows",
+            Os::Macos => "macos",
+            Os::Linux => "linux",
+            Os::Other => "other",
+        };
+        format!("{os}-{}", arch_str(facts.arch))
+    });
+    profile.blocked = Some(format!(
+        "PyTorch publishes no {} for {shown}, so this machine cannot install it.",
+        profile.label
+    ));
+    profile.fix = match here {
+        Some(p) if profile.backend == Backend::Cuda && port_runs_on("cuda-cu130", p) => Some(format!(
+            "Install NVIDIA driver {DRIVER_CU130} or newer from {NVIDIA_DRIVERS_URL} (the CUDA 13.0 build has a \
+             {p} wheel), reboot, then run this again."
+        )),
+        _ => None,
+    };
+    profile.can_train = false;
+    profile
 }
 
 /// `_fit_os`: PyTorch's CPU index has no +cpu wheels for macOS; the stock
@@ -606,7 +694,12 @@ fn select_raw(facts: &DeviceFacts, prefer: Prefer, options: &ProbeOptions) -> Pr
     let intel: Vec<&Gpu> = of(Vendor::Intel).collect();
     let apple: Vec<&Gpu> = of(Vendor::Apple).collect();
 
-    if prefer == Prefer::Cpu {
+    // An Intel Mac (or a Rosetta process) has no build at all, CPU included:
+    // let the Apple rules below block it instead of handing out a CPU port
+    // that `fit_os` would rename to the arm64-only mps port. (hardware.py
+    // returns an unblocked profile here; deliberate difference.)
+    let intel_mac = facts.os == Os::Macos && facts.arch != Arch::Arm64;
+    if prefer == Prefer::Cpu && !intel_mac {
         return cpu(
             "CPU was requested explicitly".into(),
             None,
@@ -917,5 +1010,95 @@ mod tests {
         assert_eq!(intel_rank("Intel(R) Arc(TM) A770 Graphics"), 2);
         assert_eq!(intel_rank("Intel(R) Arc(TM) Graphics"), 1);
         assert_eq!(intel_rank("Intel(R) UHD Graphics 630"), 0);
+    }
+
+    // QA 2026-11-24: selection must never name a port that has no build for
+    // the machine's platform without blocking it.
+
+    fn nvidia(name: &str, cc: f32, driver: &str) -> Gpu {
+        let mut g = gpu(Vendor::Nvidia, name, Some(driver));
+        g.compute_capability = Some(cc);
+        g
+    }
+
+    #[test]
+    fn intel_mac_asking_for_cpu_is_still_blocked() {
+        let mac = DeviceFacts {
+            os: Os::Macos,
+            os_version: "13.6".into(),
+            arch: Arch::X86_64,
+            gpus: vec![],
+            ..linux(vec![])
+        };
+        let p = select_profile_with(&mac, Prefer::Cpu, &OFF);
+        assert!(
+            p.blocked.is_some(),
+            "Intel Mac + prefer cpu must be blocked, got port {}",
+            p.port
+        );
+        assert!(host_profile_with(&mac, Prefer::Cpu, &OFF).blocked.is_some());
+        // Apple Silicon asking for CPU is fine: the macOS wheel is the CPU build.
+        let m1 = DeviceFacts {
+            arch: Arch::Arm64,
+            os_version: "14.5".into(),
+            ..mac
+        };
+        let p = select_profile_with(&m1, Prefer::Cpu, &OFF);
+        assert_eq!((p.port.as_str(), p.blocked.is_none()), ("mps", true));
+    }
+
+    #[test]
+    fn arm64_linux_nvidia_on_old_driver_is_blocked_not_sent_to_a_x86_only_port() {
+        // Grace Hopper on an R570 driver would get cuda-cu126 (no linux-arm64 build).
+        let gh200 = DeviceFacts {
+            arch: Arch::Arm64,
+            ..linux(vec![nvidia("NVIDIA GH200 480GB", 9.0, "570.86.15")])
+        };
+        let p = select_profile_with(&gh200, Prefer::Auto, &OFF);
+        assert_eq!(p.port, "cuda-cu126");
+        assert!(p.blocked.is_some(), "cu126 has no linux-arm64 build");
+        assert!(
+            p.fix.as_deref().unwrap_or("").contains("580"),
+            "{:?}",
+            p.fix
+        );
+        // The host still aggregates on the CPU build, which has an arm64 wheel.
+        let h = host_profile_with(&gh200, Prefer::Auto, &OFF);
+        assert_eq!((h.port.as_str(), h.blocked.is_none()), ("cpu", true));
+        // On R580 the same machine gets cuda-cu130, which does ship arm64.
+        let ok = DeviceFacts {
+            arch: Arch::Arm64,
+            ..linux(vec![nvidia("NVIDIA GH200 480GB", 9.0, "580.95.05")])
+        };
+        let p = select_profile_with(&ok, Prefer::Auto, &OFF);
+        assert_eq!((p.port.as_str(), p.blocked.is_none()), ("cuda-cu130", true));
+        // DGX Spark (GB10, Blackwell) on R575 would get the x86-only cu128 fallback.
+        let gb10 = DeviceFacts {
+            arch: Arch::Arm64,
+            ..linux(vec![nvidia("NVIDIA GB10", 12.1, "575.51.03")])
+        };
+        assert!(select_profile_with(&gb10, Prefer::Auto, &OFF)
+            .blocked
+            .is_some());
+    }
+
+    #[test]
+    fn unsupported_cpu_architecture_is_blocked() {
+        // A 32-bit Raspberry Pi OS: no PyTorch wheel at all.
+        let pi = DeviceFacts {
+            arch: Arch::Other,
+            ..linux(vec![])
+        };
+        let p = select_profile_with(&pi, Prefer::Auto, &OFF);
+        assert!(p.blocked.is_some());
+        assert!(host_profile_with(&pi, Prefer::Auto, &OFF).blocked.is_some());
+    }
+
+    #[test]
+    fn platform_table() {
+        assert_eq!(platform(&linux(vec![])), Some("linux-x86_64"));
+        assert!(port_runs_on("cpu", "windows-arm64"));
+        assert!(!port_runs_on("cuda-cu126", "linux-arm64"));
+        assert!(!port_runs_on("nope", "linux-x86_64"));
     }
 }

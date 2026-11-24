@@ -399,7 +399,8 @@ async function checkForUpdates() {
   if (info.available) {
     store.update = info;
     openUpdate(info);
-  } else toast(`GradApp ${info.current} is the latest version.`, "ok");
+  } else if (info.reason) toast(`Could not check for updates: ${info.reason}`, "error");
+  else toast(`GradApp ${info.current} is the latest version.`, "ok");
   renderChrome();
 }
 export { checkForUpdates };

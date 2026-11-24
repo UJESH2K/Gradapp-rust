@@ -16,7 +16,7 @@ Status legend: ✅ done · 🧪 implemented, needs hardware validation · 🚧 i
 |---|---|---|---|
 | Probe | Reads OS, CPU, RAM, every GPU, driver and (NVIDIA) compute capability. No admin rights, no installs. ~1 s. | `gm-probe::detect` | ✅ |
 | Choose port | Picks the port for this device and explains why (e.g. "RTX 5080 is compute 12.0 (Blackwell), driver 590 → CUDA 13.0"). Shows warnings (8 GB Mac, mixed GPUs) and hard blocks with the fix (old driver, Intel Mac, macOS < 14). | `gm-probe::select_profile` | ✅ |
-| Install port | On first Join/Host: downloads uv if absent, installs private CPython 3.12, the pinned torch build and engine packages, then runs a real GPU kernel to prove it works. Progress streams into the Device & Ports screen. | `gm-ports::provision` | 🧪 |
+| Install port | On first Join/Host: downloads uv if absent, installs private CPython 3.12, the pinned torch build and engine packages, then runs a real GPU kernel to prove it works. Progress streams into the Device & Ports screen. | `gm-ports::provision_with` (app: one install at a time, progress in Device & ports) | 🧪 (live-tested with a torch-free test port; GPU ports need hardware) |
 
 ## 2. Contribute (Join)
 
@@ -32,7 +32,7 @@ Status legend: ✅ done · 🧪 implemented, needs hardware validation · 🚧 i
 
 | Behaviour | Code | Status |
 |---|---|---|
-| Start the coordinator (`uvicorn coordinator.app:app`) in the host's port | `gm-supervisor::coordinator_spec` | 🧪 |
+| Start the coordinator (`uvicorn coordinator.app:app`) in the host's port, wait for `/health` | `gm-supervisor::coordinator_spec` | ✅ (live-tested) |
 | Announce it: LAN beacon + the coordinator's own mDNS | `gm-net::Beacon` | ✅ |
 | Join surface on :3000 (`/gradapp.json`, `/join.sh`, `/join.ps1`, agent files) so v1 apps and the one-line join still work | `gm-net::JoinSurface` | ✅ |
 | Invite screen: link, QR code, rotate token | app + `CoordinatorClient::rotate_token` | ✅ |
@@ -41,7 +41,9 @@ Status legend: ✅ done · 🧪 implemented, needs hardware validation · 🚧 i
 
 Mesh (node cards, vendor badges, hardware mix, live events), Runs (list, detail,
 per-round metrics), Datasets, Activity (per-process logs) — all read from the
-coordinator API through `gm-net::CoordinatorClient`.
+coordinator API through `gm-net::CoordinatorClient` (`/mesh`, `/runs`,
+`/runs/{id}`, `/datasets`) and the `/events` stream, converted in
+`app/src-tauri/src/mesh.rs`. ✅ (live-tested against the real coordinator)
 
 ## 5. Updates
 
@@ -56,6 +58,7 @@ coordinator API through `gm-net::CoordinatorClient`.
 
 Start at login, start hidden, auto-rejoin last mesh, update channel, preferred
 backend override (for a laptop with both Intel Arc and NVIDIA), data folder.
+Logs: `<data>/logs/gradapp.<date>.log` (daily, a week kept; `GRADAPP_LOG` filter).
 
 ## 7. Headless: `gmctl`
 

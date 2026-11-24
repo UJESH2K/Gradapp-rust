@@ -73,7 +73,14 @@ fn machine_hash(hostname: &str, os: &str, arch: &str) -> String {
 }
 
 /// Machine fingerprint from probed facts: hostname, OS and CPU architecture.
-/// Equal to [`local_machine_fingerprint`] for the machine the facts describe.
+///
+/// For a *remote* machine's facts (e.g. a wheelhouse built elsewhere). For
+/// this machine always use [`local_machine_fingerprint`], in both
+/// `provision` and `status`: the two are **not** guaranteed equal. On
+/// Windows `facts.hostname` is `%COMPUTERNAME%` (NetBIOS: upper case, cut to
+/// 15 characters) while gethostname is the DNS name, and under Rosetta
+/// `facts.arch` is the chip's arm64. Mixing them makes every lock Stale and
+/// rebuilds the port on every start (QA review).
 pub fn machine_fingerprint(facts: &DeviceFacts) -> String {
     let os = match facts.os {
         Os::Windows => "windows",

@@ -34,12 +34,12 @@ pub async fn logs(state: State<'_, AppBackend>) -> Res<Vec<LogEntry>> {
 
 #[tauri::command]
 pub async fn get_device(state: State<'_, AppBackend>) -> Res<DeviceReport> {
-    Ok(state.device())
+    Ok(state.device().await)
 }
 
 #[tauri::command]
 pub async fn get_ports(state: State<'_, AppBackend>) -> Res<Vec<PortEntry>> {
-    Ok(state.ports())
+    Ok(state.ports().await)
 }
 
 #[tauri::command]
@@ -69,12 +69,12 @@ pub async fn join(
     state: State<'_, AppBackend>,
     invite: String,
 ) -> Res<gm_types::Invite> {
-    state.join(&app, &invite)
+    state.join(&app, &invite).await
 }
 
 #[tauri::command]
 pub async fn leave(app: AppHandle, state: State<'_, AppBackend>) -> Res<()> {
-    state.leave(&app);
+    state.leave(&app).await;
     Ok(())
 }
 
@@ -84,45 +84,92 @@ pub async fn host_start(
     state: State<'_, AppBackend>,
     mesh_name: Option<String>,
 ) -> Res<HostInfo> {
-    state.host_start(&app, mesh_name)
+    state.host_start(&app, mesh_name).await
 }
 
 #[tauri::command]
 pub async fn host_stop(app: AppHandle, state: State<'_, AppBackend>) -> Res<()> {
-    state.host_stop(&app);
+    state.host_stop(&app).await;
     Ok(())
 }
 
 #[tauri::command]
 pub async fn mesh_snapshot(state: State<'_, AppBackend>) -> Res<Option<MeshSnapshot>> {
-    Ok(state.mesh_snapshot())
+    state.mesh_snapshot().await
 }
 
 #[tauri::command]
 pub async fn runs(state: State<'_, AppBackend>) -> Res<Vec<RunSummary>> {
-    Ok(state.runs())
+    state.runs().await
 }
 
 #[tauri::command]
 pub async fn datasets(state: State<'_, AppBackend>) -> Res<Vec<Dataset>> {
-    Ok(state.datasets())
+    state.datasets().await
 }
 
-/// Ask the release feed for a newer build. Uses Tauri's signed updater, so a
-/// found update is always installable in place.
+/// "Check now" in the window: always asks GitHub (no throttle).
 #[tauri::command]
-pub async fn check_update(
-    app: AppHandle,
-    state: State<'_, AppBackend>,
-    pending: State<'_, PendingUpdate>,
-) -> Res<UpdateInfo> {
-    // INTEGRATE: gm-update can add a link-only fallback (installable=false) for builds
-    // the signed updater cannot replace, e.g. distro packages.
-    let feed = if state.settings().update_channel == "beta" {
-        BETA_FEED
+pub async fn check_update(app: AppHandle) -> Res<UpdateInfo> {
+    run_update_check(&app, true).await
+}
+
+/// Ask GitHub Releases (gm-update: highest semver, stable or beta channel,
+/// ETag cache) whether a newer GradApp exists. When the release carries a
+/// signed `latest.json`, prepare the Tauri updater from that exact manifest
+/// so "Update now" installs in place; otherwise the update is link-only
+/// (`installable: false`) and the window offers the download page.
+pub async fn run_update_check(app: &AppHandle, force: bool) -> Res<UpdateInfo> {
+    let state = app.state::<AppBackend>();
+    let beta = state.settings().update_channel == "beta";
+    let channel = if beta {
+        gm_update::Channel::Beta
     } else {
-        STABLE_FEED
+        gm_update::Channel::Stable
     };
+    let checker = gm_update::Checker::new().with_cache(state.data_dir().join("update-check.json"));
+    let checked = checker
+        .check_detailed(APP_VERSION, gm_update::DEFAULT_REPO, channel, force)
+        .await;
+    let mut info = checked.info;
+    info.reason = checked.reason;
+    info.manifest_url = checked.manifest_url.clone();
+    let mut found = None;
+    if info.available && info.installable {
+        let feed = checked
+            .manifest_url
+            .clone()
+            .unwrap_or_else(|| (if beta { BETA_FEED } else { STABLE_FEED }).to_string());
+        match signed_update(app, &feed).await {
+            Ok(Some(update)) => found = Some(update),
+            Ok(None) => {
+                info.installable = false;
+                info.reason = Some("The release has no signed build for this platform.".into());
+            }
+            Err(error) => {
+                info.installable = false;
+                info.reason = Some(format!("The signed update could not be prepared: {error}"));
+            }
+        }
+    }
+    if let Some(reason) = &info.reason {
+        tracing::info!("update check: {reason}");
+    }
+    *app.state::<PendingUpdate>()
+        .0
+        .lock()
+        .unwrap_or_else(|p| p.into_inner()) = found;
+    state.set_update(info.available.then(|| info.clone()));
+    if info.available {
+        emit(app, AppEvent::Update { info: info.clone() });
+    }
+    Ok(info)
+}
+
+async fn signed_update(
+    app: &AppHandle,
+    feed: &str,
+) -> Result<Option<tauri_plugin_updater::Update>, String> {
     let url = tauri::Url::parse(feed).map_err(|e| e.to_string())?;
     let updater = app
         .updater_builder()
@@ -130,40 +177,7 @@ pub async fn check_update(
         .map_err(|e| e.to_string())?
         .build()
         .map_err(|e| e.to_string())?;
-    let found = updater
-        .check()
-        .await
-        .map_err(|e| format!("Could not check for updates: {e}"))?;
-    let info = match &found {
-        Some(update) => UpdateInfo {
-            available: true,
-            current: APP_VERSION.to_string(),
-            latest: Some(update.version.clone()),
-            notes: update.body.clone(),
-            url: Some("https://github.com/UJESH2K/gradapp/releases/latest".into()),
-            published_at: update.date.map(|d| d.to_string()),
-            installable: true,
-            reason: None,
-            manifest_url: None,
-        },
-        None => UpdateInfo {
-            available: false,
-            current: APP_VERSION.to_string(),
-            latest: None,
-            notes: None,
-            url: None,
-            published_at: None,
-            installable: false,
-            reason: None,
-            manifest_url: None,
-        },
-    };
-    *pending.0.lock().unwrap_or_else(|p| p.into_inner()) = found;
-    state.set_update(info.available.then(|| info.clone()));
-    if info.available {
-        emit(&app, AppEvent::Update { info: info.clone() });
-    }
-    Ok(info)
+    updater.check().await.map_err(|e| e.to_string())
 }
 
 /// Download and install the pending update, streaming UpdateProgress events.
@@ -178,13 +192,17 @@ pub async fn install_update(
     let update = match taken {
         Some(update) => update,
         None => {
-            check_update(app.clone(), state.clone(), pending.clone()).await?;
-            pending
-                .0
-                .lock()
-                .unwrap_or_else(|p| p.into_inner())
-                .take()
-                .ok_or("GradApp is already up to date.")?
+            let info = run_update_check(&app, true).await?;
+            let taken = pending.0.lock().unwrap_or_else(|p| p.into_inner()).take();
+            match taken {
+                Some(update) => update,
+                None if info.available => {
+                    return Err(info.reason.unwrap_or_else(|| {
+                        "This update must be downloaded from the release page.".into()
+                    }))
+                }
+                None => return Err("GradApp is already up to date.".into()),
+            }
         }
     };
     let mut downloaded: u64 = 0;
@@ -232,12 +250,12 @@ pub async fn set_settings(
         };
         result.map_err(|e| format!("Could not change start at login: {e}"))?;
     }
-    state.save_settings(settings)
+    state.save_settings_from_ui(settings)
 }
 
 #[tauri::command]
 pub async fn open_data_dir(app: AppHandle, state: State<'_, AppBackend>) -> Res<()> {
-    let dir = std::path::PathBuf::from(state.settings().data_dir);
+    let dir = state.data_dir();
     std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
     app.opener()
         .open_path(dir.to_string_lossy(), None::<&str>)

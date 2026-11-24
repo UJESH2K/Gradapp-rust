@@ -36,7 +36,9 @@ fn tiny_port() -> PortSpec {
         index_url: None,
         local_suffix: String::new(),
         packages: vec!["six==1.17.0".into()],
-        platforms: vec!["linux-x86_64".into()],
+        platforms: vec![gm_ports::current_platform()
+            .unwrap_or("linux-x86_64")
+            .into()],
         reference: false,
         experimental: false,
         min_driver: None,

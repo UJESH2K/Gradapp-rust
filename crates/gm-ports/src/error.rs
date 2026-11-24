@@ -13,6 +13,15 @@ pub enum Error {
     #[error("unknown port '{0}'")]
     UnknownPort(String),
 
+    /// The port has no PyTorch build for this OS/CPU (e.g. an x86-only CUDA
+    /// build on an arm64 machine, anything on an Intel Mac).
+    #[error("port '{port}' has no build for {platform} (it supports {supported})")]
+    UnsupportedPlatform {
+        port: String,
+        platform: String,
+        supported: String,
+    },
+
     #[error("{path}: {source}")]
     Io {
         path: PathBuf,

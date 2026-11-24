@@ -294,6 +294,9 @@ impl Provisioner<'_> {
 
     async fn run(&self, mut sink: Sink<'_>) -> Result<PortStatus> {
         let spec = self.spec;
+        // Before anything is deleted or downloaded: a port with no wheel for
+        // this OS/CPU would only fail minutes later inside the resolver.
+        crate::registry::check_platform(spec, crate::registry::current_platform())?;
         let dir = env_dir(self.env_root, &spec.id);
         let python = env_python(&dir);
         let want = plan(spec, &self.opts.facts_fingerprint);

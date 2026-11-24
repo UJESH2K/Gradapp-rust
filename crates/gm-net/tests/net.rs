@@ -349,6 +349,10 @@ async fn discover_is_cancellable() {
         beacon: true,
         beacon_port: free_udp_port(),
         mdns: true,
+        // Names no real mesh uses: a coordinator on this LAN (gradmesh.local)
+        // answered within the 300 ms and made `found` non-empty (QA review).
+        mdns_hostname: "gm-qa-cancel-test.local".into(),
+        mdns_service: "_gmqacancel._tcp.local.".into(),
         cancel: cancel.clone(),
         ..quiet_opts()
     };
@@ -836,9 +840,14 @@ async fn live_coordinator() {
         sink.lock().unwrap().get_or_insert(started.elapsed());
     })
     .await;
-    assert_eq!(found.len(), 1, "{found:?}");
-    assert_eq!(found[0].mesh_id, health.mesh_id);
-    assert_eq!(found[0].source, DiscoverySource::Mdns);
+    // Other meshes may share the LAN (a lab often runs several): look for ours.
+    let ours = found
+        .iter()
+        .find(|m| m.mesh_id == health.mesh_id)
+        .unwrap_or_else(|| panic!("{} not found via mDNS: {found:?}", health.mesh_id));
+    assert_eq!(ours.source, DiscoverySource::Mdns);
+    let ids: std::collections::HashSet<_> = found.iter().map(|m| &m.mesh_id).collect();
+    assert_eq!(ids.len(), found.len(), "a mesh listed twice: {found:?}");
     eprintln!("mDNS hit after {:?}", first.lock().unwrap());
 
     // Everything at once, defaults (real /24 sweep of this machine's LAN).

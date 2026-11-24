@@ -119,7 +119,7 @@ impl Default for RestartPolicy {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Clone, PartialEq)]
 pub struct ProcSpec {
     pub role: ProcRole,
     pub program: OsString,
@@ -134,6 +134,40 @@ pub struct ProcSpec {
     /// Polite-stop budget before the tree is killed.
     pub grace: Duration,
     pub ring_lines: usize,
+}
+
+/// Env var names whose values never appear in `Debug` output (the worker's
+/// mesh token travels as `GRADMESH_TOKEN`).
+fn is_secret_env(key: &std::ffi::OsStr) -> bool {
+    let k = key.to_string_lossy().to_ascii_uppercase();
+    ["TOKEN", "SECRET", "PASSWORD", "KEY"]
+        .iter()
+        .any(|w| k.contains(w))
+}
+
+impl std::fmt::Debug for ProcSpec {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let env: Vec<(&OsString, &dyn std::fmt::Debug)> = self
+            .env
+            .iter()
+            .map(|(k, v)| {
+                let shown: &dyn std::fmt::Debug = if is_secret_env(k) { &"<redacted>" } else { v };
+                (k, shown)
+            })
+            .collect();
+        f.debug_struct("ProcSpec")
+            .field("role", &self.role)
+            .field("program", &self.program)
+            .field("args", &self.args)
+            .field("env", &env)
+            .field("env_remove", &self.env_remove)
+            .field("cwd", &self.cwd)
+            .field("restart", &self.restart)
+            .field("stop_signal", &self.stop_signal)
+            .field("grace", &self.grace)
+            .field("ring_lines", &self.ring_lines)
+            .finish()
+    }
 }
 
 impl ProcSpec {
@@ -523,7 +557,6 @@ async fn run(spec: ProcSpec, shared: &Arc<Shared>, mut stop_rx: watch::Receiver<
         // Sweep anything the leader left behind in its group / job.
         tree.kill(&mut child);
         // On Windows this closes the job handle (KILL_ON_JOB_CLOSE).
-        #[allow(clippy::drop_non_drop)]
         drop(tree);
         for reader in readers.into_iter().flatten() {
             // Pipes close once every holder is dead; don't hang if one survived.

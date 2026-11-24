@@ -19,3 +19,9 @@ anyhow.workspace = true
 
 [dev-dependencies]
 tempfile.workspace = true
+axum.workspace = true
+tokio.workspace = true
+
+[target.'cfg(unix)'.dev-dependencies]
+libc = "0.2"
+

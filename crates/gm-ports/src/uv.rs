@@ -159,10 +159,48 @@ pub fn find() -> Option<Uv> {
     find_in(&crate::paths::data_dir())
 }
 
+/// Oldest uv whose CLI provisioning relies on (`uv python install --no-bin`
+/// and `--no-registry` arrived in 0.8).
+pub const MIN_UV_VERSION: (u64, u64, u64) = (0, 8, 0);
+
+/// `"uv 0.11.32 (abc 2026-10-01)"` → `(0, 11, 32)`.
+pub fn parse_uv_version(text: &str) -> Option<(u64, u64, u64)> {
+    let version = text.trim().strip_prefix("uv ")?.split_whitespace().next()?;
+    let mut parts = version.split('.').map(|p| p.parse::<u64>().ok());
+    Some((
+        parts.next()??,
+        parts.next()??,
+        parts.next().flatten().unwrap_or(0),
+    ))
+}
+
+/// `uv --version` runs and is at least [`MIN_UV_VERSION`].
+pub async fn is_usable(uv: &Uv) -> bool {
+    match tokio::time::timeout(Duration::from_secs(20), uv.version()).await {
+        Ok(Ok(v)) => parse_uv_version(&v).is_some_and(|v| v >= MIN_UV_VERSION),
+        _ => false,
+    }
+}
+
 /// Find uv, downloading the pinned release into `<data_dir>/bin` if needed.
+///
+/// A uv found on `PATH` or left in `<data>/bin` is used only if it is at
+/// least [`MIN_UV_VERSION`]; an older one (a years-old Homebrew or pipx uv)
+/// would fail on flags provisioning needs, so the pinned release is fetched
+/// instead. `GRADAPP_UV` and a bundled copy are trusted as they are.
 pub async fn ensure(data_dir: &Path) -> Result<Uv> {
     if let Some(uv) = find_in(data_dir) {
-        return Ok(uv);
+        let checked = matches!(uv.source, UvSource::Path | UvSource::DataDir);
+        if !checked || is_usable(&uv).await {
+            return Ok(uv);
+        }
+        tracing::warn!(
+            "{} is older than uv {}.{}.{} or does not run; downloading uv {UV_VERSION}",
+            uv.path.display(),
+            MIN_UV_VERSION.0,
+            MIN_UV_VERSION.1,
+            MIN_UV_VERSION.2
+        );
     }
     download(data_dir, UV_VERSION).await
 }

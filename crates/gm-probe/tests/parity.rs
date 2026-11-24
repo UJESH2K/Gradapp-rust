@@ -168,6 +168,12 @@ fn diff(case: &str, which: &str, rust: &Profile, py: &Value) -> Vec<String> {
     out
 }
 
+/// Cases where Rust intentionally differs from hardware.py (QA 2026-11-24):
+/// an x86_64 macOS process asking for `--prefer cpu`. Python hands out the
+/// stock macOS wheel (port "mps"), which only exists for arm64, so the install
+/// would fail; Rust blocks with the Intel-Mac / Rosetta explanation instead.
+const DELIBERATE_DEVIATIONS: &[&str] = &["intel-mac/cpu", "rosetta/cpu"];
+
 #[test]
 fn matches_hardware_py() {
     let data: Value = serde_json::from_str(CASES).expect("parity_cases.json parses");
@@ -188,10 +194,22 @@ fn matches_hardware_py() {
         experimental_rocm: false,
     };
     let mut failures = Vec::new();
+    let mut deviations_seen = 0;
     for case in cases {
         let name = case["name"].as_str().unwrap();
         let prefer: Prefer = case["prefer"].as_str().unwrap().parse().unwrap();
         let facts = facts(&case["facts"]);
+        if DELIBERATE_DEVIATIONS.contains(&name) {
+            // hardware.py returns an unblocked mps/cpu profile that cannot
+            // install; Rust blocks it (both as worker and as host).
+            deviations_seen += 1;
+            let s = select_profile_with(&facts, prefer, &options);
+            let h = host_profile_with(&facts, prefer, &options);
+            if s.blocked.is_none() || h.blocked.is_none() {
+                failures.push(format!("{name}: deliberate deviation no longer blocks"));
+            }
+            continue;
+        }
         failures.extend(diff(
             name,
             "select",
@@ -205,6 +223,11 @@ fn matches_hardware_py() {
             &case["host"],
         ));
     }
+    assert_eq!(
+        deviations_seen,
+        DELIBERATE_DEVIATIONS.len(),
+        "a deliberate deviation case vanished from the fixtures"
+    );
     assert!(
         failures.is_empty(),
         "{} mismatches with hardware.py:\n{}",

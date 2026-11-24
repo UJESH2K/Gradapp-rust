@@ -264,7 +264,7 @@ where
                 };
                 let Some(port) = url::Url::parse(&invite.coordinator)
                     .ok()
-                    .and_then(|u| u.port())
+                    .and_then(|u| u.port_or_known_default())
                 else {
                     continue;
                 };
@@ -341,7 +341,11 @@ where
         let lans = lans.clone();
         async move {
             if opts.beacon {
-                listen_beacons(&client, &opts, &lans, &listen, &tx).await;
+                // Cancellation must also win while a found mesh is waiting
+                // for room in the channel (the consumer stops reading on cancel).
+                listen
+                    .run_until_cancelled(listen_beacons(&client, &opts, &lans, &listen, &tx))
+                    .await;
             }
         }
     };

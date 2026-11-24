@@ -76,6 +76,12 @@ jobs:
             echo "::error::Tag $GITHUB_REF_NAME does not match the app version $version (tauri.conf.json / Cargo.toml). Bump the version first."
             exit 1
           fi
+          # Installed apps verify updates with this key: a placeholder would
+          # ship a release whose in-app updater can never install anything.
+          if grep -q '"pubkey": *"REPLACE' app/src-tauri/tauri.conf.json; then
+            echo "::error::plugins.updater.pubkey in tauri.conf.json is still a placeholder."
+            exit 1
+          fi
       - name: Create the draft release
         id: create
         uses: actions/github-script@v7
@@ -152,6 +158,25 @@ jobs:
             cd app && (npm ci || npm install)
           fi
 
+      # WiX (.msi) only accepts a numeric pre-release (2.1.0-1): a beta tag
+      # such as v2.1.0-beta.1 would fail the whole Windows build and keep the
+      # release a draft. Pre-releases ship the NSIS installer only (which is
+      # what the updater uses anyway: updaterJsonPreferNsis).
+      - name: Bundle arguments
+        id: bundle
+        shell: bash
+        run: |
+          args="${{ matrix.args }}"
+          version="${{ needs.create-release.outputs.version }}"
+          if [ -z "$version" ]; then
+            version=$(sed -n 's/^ *"version": *"\([^"]*\)".*/\1/p' app/src-tauri/tauri.conf.json | head -n1)
+          fi
+          if [[ "$RUNNER_OS" == "Windows" && "$version" == *-* ]]; then
+            args="$args --bundles nsis"
+          fi
+          echo "version=$version args=$args"
+          echo "args=$args" >> "$GITHUB_OUTPUT"
+
       - name: Build (and upload to the release)
         uses: tauri-apps/tauri-action@v0
         env:
@@ -162,7 +187,7 @@ jobs:
           projectPath: app
           # Works with or without an app/package.json.
           tauriScript: npx --yes @tauri-apps/cli@^2
-          args: ${{ matrix.args }}
+          args: ${{ steps.bundle.outputs.args }}
           releaseId: ${{ needs.create-release.outputs.release_id }}
           releaseName: "GradApp v__VERSION__"
           releaseDraft: false

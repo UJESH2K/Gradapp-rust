@@ -72,6 +72,21 @@ fn platform_for(os: &str, arch: &str) -> Option<&'static str> {
     })
 }
 
+/// `Err(UnsupportedPlatform)` unless `spec` lists `platform`. `None` means
+/// a machine no port supports (Intel Mac, 32-bit ARM, ...).
+pub(crate) fn check_platform(spec: &PortSpec, platform: Option<&str>) -> Result<()> {
+    match platform {
+        Some(p) if spec.platforms.iter().any(|x| x == p) => Ok(()),
+        _ => Err(Error::UnsupportedPlatform {
+            port: spec.id.clone(),
+            platform: platform
+                .map(str::to_string)
+                .unwrap_or_else(|| format!("{}-{}", std::env::consts::OS, std::env::consts::ARCH)),
+            supported: spec.platforms.join(", "),
+        }),
+    }
+}
+
 /// The `--python-platform` value uv understands for a port platform. Used to
 /// resolve (or build a wheelhouse for) a port on a machine other than this one.
 pub fn uv_python_platform(platform: &str) -> Option<&'static str> {
@@ -162,6 +177,14 @@ impl Registry {
     pub fn require(&self, id: &str) -> Result<&PortSpec> {
         self.get(id)
             .ok_or_else(|| Error::UnknownPort(id.to_string()))
+    }
+
+    /// Like [`Registry::require`], and the port must have a build for
+    /// `platform` (e.g. [`current_platform`]).
+    pub fn require_on(&self, id: &str, platform: &str) -> Result<&PortSpec> {
+        let spec = self.require(id)?;
+        check_platform(spec, Some(platform))?;
+        Ok(spec)
     }
 
     pub fn all(&self) -> &[PortSpec] {

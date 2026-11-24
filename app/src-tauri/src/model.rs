@@ -1,10 +1,10 @@
-//! Types the app returns to the UI that gm-types does not (yet) define.
-//!
-//! Each of these crosses into the UI, so by the rule in gm-types they belong
-//! there. They live here only until the integrator moves them; the field names
-//! are what `app/ui/js/api.js` (and its mock) already expect, so moving them is
-//! a pure relocation. See docs/devlog/app.md, "gm-types change requests".
+//! Types the app returns to the UI that only the app uses (device report,
+//! port rows, mesh snapshot, runs, datasets, host info, settings). Shared
+//! vocabulary (facts, profiles, ports, events, `MeshEvent`) lives in gm-types.
+//! The field names are what `app/ui/js/api.js` (and its mock) expect;
+//! `mesh.rs` fills the mesh types from the coordinator's JSON.
 
+use gm_types::MeshEvent;
 use gm_types::{
     Backend, DeviceFacts, Invite, PortSpec, PortStatus, ProcStatus, Profile, UpdateInfo,
 };
@@ -56,14 +56,6 @@ pub struct MeshNode {
     pub is_self: bool,
     #[serde(default)]
     pub warnings: Vec<String>,
-}
-
-/// A coordinator event (`/events`), shown in the live feed.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct MeshEvent {
-    pub at: f64,
-    pub kind: String,
-    pub text: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -165,7 +157,11 @@ pub struct Settings {
     pub data_dir: String,
     /// None = automatic (gm-probe decides).
     pub preferred_backend: Option<Backend>,
+    /// Last mesh joined, as a `gradapp://` link carrying its token.
     pub last_invite: Option<String>,
+    /// This machine was contributing when GradApp last ran (set on join,
+    /// cleared on an explicit leave). Auto-rejoin only acts when it is set.
+    pub rejoin_on_start: bool,
 }
 
 impl Default for Settings {
@@ -178,11 +174,10 @@ impl Default for Settings {
             auto_rejoin: true,
             notifications: true,
             update_channel: "stable".into(),
-            data_dir: crate::backend::default_data_dir()
-                .to_string_lossy()
-                .into_owned(),
+            data_dir: gm_ports::data_dir().to_string_lossy().into_owned(),
             preferred_backend: None,
             last_invite: None,
+            rejoin_on_start: false,
         }
     }
 }

@@ -13,8 +13,11 @@ use tokio::process::{Child, Command};
 
 use crate::StopSignal;
 
-/// Per-spawn tree handle. Dropping it does not kill anything on Unix; on
-/// Windows dropping closes the job, which kills the tree (by design).
+/// Per-spawn tree handle. Dropping it kills whatever is left of the tree:
+/// on Unix by SIGKILL to the process group, on Windows by closing the job
+/// (KILL_ON_JOB_CLOSE). That covers the paths where the supervision task is
+/// dropped instead of finishing (runtime shutdown, abort): `kill_on_drop`
+/// alone only reaches the direct child.
 pub(crate) struct Tree {
     #[cfg(unix)]
     pgid: Option<i32>,
@@ -105,6 +108,18 @@ impl Tree {
         }
         // The direct child, in case the group/job could not be set up.
         let _ = child.start_kill();
+    }
+}
+
+impl Drop for Tree {
+    fn drop(&mut self) {
+        #[cfg(unix)]
+        if let Some(pgid) = self.pgid {
+            // SAFETY: plain syscall on our own group; ESRCH (already empty) is fine.
+            unsafe {
+                libc::kill(-pgid, libc::SIGKILL);
+            }
+        }
     }
 }
 

@@ -111,7 +111,9 @@ function pushLog(source, line) {
 function handle(event) {
   switch (event.kind) {
     case "mesh_found":
-      store.meshes.set(event.mesh.mesh_id, event.mesh);
+      // Upsert: discovery repeats a mesh when a better address or its token arrives.
+      // A repeat never blanks what an earlier sighting knew (token, name).
+      store.meshes.set(event.mesh.mesh_id, { ...(store.meshes.get(event.mesh.mesh_id) || {}), ...Object.fromEntries(Object.entries(event.mesh).filter(([, v]) => v != null)) });
       emit("meshes");
       break;
     case "scan_progress":
@@ -149,6 +151,16 @@ function handle(event) {
       break;
     case "log":
       pushLog(event.role, event.line);
+      break;
+    case "mesh_event":
+      if (store.mesh) {
+        const events = store.mesh.events || (store.mesh.events = []);
+        if (!events.some((e) => e.at === event.event.at && e.kind === event.event.kind)) {
+          events.push(event.event);
+          if (events.length > 200) events.splice(0, events.length - 200);
+          emit("mesh");
+        }
+      }
       break;
     case "update":
       if (event.info?.available) {

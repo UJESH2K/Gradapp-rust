@@ -225,16 +225,16 @@ export function createMock(dispatch, dispatchChannel) {
     (async () => {
       const spec = entry.spec;
       const steps = [
-        ["uv", 0.04, "uv 0.9.11 (bundled)"],
+        ["prepare", 0.04, "uv 0.9.11 (bundled)"],
         ["python", 0.1, `Downloading cpython-${spec.python}.12-windows-x86_64 (21.4 MiB)`],
         ["python", 0.16, `Using CPython ${spec.python}.12 (managed, not the system Python)`],
         ["venv", 0.2, `Creating virtual environment at ${entry.status.env_dir}\\.venv`],
-        ["resolve", 0.26, `Resolved 41 packages from ${spec.index_url || "PyPI"} in 1.4s`],
-        ["torch", 0.34, `Downloading torch-${spec.torch}${spec.local_suffix}-cp312-win_amd64.whl (812.6 MiB)`],
-        ["torch", 0.52, "  ████████░░░░░░░░  48%  31.2 MiB/s"],
-        ["torch", 0.66, "  ██████████████░░  88%  33.0 MiB/s"],
-        ["torch", 0.72, `Installed torch==${spec.torch}${spec.local_suffix} torchvision==${spec.torchvision}${spec.local_suffix}`],
-        ["packages", 0.84, `Installed ${spec.packages.length + 37} packages in 6.1s`],
+        ["install", 0.26, `Resolved 41 packages from ${spec.index_url || "PyPI"} in 1.4s`],
+        ["install", 0.34, `Downloading torch-${spec.torch}${spec.local_suffix}-cp312-win_amd64.whl (812.6 MiB)`],
+        ["install", 0.52, "  ████████░░░░░░░░  48%  31.2 MiB/s"],
+        ["install", 0.66, "  ██████████████░░  88%  33.0 MiB/s"],
+        ["install", 0.72, `Installed torch==${spec.torch}${spec.local_suffix} torchvision==${spec.torchvision}${spec.local_suffix}`],
+        ["install", 0.84, `Installed ${spec.packages.length + 37} packages in 6.1s`],
         ["verify", 0.94, `verify: torch ${spec.torch} · ${spec.backend} available · 1×1024² matmul ok in 3.1 ms`],
         ["lock", 1, `port ${spec.id} ready (lock 3f9c21ab)`],
       ];
@@ -277,8 +277,9 @@ export function createMock(dispatch, dispatchChannel) {
     let name = null;
     if (raw.startsWith("gradapp://join?")) {
       const q = new URLSearchParams(raw.slice("gradapp://join?".length));
-      host = q.get("host");
-      port = Number(q.get("port") || 8000);
+      const server = q.get("server") ? new URL(q.get("server")) : null;
+      host = server ? server.hostname : q.get("host");
+      port = Number((server ? server.port : q.get("port")) || 8000);
       token = q.get("token");
       name = q.get("name");
     } else {

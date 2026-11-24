@@ -4,24 +4,74 @@
 
 mod backend;
 mod commands;
+mod mesh;
 mod model;
 mod tray;
 
+use std::path::Path;
 use std::time::Duration;
 
-use tauri::{Emitter, Manager, WindowEvent};
+use tauri::{Emitter, Manager, RunEvent, WindowEvent};
 use tauri_plugin_autostart::MacosLauncher;
 use tauri_plugin_notification::NotificationExt as _;
 
 use backend::AppBackend;
 
-pub fn run() {
-    let _ = tracing_subscriber::fmt()
-        .with_env_filter(
-            tracing_subscriber::EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| "gradapp=info".into()),
-        )
+/// First update check after start, then this often.
+const UPDATE_FIRST: Duration = Duration::from_secs(10);
+const UPDATE_EVERY: Duration = Duration::from_secs(6 * 60 * 60);
+
+/// Logs to stderr and to `<data>/logs/gradapp.<date>.log` (daily files, a
+/// week kept). The returned guard flushes the file writer; keep it alive.
+fn init_logging(data_dir: &Path) -> Option<tracing_appender::non_blocking::WorkerGuard> {
+    use tracing_subscriber::layer::SubscriberExt as _;
+    use tracing_subscriber::util::SubscriberInitExt as _;
+    let filter = || {
+        tracing_subscriber::EnvFilter::try_from_env("GRADAPP_LOG").unwrap_or_else(|_| {
+            "info,gradapp_lib=info,gm_net=info,gm_ports=info,gm_supervisor=info,gm_update=info,mdns_sd=warn,tao=warn,wry=warn".into()
+        })
+    };
+    let _ = std::fs::create_dir_all(data_dir.join("logs"));
+    let file = tracing_appender::rolling::Builder::new()
+        .rotation(tracing_appender::rolling::Rotation::DAILY)
+        .filename_prefix("gradapp")
+        .filename_suffix("log")
+        .max_log_files(7)
+        .build(data_dir.join("logs"));
+    let (file_layer, guard) = match file {
+        Ok(appender) => {
+            let (writer, guard) = tracing_appender::non_blocking(appender);
+            (
+                Some(
+                    tracing_subscriber::fmt::layer()
+                        .with_ansi(false)
+                        .with_writer(writer),
+                ),
+                Some(guard),
+            )
+        }
+        Err(error) => {
+            eprintln!("GradApp: file logging disabled: {error}");
+            (None, None)
+        }
+    };
+    let _ = tracing_subscriber::registry()
+        .with(filter())
+        .with(tracing_subscriber::fmt::layer().with_writer(std::io::stderr))
+        .with(file_layer)
         .try_init();
+    guard
+}
+
+pub fn run() {
+    let backend = AppBackend::load();
+    let _log_guard = init_logging(&backend.data_dir());
+    tracing::info!(
+        "GradApp {} starting (engine {}, protocol {})",
+        gm_types::APP_VERSION,
+        gm_types::ENGINE_VERSION,
+        gm_types::MESH_PROTOCOL
+    );
 
     let started_hidden = std::env::args().any(|a| a == "--hidden");
 
@@ -41,7 +91,7 @@ pub fn run() {
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
-        .manage(AppBackend::load())
+        .manage(backend)
         .manage(commands::PendingUpdate::default())
         .manage(tray::TrayState::default())
         .invoke_handler(tauri::generate_handler![
@@ -78,40 +128,62 @@ pub fn run() {
                 tray::show_main(&handle);
             }
 
-            // Rejoin the last mesh, if asked to.
-            if settings.auto_rejoin {
+            // Probe now, so Home and Device show real hardware at once.
+            let probe = handle.clone();
+            tauri::async_runtime::spawn(async move {
+                probe.state::<AppBackend>().facts().await;
+            });
+
+            // Rejoin the last mesh if this machine was contributing when GradApp last ran.
+            if settings.auto_rejoin && settings.rejoin_on_start {
                 if let Some(invite) = settings.last_invite.clone() {
-                    if let Err(error) = app.state::<AppBackend>().join(&handle, &invite) {
-                        tracing::info!("auto-rejoin skipped: {error}");
-                    }
+                    let rejoin = handle.clone();
+                    tauri::async_runtime::spawn(async move {
+                        match rejoin.state::<AppBackend>().join(&rejoin, &invite).await {
+                            Ok(joined) => tracing::info!("auto-rejoined {}", joined.coordinator),
+                            Err(error) => {
+                                tracing::info!("auto-rejoin skipped: {error}");
+                                backend::notice(
+                                    &rejoin,
+                                    "warn",
+                                    "Could not rejoin the last mesh",
+                                    &error,
+                                );
+                            }
+                        }
+                    });
                 }
             }
 
-            // One quiet update check shortly after start; the window shows the dialog.
+            // Update check 10 s after start, then every 6 h; the window shows the dialog.
             let check = handle.clone();
             tauri::async_runtime::spawn(async move {
-                tokio::time::sleep(Duration::from_secs(6)).await;
-                let info =
-                    commands::check_update(check.clone(), check.state(), check.state()).await;
-                if let Ok(info) = info {
-                    let hidden = check
-                        .get_webview_window("main")
-                        .map(|w| !w.is_visible().unwrap_or(false))
-                        .unwrap_or(true);
-                    if info.available
-                        && hidden
-                        && check.state::<AppBackend>().settings().notifications
-                    {
-                        let _ = check
-                            .notification()
-                            .builder()
-                            .title(format!(
-                                "GradApp {} is available",
-                                info.latest.clone().unwrap_or_default()
-                            ))
-                            .body("Open GradApp to update.")
-                            .show();
+                tokio::time::sleep(UPDATE_FIRST).await;
+                loop {
+                    match commands::run_update_check(&check, false).await {
+                        Ok(info) => {
+                            let hidden = check
+                                .get_webview_window("main")
+                                .map(|w| !w.is_visible().unwrap_or(false))
+                                .unwrap_or(true);
+                            if info.available
+                                && hidden
+                                && check.state::<AppBackend>().settings().notifications
+                            {
+                                let _ = check
+                                    .notification()
+                                    .builder()
+                                    .title(format!(
+                                        "GradApp {} is available",
+                                        info.latest.clone().unwrap_or_default()
+                                    ))
+                                    .body("Open GradApp to update.")
+                                    .show();
+                            }
+                        }
+                        Err(error) => tracing::info!("update check failed: {error}"),
                     }
+                    tokio::time::sleep(UPDATE_EVERY).await;
                 }
             });
             Ok(())
@@ -130,6 +202,22 @@ pub fn run() {
                 }
             }
         })
-        .run(tauri::generate_context!())
-        .expect("GradApp failed to start");
+        .build(tauri::generate_context!())
+        .expect("GradApp failed to start")
+        .run(|app, event| {
+            // Quit (tray, window, OS): stop the worker, coordinator, join page
+            // and beacon so no Python process outlives the app.
+            if let RunEvent::Exit = event {
+                let app = app.clone();
+                tauri::async_runtime::block_on(async move {
+                    let backend = app.state::<AppBackend>();
+                    if tokio::time::timeout(Duration::from_secs(15), backend.shutdown(&app))
+                        .await
+                        .is_err()
+                    {
+                        tracing::warn!("shutdown took longer than 15 s");
+                    }
+                });
+            }
+        });
 }

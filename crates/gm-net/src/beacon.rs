@@ -177,7 +177,9 @@ fn sender_socket(bind: Ipv4Addr, multicast_if: Option<Ipv4Addr>) -> io::Result<U
 }
 
 fn directed_broadcast(lan: &LanAddress) -> Option<Ipv4Addr> {
-    (lan.prefix <= 30)
+    // /0 has no directed broadcast (and `<< 32` would overflow); /31 and /32 have none either.
+    (1..=30)
+        .contains(&lan.prefix)
         .then(|| Ipv4Addr::from(u32::from(lan.address) | !(u32::MAX << (32 - lan.prefix as u32))))
 }
 
@@ -307,6 +309,27 @@ mod tests {
         assert_eq!(
             directed_broadcast(&lan),
             Some(Ipv4Addr::new(192, 168, 1, 255))
+        );
+    }
+
+    /// Some adapters (VPN/PPP links, odd Windows configs) report a 0.0.0.0
+    /// netmask. `u32::MAX << 32` panics in debug builds and, in release,
+    /// "broadcasts" to the host's own address. A /0 has no directed
+    /// broadcast; 255.255.255.255 is sent separately anyway.
+    #[test]
+    fn directed_broadcast_survives_prefix_zero() {
+        let lan = LanAddress {
+            name: "ppp0".into(),
+            address: Ipv4Addr::new(10, 64, 0, 7),
+            netmask: Ipv4Addr::new(0, 0, 0, 0),
+            prefix: 0,
+            is_virtual: false,
+        };
+        assert_eq!(directed_broadcast(&lan), None);
+        let lan8 = LanAddress { prefix: 8, ..lan };
+        assert_eq!(
+            directed_broadcast(&lan8),
+            Some(Ipv4Addr::new(10, 255, 255, 255))
         );
     }
 }

@@ -100,7 +100,8 @@ then an integration pass. Each agent's detailed notes are in `docs/devlog/`:
   secrets `TAURI_SIGNING_PRIVATE_KEY`, `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`).
 
 ### Verified
-- `cargo test` (default members): ~190 tests green; `cargo clippy --workspace
+- End of day, whole workspace incl. the app: **179 passed, 0 failed** (6
+  network tests ignored by default); `cargo clippy --workspace
   --all-targets -D warnings` and `cargo fmt --check` clean; `cargo build -p
   gradapp` clean.
 - gm-ports network tests (run with `--ignored`): end-to-end provision of a
@@ -120,18 +121,59 @@ then an integration pass. Each agent's detailed notes are in `docs/devlog/`:
   the first `ci-v2.yml` run on GitHub is that check.
 - No real GPU has run a port's verification kernel yet.
 
-### Open at end of day
-- `app/src-tauri/src/backend.rs` still has `// INTEGRATE:` stubs: the window
-  shows simulated join/host/install. The crates behind them are finished, and
-  `gmctl` already runs the real path (probe → port → worker). Integration had
-  started (crates added as deps, `UpdateInfo.reason/manifest_url`,
-  `AppEvent::MeshEvent`) when the session hit its usage limit.
-- Independent QA review pass (cross-platform `cfg` review, e2e tests) — not
-  started for the same reason.
+### Paused at 16:30 (usage limit), resumed 23:05
+The first pass stopped with the window still on placeholder data and the QA
+pass not started. Both were resumed in parallel; see the next two sections.
+
+### Later the same day: the app on the real crates
+- **What:** every `// INTEGRATE:` stub in `app/src-tauri` replaced: probe
+  (cached, preferred-backend override), ports from gm-ports with real
+  installs (one at a time), cancellable discovery, join (address → health →
+  token → port → supervised worker, milestones, `/leave` after stop), host
+  (coordinator + join page :3000 + beacon), mesh/runs/datasets/live feed
+  from the coordinator (`app/src-tauri/src/mesh.rs`), gm-update checks with
+  the Tauri updater for install (beta via the release's own `latest.json`),
+  daily log files in `<data>/logs`, engine bundled as `engine/`.
+  Details: `docs/devlog/integration.md`.
+- **Why:** the window was a simulation. Wiring also found two bugs: the
+  Discover join link used `host=` (the real parser only reads `server=`) and
+  auto-rejoin ignored an explicit "Stop contributing".
+- **Verified:** all four gates green; live under Xvfb against the real
+  coordinator: discovery, a real uv/CPython port install (torch-free test
+  port), hosting end to end, join up to the worker spawn (it stops at
+  `import torch`), leave, host stop, quit cleanup
+  (`docs/screenshots/real-*.png`).
+
+### Later the same day: independent QA review
+- **What:** a reviewer that wrote none of the code went through every crate,
+  the manifests and the workflows. 11 bugs fixed (3 high, 4 medium, 4 low),
+  each with a test where one could run here. Highest:
+  - wrong port for the platform (Intel Mac with prefer=cpu got `mps`;
+    linux-arm64 NVIDIA on a pre-R580 driver got x86-only CUDA ports) → a
+    platform check now blocks those with the fix shown;
+  - `provision` didn't check a port's `platforms` before deleting/downloading;
+  - on Unix, a dropped supervisor could leave grandchildren running → the
+    whole process group is killed on drop.
+  Also: `gmctl join` hang after a clean exit, `ports gc` deleting the host's
+  `cpu` port, too-old uv on PATH used unchecked, beta tags failing the MSI
+  build (pre-releases now bundle NSIS only), mesh token printed in Debug
+  output, beacon panic on a /0 netmask.
+  New cross-crate suite `crates/gmctl/tests/e2e.rs`: beacon + join surface
+  find a mesh with its token in < 1.5 s, one mesh seen three ways listed
+  once, 400+ probe → port checks, token never in argv, stop kills a
+  grandchild that ignores SIGINT.
+  Full table and the per-OS/GPU hardware checklist: `docs/devlog/qa-review.md`.
+- **Why:** the crates were each tested by the agent that wrote them; a second
+  pair of eyes was needed before real users on three OSes.
+- **Known, not changed yet:** the join page token is readable by a web page
+  via DNS rebinding (same as v1; fix in 2.1 with a Host-header check); on
+  Windows the job object is assigned just after spawn; no lock against two
+  processes provisioning the same port at once.
 
 ### Next
-1. Finish wiring `backend.rs` to the crates; live-test join/host on the LAN.
-2. QA pass + `crates/gmctl/tests/e2e.rs`.
+1. ~~Finish wiring `backend.rs` to the crates~~ (done); live-test join/host
+   with a real torch port on the LAN.
+2. ~~QA pass + `crates/gmctl/tests/e2e.rs`~~ (done). Fix the three known items above.
 3. Push `v2-rust`, let `ci-v2.yml` compile on Windows/macOS, fix what it finds.
 4. Tag `v2.0.0-beta.1`, install on the M1 Air, an NVIDIA PC and an Arc PC,
    then tag `v2.0.1-beta.1` to prove the in-app update popup end to end.

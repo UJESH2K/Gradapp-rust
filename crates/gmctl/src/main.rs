@@ -119,6 +119,26 @@ fn pick_port(cli: &Cli, given: Option<String>) -> Result<String> {
     Ok(gm_probe::select_profile(&facts, prefer(cli)?).port)
 }
 
+/// Like [`pick_port`], but an auto-picked port must be installable: a
+/// blocked profile (driver too old, Intel Mac, no build for this CPU) stops
+/// here with its fix instead of failing minutes later inside uv. Naming a
+/// port explicitly still installs it.
+fn pick_installable_port(cli: &Cli, given: Option<String>) -> Result<String> {
+    if let Some(id) = given {
+        return Ok(id);
+    }
+    let facts = gm_probe::detect();
+    let profile = gm_probe::select_profile(&facts, prefer(cli)?);
+    if let Some(blocked) = &profile.blocked {
+        bail!(
+            "this machine's port ({}) is blocked: {blocked}\n{}",
+            profile.port,
+            profile.fix.clone().unwrap_or_default()
+        );
+    }
+    Ok(profile.port)
+}
+
 fn engine_dir(given: Option<PathBuf>) -> Result<PathBuf> {
     let mut candidates: Vec<PathBuf> = Vec::new();
     if let Some(g) = given {
@@ -307,13 +327,23 @@ async fn ports(cli: &Cli, cmd: &PortsCmd) -> Result<()> {
             skip_verify,
             wheelhouse,
         } => {
-            let id = pick_port(cli, port.clone())?;
+            let id = pick_installable_port(cli, port.clone())?;
             let spec = reg.require(&id)?;
             install(spec, &root, *skip_verify, wheelhouse.clone()).await?;
         }
         PortsCmd::Gc { keep } => {
             let keep: Vec<String> = if keep.is_empty() {
-                vec![pick_port(cli, None)?]
+                // This machine's worker port and the port it would host on
+                // (they differ when the GPU is blocked: the host falls back
+                // to cpu). Deleting the host port would break hosting.
+                let facts = gm_probe::detect();
+                let p = prefer(cli)?;
+                let mut keep = vec![gm_probe::select_profile(&facts, p).port];
+                let host = gm_probe::host_profile(&facts, p).port;
+                if !keep.contains(&host) {
+                    keep.push(host);
+                }
+                keep
             } else {
                 keep.clone()
             };
@@ -424,21 +454,38 @@ async fn join(
     let handle = gm_supervisor::Supervisor::spawn(gm_supervisor::worker_spec(&launch));
     let mut events = handle.subscribe();
     eprintln!("contributing to {} (Ctrl+C to stop)", invite.coordinator);
+    // Wait on supervision itself, not on a status event: a clean exit ends in
+    // Stopped (which the old loop ignored, so gmctl hung forever), and a
+    // lagging receiver can miss the Failed event altogether.
+    let finished = handle.wait();
+    tokio::pin!(finished);
+    let print = |ev: gm_supervisor::Event| {
+        if let gm_supervisor::Event::Line(l) = ev {
+            println!("{}", l.line);
+        }
+    };
     loop {
         tokio::select! {
             _ = tokio::signal::ctrl_c() => {
                 eprintln!("stopping…");
                 let _ = handle.stop().await;
-                break;
+                return Ok(());
+            }
+            st = &mut finished => {
+                while let Ok(ev) = events.try_recv() {
+                    print(ev);
+                }
+                if st.state == ProcState::Failed {
+                    bail!("worker failed (exit {:?}): {}", st.exit_code, st.last_line.unwrap_or_default());
+                }
+                eprintln!("worker exited (code {:?})", st.exit_code);
+                return Ok(());
             }
             ev = events.recv() => match ev {
-                Ok(gm_supervisor::Event::Line(l)) => println!("{}", l.line),
-                Ok(gm_supervisor::Event::Status(s)) if s.state == ProcState::Failed => bail!("worker failed: {:?}", s.last_line),
-                Ok(_) => {}
-                Err(tokio::sync::broadcast::error::RecvError::Lagged(_)) => {}
-                Err(_) => break,
+                Ok(ev) => print(ev),
+                Err(tokio::sync::broadcast::error::RecvError::Lagged(n)) => eprintln!("({n} lines skipped)"),
+                Err(tokio::sync::broadcast::error::RecvError::Closed) => {}
             }
         }
     }
-    Ok(())
 }

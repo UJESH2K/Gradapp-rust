@@ -35,7 +35,8 @@ pub fn worker_backend_arg(backend: Option<Backend>) -> &'static str {
 }
 
 /// How to start `engine/worker.py` (contributing this machine's GPU).
-#[derive(Debug, Clone, PartialEq)]
+/// `Debug` shows everything but the token.
+#[derive(Clone, PartialEq)]
 pub struct WorkerLaunch {
     /// The port's interpreter (gm-ports), replacing v1's venv python from
     /// `setup_env.py run_agent` (`venv_python(venv)`).
@@ -64,6 +65,25 @@ pub struct WorkerLaunch {
     pub discover: bool,
     /// Anything else, appended verbatim (e.g. `--max-batch-size 32`).
     pub extra_args: Vec<String>,
+}
+
+impl std::fmt::Debug for WorkerLaunch {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("WorkerLaunch")
+            .field("python", &self.python)
+            .field("engine_dir", &self.engine_dir)
+            .field("server_url", &self.server_url)
+            .field("token", &"<redacted>")
+            .field("name", &self.name)
+            .field("backend", &self.backend)
+            .field("gpu_index", &self.gpu_index)
+            .field("owner", &self.owner)
+            .field("agent_home", &self.agent_home)
+            .field("worker_home", &self.worker_home)
+            .field("discover", &self.discover)
+            .field("extra_args", &self.extra_args)
+            .finish()
+    }
 }
 
 impl WorkerLaunch {
