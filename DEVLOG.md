@@ -56,8 +56,18 @@ Everything compiles on Windows and macOS; every other crate's tests pass there.
   stays on the real-Mac checklist (it passes on Linux CI and locally).
 - CI annotations now include the line after each panic (the actual message).
 
+### CI round 3 (00:40): ci-v2 green on Linux, Windows and macOS ✅
+Tagged `v2.0.0-beta.1`; `release-v2` stopped in its first step again, this
+time on a workflow bug: the version reader used Python's `tomllib`, which
+needs Python 3.11, and ubuntu-22.04's `python3` is 3.10. Fixed (plain regex
+fallback, explicit error message), tested locally with the same inputs.
+Also checked before re-tagging, so the build jobs don't fail next:
+- A real `tauri build` bundle on Linux works with the bundled engine
+  (engine adds 572 KB to the installer).
+- The updater key signs with an empty password, as the secrets are set up.
+
 ### Next
-- Push; when ci-v2 is green on all three OSes, re-tag `v2.0.0-beta.1`.
+- Delete and re-push the tag `v2.0.0-beta.1`; watch the three build jobs.
 
 ## 2026-11-24 (late night) — One home for releases: UJESH2K/gradapp
 
