@@ -89,6 +89,17 @@ jobs:
             echo "::error::plugins.updater.pubkey in tauri.conf.json is still a placeholder."
             exit 1
           fi
+      # Without the key, every build compiles for ~8-25 min and then fails at
+      # the very end ("A public key has been found, but no private key").
+      - name: Check the updater signing secret is set
+        env:
+          HAS_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY != '' }}
+        shell: bash
+        run: |
+          if [ "$HAS_KEY" != "true" ]; then
+            echo "::error::Repository secret TAURI_SIGNING_PRIVATE_KEY is missing. Settings > Secrets and variables > Actions > New repository secret (the full contents of gradapp-updater.key)."
+            exit 1
+          fi
       - name: Create the draft release
         id: create
         uses: actions/github-script@v7

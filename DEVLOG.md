@@ -66,8 +66,18 @@ Also checked before re-tagging, so the build jobs don't fail next:
   (engine adds 572 KB to the installer).
 - The updater key signs with an empty password, as the secrets are set up.
 
+### Release round 2 (01:00)
+The version step passed and the draft release was created. All three builds
+compiled fully (~8 min on Linux) and then failed in the last step, the
+updater signing: the same error reproduced locally when the private key is
+absent ("A public key has been found, but no private key"). The repository
+secret `TAURI_SIGNING_PRIVATE_KEY` was not set (or not readable).
+- Added a first-step check in `release-v2` so a missing key fails in seconds
+  with instructions, instead of after every build.
+
 ### Next
-- Delete and re-push the tag `v2.0.0-beta.1`; watch the three build jobs.
+- Add the secret, then "Re-run failed jobs" on the existing run (the draft
+  release is reused; no new tag needed).
 
 ## 2026-11-24 (late night) — One home for releases: UJESH2K/gradapp
 
