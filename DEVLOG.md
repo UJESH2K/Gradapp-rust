@@ -16,6 +16,32 @@ Format:
 
 ---
 
+## 2026-11-25 — First CI run on Windows/macOS; first beta tag (2.0.0-beta.1)
+
+### What happened
+- The push to `gradapp` main ran `ci-v2`: **lint, Linux tests and the
+  probe-parity check passed; tests failed on Windows and macOS** (the first
+  time this code compiled there). The raw logs need a GitHub sign-in, which
+  this session doesn't have.
+- The tag `v2.0.0-beta.1` started `release-v2`, which stopped at its own
+  guard: the tag said `2.0.0-beta.1`, the app said `2.0.0`. Nothing was
+  published; no draft release was left behind.
+- The window you have open is GradApp **1.0.1** (Electron). It correctly
+  says it's up to date: GradApp 2 has not been released yet, and it installs
+  as its own app.
+
+### What changed
+- Version is now `2.0.0-beta.1` (workspace `Cargo.toml` + `tauri.conf.json`),
+  so the tag and the app agree.
+- `ci-v2` test step: `--no-fail-fast` (every failing test, not just the
+  first crate's), and a follow-up step that turns failing-test lines into
+  GitHub annotations. Annotations are public through the API, so failures can
+  be read and fixed without the raw log.
+- `actions/checkout@v5`, `actions/setup-python@v6` (Node 20 deprecation).
+
+### Next
+- Push, read the Windows/macOS annotations, fix, then re-tag the beta.
+
 ## 2026-11-24 (late night) — One home for releases: UJESH2K/gradapp
 
 ### What

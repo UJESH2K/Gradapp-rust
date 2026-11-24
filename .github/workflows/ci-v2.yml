@@ -29,7 +29,7 @@ jobs:
   lint:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
@@ -48,17 +48,29 @@ jobs:
         os: [ubuntu-22.04, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
       - uses: swatinem/rust-cache@v2
         with:
           key: test-${{ matrix.os }}
       # gm-supervisor's tests start real python3 children where available.
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - name: cargo test (default members)
-        run: cargo test
+        shell: bash
+        run: |
+          set -o pipefail
+          cargo test --no-fail-fast 2>&1 | tee test.log
+      # Failures as annotations: they show on the run's summary page and are
+      # readable through the public API without opening the raw log.
+      - name: Report test failures
+        if: failure()
+        shell: bash
+        run: |
+          grep -nE "^error(\[|:)|panicked at|^---- .* stdout ----|^test .* FAILED|^failures:|assertion .*failed|left: |right: " test.log \
+            | head -60 | while IFS= read -r line; do echo "::error title=${{ matrix.os }}::${line}"; done
+          exit 1
 
   # gm-probe's port selection is pinned to engine/hardware.py by a fixture the
   # Python generates. Regenerate it and fail if it drifted, so a change to
@@ -66,8 +78,8 @@ jobs:
   probe-parity:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - name: Regenerate parity fixtures and compare
