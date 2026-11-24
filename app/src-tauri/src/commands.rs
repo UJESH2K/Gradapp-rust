@@ -19,10 +19,8 @@ type Res<T> = Result<T, String>;
 #[derive(Default)]
 pub struct PendingUpdate(pub Mutex<Option<tauri_plugin_updater::Update>>);
 
-const STABLE_FEED: &str =
-    "https://github.com/UJESH2K/Gradapp-rust/releases/latest/download/latest.json";
-const BETA_FEED: &str =
-    "https://github.com/UJESH2K/Gradapp-rust/releases/download/beta/latest.json";
+const STABLE_FEED: &str = "https://github.com/UJESH2K/gradapp/releases/latest/download/latest.json";
+const BETA_FEED: &str = "https://github.com/UJESH2K/gradapp/releases/download/beta/latest.json";
 
 #[tauri::command]
 pub async fn app_status(state: State<'_, AppBackend>) -> Res<AppStatus> {

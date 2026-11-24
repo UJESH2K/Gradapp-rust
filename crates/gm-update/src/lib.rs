@@ -32,7 +32,7 @@ use serde::{Deserialize, Serialize};
 /// GitHub's REST API root. Injectable via [`Checker::with_api_base`] for tests.
 pub const GITHUB_API: &str = "https://api.github.com";
 /// The repository GradApp publishes from.
-pub const DEFAULT_REPO: &str = "UJESH2K/Gradapp-rust";
+pub const DEFAULT_REPO: &str = "UJESH2K/gradapp";
 /// Name of the Tauri updater manifest asset that tauri-action uploads.
 pub const MANIFEST_ASSET: &str = "latest.json";
 /// Release notes longer than this are cut (on a char boundary) with an ellipsis.

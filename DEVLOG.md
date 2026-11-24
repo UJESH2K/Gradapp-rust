@@ -16,6 +16,33 @@ Format:
 
 ---
 
+## 2026-11-24 (late night) — One home for releases: UJESH2K/gradapp
+
+### What
+- The same code is pushed to **both** repositories. `UJESH2K/gradapp` is the
+  release home; `UJESH2K/Gradapp-rust` is a mirror.
+- Reverted the update feed, `gm-update`'s default repo, `gmctl` and the
+  workspace `repository` back to `UJESH2K/gradapp`.
+- `release-v2.yml` now only runs in `UJESH2K/gradapp`
+  (`github.repository` guard on its jobs); in the mirror it does nothing.
+  `ci-v2.yml` (fmt, clippy, tests on 3 OSes) runs in both.
+
+### Why
+- gradapp.ujesh.in is deployed from `gradapp`'s `website/`, and its download
+  buttons read that repo's latest release. Publishing v2 there means a `v2.*`
+  tag builds the installers, the website picks them up automatically
+  (`website/app.js` already finds the v2 file names), and installed apps get
+  the update popup — no second place to maintain.
+- Building releases in both repos would give two update feeds that drift.
+
+### Notes
+- Pushing to `gradapp` `main` redeploys the website. The only website change
+  on this branch is the v2 file-name fallback in `app.js`; v1 downloads work
+  exactly as before until a v2 release is the latest.
+- Beta tags (`v2.0.0-beta.1`) are GitHub pre-releases, which the website's
+  "latest release" ignores, so the public download stays v1 during testing.
+- The Gradapp-rust entry below is superseded by this one.
+
 ## 2026-11-24 (night) — New home: UJESH2K/Gradapp-rust; the G logo in the window
 
 ### What

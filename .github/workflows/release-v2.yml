@@ -46,7 +46,9 @@ jobs:
   # = false) only after every platform uploaded, so neither the website's
   # /releases/latest links nor the updater ever see a half-filled release.
   create-release:
-    if: github.event_name == 'push' || inputs.publish
+    # Releases are published from UJESH2K/gradapp only (its website and the
+    # installed apps' update feed live there). Gradapp-rust mirrors the code.
+    if: github.repository == 'UJESH2K/gradapp' && (github.event_name == 'push' || inputs.publish)
     runs-on: ubuntu-22.04
     outputs:
       release_id: ${{ steps.create.outputs.release_id }}
@@ -114,7 +116,7 @@ jobs:
   build:
     needs: create-release
     # Runs for manual builds without a release too (create-release skipped).
-    if: always() && (needs.create-release.result == 'success' || needs.create-release.result == 'skipped')
+    if: always() && github.repository == 'UJESH2K/gradapp' && (needs.create-release.result == 'success' || needs.create-release.result == 'skipped')
     strategy:
       fail-fast: false
       matrix:

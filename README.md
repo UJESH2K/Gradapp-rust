@@ -47,6 +47,13 @@ Linux needs `libwebkit2gtk-4.1-dev libgtk-3-dev librsvg2-dev libayatana-appindic
 The UI also runs in a plain browser against a mock backend:
 `python3 -m http.server -d app/ui` → http://localhost:8000.
 
+## Repositories
+
+- **github.com/UJESH2K/gradapp** — the home: releases, the update feed the
+  installed apps check, and the website at gradapp.ujesh.in (Vercel, `website/`).
+- **github.com/UJESH2K/Gradapp-rust** — the same code, mirrored. CI runs there;
+  releases do not.
+
 ## Release
 
 Push a tag `v2.x.y` (or `v2.x.y-beta.n`). `release-v2.yml` builds Windows,
