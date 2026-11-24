@@ -1,0 +1,66 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/gm-types",
+    "crates/gm-probe",
+    "crates/gm-ports",
+    "crates/gm-net",
+    "crates/gm-update",
+    "crates/gm-supervisor",
+    "crates/gmctl",
+    "app/src-tauri",
+]
+# `cargo test` / `cargo build` at the root skip the Tauri app, which needs the
+# platform webview SDK. Build it explicitly with `cargo build -p gradapp`.
+default-members = [
+    "crates/gm-types",
+    "crates/gm-probe",
+    "crates/gm-ports",
+    "crates/gm-net",
+    "crates/gm-update",
+    "crates/gm-supervisor",
+    "crates/gmctl",
+]
+
+[workspace.package]
+version = "2.0.0"
+edition = "2021"
+rust-version = "1.80"
+license = "MIT"
+authors = ["Ujesh Kumar Yadav"]
+repository = "https://github.com/UJESH2K/gradapp"
+
+[workspace.dependencies]
+gm-types = { path = "crates/gm-types" }
+gm-probe = { path = "crates/gm-probe" }
+gm-ports = { path = "crates/gm-ports" }
+gm-net = { path = "crates/gm-net" }
+gm-update = { path = "crates/gm-update" }
+gm-supervisor = { path = "crates/gm-supervisor" }
+
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.8"
+thiserror = "2"
+anyhow = "1"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "net", "time", "process", "io-util", "sync", "fs", "signal"] }
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls", "stream"] }
+semver = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+futures = "0.3"
+url = "2"
+uuid = { version = "1", features = ["v4", "serde"] }
+clap = { version = "4", features = ["derive"] }
+sha2 = "0.10"
+hex = "0.4"
+dirs = "5"
+if-addrs = "0.13"
+axum = "0.7"
+tempfile = "3"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true
+opt-level = 3

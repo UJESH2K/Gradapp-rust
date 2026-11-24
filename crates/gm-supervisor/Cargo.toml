@@ -1,0 +1,8 @@
+[package]
+name = "gm-supervisor"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+gm-types.workspace = true

@@ -1,0 +1,9 @@
+[package]
+name = "gmctl"
+description = "GradApp headless CLI: probe, ports, discover, join. Same crates as the app."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+gm-types.workspace = true
