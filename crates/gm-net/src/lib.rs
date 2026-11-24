@@ -19,7 +19,9 @@ pub mod invite;
 pub mod join;
 pub mod lan;
 
-pub use address::{encode_uri_component, invite_link, parse_address, parse_address_with, AddressDefaults};
+pub use address::{
+    encode_uri_component, invite_link, parse_address, parse_address_with, AddressDefaults,
+};
 pub use beacon::{beacon_packet, Beacon, BeaconConfig};
 pub use client::{CoordinatorClient, SseEvent};
 pub use discovery::{discover, DiscoverOptions, MeshTable};

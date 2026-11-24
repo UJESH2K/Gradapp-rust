@@ -21,13 +21,23 @@ pub const TOKEN_HEADER: &str = "X-Mesh-Token";
 
 /// v1 api.js `ALLOWED`, without regexes. `[\w-]+` is one id segment.
 fn allowed(path: &str) -> bool {
-    let id = |s: &str| !s.is_empty() && s.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'-');
+    let id = |s: &str| {
+        !s.is_empty()
+            && s.bytes()
+                .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'-')
+    };
     let parts: Vec<&str> = match path.strip_prefix('/') {
         Some(rest) => rest.split('/').collect(),
         None => return false,
     };
     match parts.as_slice() {
-        ["health"] | ["mesh"] | ["runs"] | ["datasets"] | ["models"] | ["policy"] | ["token", "rotate"] => true,
+        ["health"]
+        | ["mesh"]
+        | ["runs"]
+        | ["datasets"]
+        | ["models"]
+        | ["policy"]
+        | ["token", "rotate"] => true,
         ["runs", r] => id(r),
         ["runs", r, "stop"] => id(r),
         ["datasets", d] => id(d), // includes "standard"
@@ -51,7 +61,10 @@ pub struct SseEvent {
 impl SseEvent {
     /// The coordinator's `kind` (e.g. "run.started", "stream.ready").
     pub fn kind(&self) -> Option<&str> {
-        self.data.get("kind").and_then(Value::as_str).or(self.event.as_deref())
+        self.data
+            .get("kind")
+            .and_then(Value::as_str)
+            .or(self.event.as_deref())
     }
 }
 
@@ -65,7 +78,8 @@ pub struct SseParser {
 
 impl SseParser {
     pub fn feed(&mut self, chunk: &[u8]) -> Vec<SseEvent> {
-        self.buf.extend(chunk.iter().copied().filter(|b| *b != b'\r'));
+        self.buf
+            .extend(chunk.iter().copied().filter(|b| *b != b'\r'));
         let mut out = Vec::new();
         while let Some(end) = self.buf.windows(2).position(|w| w == b"\n\n") {
             let block: Vec<u8> = self.buf.drain(..end + 2).collect();
@@ -88,7 +102,11 @@ impl SseParser {
                 continue;
             }
             if let Ok(value) = serde_json::from_str(&data.join("\n")) {
-                out.push(SseEvent { event, id, data: value });
+                out.push(SseEvent {
+                    event,
+                    id,
+                    data: value,
+                });
             }
         }
         out
@@ -107,7 +125,9 @@ pub struct CoordinatorClient {
 
 impl std::fmt::Debug for CoordinatorClient {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("CoordinatorClient").field("base", &self.base).finish_non_exhaustive()
+        f.debug_struct("CoordinatorClient")
+            .field("base", &self.base)
+            .finish_non_exhaustive()
     }
 }
 
@@ -117,7 +137,11 @@ impl CoordinatorClient {
         Self::with_http(lan_client(), coordinator, token)
     }
 
-    pub fn with_http(http: reqwest::Client, coordinator: impl Into<String>, token: Option<String>) -> Self {
+    pub fn with_http(
+        http: reqwest::Client,
+        coordinator: impl Into<String>,
+        token: Option<String>,
+    ) -> Self {
         Self {
             base: coordinator.into().trim_end_matches('/').to_string(),
             token: Arc::new(RwLock::new(token)),
@@ -165,16 +189,25 @@ impl CoordinatorClient {
         if let Some(body) = body {
             req = req.json(body);
         }
-        let response = req.send().await.map_err(|e| NetError::from_reqwest(e, &self.base))?;
+        let response = req
+            .send()
+            .await
+            .map_err(|e| NetError::from_reqwest(e, &self.base))?;
         let status = response.status();
-        let text = response.text().await.map_err(|e| NetError::from_reqwest(e, &self.base))?;
+        let text = response
+            .text()
+            .await
+            .map_err(|e| NetError::from_reqwest(e, &self.base))?;
         let data = if text.is_empty() {
             Value::Null
         } else {
             serde_json::from_str(&text).unwrap_or(Value::String(text))
         };
         if !status.is_success() {
-            return Err(NetError::Http { status: status.as_u16(), detail: detail_of(Some(&data), status.as_u16()) });
+            return Err(NetError::Http {
+                status: status.as_u16(),
+                detail: detail_of(Some(&data), status.as_u16()),
+            });
         }
         Ok(data)
     }
@@ -216,11 +249,13 @@ impl CoordinatorClient {
     }
 
     pub async fn stop_run(&self, id: &str) -> Result<Value> {
-        self.call(Method::POST, &format!("/runs/{id}/stop"), None).await
+        self.call(Method::POST, &format!("/runs/{id}/stop"), None)
+            .await
     }
 
     pub async fn delete_run(&self, id: &str) -> Result<Value> {
-        self.call(Method::DELETE, &format!("/runs/{id}"), None).await
+        self.call(Method::DELETE, &format!("/runs/{id}"), None)
+            .await
     }
 
     pub async fn datasets(&self) -> Result<Value> {
@@ -238,14 +273,18 @@ impl CoordinatorClient {
 
     /// `PUT /policy` with `{"values": values}` (coordinator `PolicyRequest`).
     pub async fn put_policy(&self, values: &Value) -> Result<Value> {
-        self.call(Method::PUT, "/policy", Some(&json!({ "values": values }))).await
+        self.call(Method::PUT, "/policy", Some(&json!({ "values": values })))
+            .await
     }
 
     /// `POST /token/rotate`: mints a new token (and drops every node). The new
     /// token is stored in this client and returned.
     pub async fn rotate_token(&self) -> Result<String> {
         let v = self.call(Method::POST, "/token/rotate", None).await?;
-        let token = v.get("token").and_then(Value::as_str).ok_or_else(|| NetError::Decode("no token in reply".into()))?;
+        let token = v
+            .get("token")
+            .and_then(Value::as_str)
+            .ok_or_else(|| NetError::Decode("no token in reply".into()))?;
         self.set_token(Some(token.to_string()));
         Ok(token.to_string())
     }
@@ -253,7 +292,10 @@ impl CoordinatorClient {
     /// One connection to `GET /events?replay=N` (server-sent events; the
     /// coordinator sends `: keepalive` every 15 s). Ends when the server
     /// closes; see [`follow_events`](Self::follow_events) for reconnects.
-    pub async fn events(&self, replay: u32) -> Result<impl Stream<Item = Result<SseEvent>> + Send + 'static> {
+    pub async fn events(
+        &self,
+        replay: u32,
+    ) -> Result<impl Stream<Item = Result<SseEvent>> + Send + 'static> {
         let response = self
             .request(Method::GET, &format!("/events?replay={}", replay.min(200)))
             .header(reqwest::header::ACCEPT, "text/event-stream")
@@ -263,27 +305,38 @@ impl CoordinatorClient {
         let status = response.status();
         if !status.is_success() {
             let body = response.json::<Value>().await.ok();
-            return Err(NetError::Http { status: status.as_u16(), detail: detail_of(body.as_ref(), status.as_u16()) });
+            return Err(NetError::Http {
+                status: status.as_u16(),
+                detail: detail_of(body.as_ref(), status.as_u16()),
+            });
         }
         let base = self.base.clone();
-        let state = (response.bytes_stream().boxed(), SseParser::default(), VecDeque::<SseEvent>::new(), base);
-        Ok(futures::stream::unfold(state, |(mut bytes, mut parser, mut pending, base)| async move {
-            loop {
-                if let Some(ev) = pending.pop_front() {
-                    return Some((Ok(ev), (bytes, parser, pending, base)));
-                }
-                match bytes.next().await {
-                    Some(Ok(chunk)) => pending.extend(parser.feed(&chunk)),
-                    Some(Err(e)) => {
-                        let err = NetError::from_reqwest(e, &base);
-                        // Yield the error once, then end.
-                        let empty = futures::stream::empty().boxed();
-                        return Some((Err(err), (empty, parser, pending, base)));
+        let state = (
+            response.bytes_stream().boxed(),
+            SseParser::default(),
+            VecDeque::<SseEvent>::new(),
+            base,
+        );
+        Ok(futures::stream::unfold(
+            state,
+            |(mut bytes, mut parser, mut pending, base)| async move {
+                loop {
+                    if let Some(ev) = pending.pop_front() {
+                        return Some((Ok(ev), (bytes, parser, pending, base)));
                     }
-                    None => return None,
+                    match bytes.next().await {
+                        Some(Ok(chunk)) => pending.extend(parser.feed(&chunk)),
+                        Some(Err(e)) => {
+                            let err = NetError::from_reqwest(e, &base);
+                            // Yield the error once, then end.
+                            let empty = futures::stream::empty().boxed();
+                            return Some((Err(err), (empty, parser, pending, base)));
+                        }
+                        None => return None,
+                    }
                 }
-            }
-        }))
+            },
+        ))
     }
 
     /// Follow `/events` until `cancel`, reconnecting with backoff (1 s → 15 s,
@@ -311,7 +364,11 @@ impl CoordinatorClient {
                 }
                 Some(Err(e)) => tracing::debug!("events: {e}"),
             }
-            if cancel.run_until_cancelled(tokio::time::sleep(delay)).await.is_none() {
+            if cancel
+                .run_until_cancelled(tokio::time::sleep(delay))
+                .await
+                .is_none()
+            {
                 return;
             }
             delay = (delay * 2).min(Duration::from_secs(15));
@@ -326,14 +383,37 @@ mod tests {
     #[test]
     fn allowlist_matches_v1() {
         for ok in [
-            "/health", "/mesh", "/runs", "/runs/abc-1", "/runs/abc_1/stop", "/datasets", "/datasets/standard",
-            "/datasets/d1", "/datasets/d1/default", "/models", "/policy", "/nodes/n1", "/nodes/n1/reset", "/token/rotate",
+            "/health",
+            "/mesh",
+            "/runs",
+            "/runs/abc-1",
+            "/runs/abc_1/stop",
+            "/datasets",
+            "/datasets/standard",
+            "/datasets/d1",
+            "/datasets/d1/default",
+            "/models",
+            "/policy",
+            "/nodes/n1",
+            "/nodes/n1/reset",
+            "/token/rotate",
         ] {
             assert!(allowed(ok), "{ok}");
         }
         for bad in [
-            "", "health", "/runs/", "/runs/a/b", "/runs/../x", "/runs/a.b", "/events", "/register_node",
-            "/nodes/n1/x", "/datasets/d1/download", "/token", "/policy/", "//health",
+            "",
+            "health",
+            "/runs/",
+            "/runs/a/b",
+            "/runs/../x",
+            "/runs/a.b",
+            "/events",
+            "/register_node",
+            "/nodes/n1/x",
+            "/datasets/d1/download",
+            "/token",
+            "/policy/",
+            "//health",
         ] {
             assert!(!allowed(bad), "{bad}");
         }

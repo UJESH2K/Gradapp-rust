@@ -63,8 +63,14 @@ pub enum Prefer {
 
 impl Prefer {
     /// Every value, in CLI order.
-    pub const ALL: [Prefer; 6] =
-        [Prefer::Auto, Prefer::Cuda, Prefer::Xpu, Prefer::Mps, Prefer::Cpu, Prefer::Rocm];
+    pub const ALL: [Prefer; 6] = [
+        Prefer::Auto,
+        Prefer::Cuda,
+        Prefer::Xpu,
+        Prefer::Mps,
+        Prefer::Cpu,
+        Prefer::Rocm,
+    ];
 
     /// The lowercase name used on the command line and in hardware.py.
     pub fn as_str(self) -> &'static str {
@@ -91,7 +97,11 @@ pub struct PreferParseError(pub String);
 
 impl fmt::Display for PreferParseError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "unknown backend '{}' (expected auto, cuda, xpu, mps, cpu or rocm)", self.0)
+        write!(
+            f,
+            "unknown backend '{}' (expected auto, cuda, xpu, mps, cpu or rocm)",
+            self.0
+        )
     }
 }
 
@@ -128,7 +138,9 @@ impl ProbeOptions {
         let on = std::env::var(EXPERIMENTAL_ROCM_ENV)
             .map(|v| matches!(v.trim().to_ascii_lowercase().as_str(), "1" | "true" | "yes"))
             .unwrap_or(false);
-        ProbeOptions { experimental_rocm: on }
+        ProbeOptions {
+            experimental_rocm: on,
+        }
     }
 }
 
@@ -191,10 +203,14 @@ pub fn host_profile_with(facts: &DeviceFacts, prefer: Prefer, options: &ProbeOpt
 /// `driver` to `"rocm <version>"` (or just `"rocm"`), because `DeviceFacts`
 /// has no field for installed runtimes yet. Returns the text after `rocm`.
 pub fn rocm_version(facts: &DeviceFacts) -> Option<&str> {
-    facts.gpus.iter().filter(|g| g.vendor == Vendor::Amd).find_map(|g| {
-        let driver = g.driver.as_deref()?;
-        driver.strip_prefix("rocm").map(str::trim)
-    })
+    facts
+        .gpus
+        .iter()
+        .filter(|g| g.vendor == Vendor::Amd)
+        .find_map(|g| {
+            let driver = g.driver.as_deref()?;
+            driver.strip_prefix("rocm").map(str::trim)
+        })
 }
 
 // ---------------------------------------------------------------------------
@@ -294,7 +310,13 @@ fn cpu(
     }
 }
 
-fn mps(reason: String, gpu_name: String, blocked: Option<String>, fix: Option<String>, warnings: Vec<String>) -> Profile {
+fn mps(
+    reason: String,
+    gpu_name: String,
+    blocked: Option<String>,
+    fix: Option<String>,
+    warnings: Vec<String>,
+) -> Profile {
     Profile {
         port: "mps".into(),
         backend: Backend::Mps,
@@ -340,7 +362,12 @@ fn first_max_by<'a, T, K: PartialOrd>(items: &[&'a T], key: impl Fn(&T) -> K) ->
 fn nvidia_profile(gpus: &[&Gpu], os: Os) -> Profile {
     // Train on the most capable card. A machine mixing a Pascal and a Blackwell
     // card has no single build that covers both, so the stronger one wins.
-    let best = first_max_by(gpus, |g| (g.compute_capability.unwrap_or(0.0), g.memory_mb.unwrap_or(0)));
+    let best = first_max_by(gpus, |g| {
+        (
+            g.compute_capability.unwrap_or(0.0),
+            g.memory_mb.unwrap_or(0),
+        )
+    });
     let capability = best.compute_capability;
     let driver_text = best.driver.as_deref();
     let driver = driver_major(driver_text);
@@ -364,7 +391,12 @@ fn nvidia_profile(gpus: &[&Gpu], os: Os) -> Profile {
         ));
     }
 
-    let cuda = |port: &str, label: &str, reason: String, torch: &str, reference: bool, warnings: Vec<String>| Profile {
+    let cuda = |port: &str,
+                label: &str,
+                reason: String,
+                torch: &str,
+                reference: bool,
+                warnings: Vec<String>| Profile {
         port: port.into(),
         backend: Backend::Cuda,
         label: label.into(),
@@ -385,7 +417,10 @@ fn nvidia_profile(gpus: &[&Gpu], os: Os) -> Profile {
     if let Some(c) = capability {
         if c < 5.0 {
             return cpu(
-                format!("{} at {} is older than any current PyTorch CUDA build supports", best.name, cc_text),
+                format!(
+                    "{} at {} is older than any current PyTorch CUDA build supports",
+                    best.name, cc_text
+                ),
                 Some(best),
                 None,
                 None,
@@ -394,7 +429,11 @@ fn nvidia_profile(gpus: &[&Gpu], os: Os) -> Profile {
         }
     }
 
-    let minimum_cu126 = if os == Os::Windows { DRIVER_CU126_WINDOWS } else { DRIVER_CU126_LINUX };
+    let minimum_cu126 = if os == Os::Windows {
+        DRIVER_CU126_WINDOWS
+    } else {
+        DRIVER_CU126_LINUX
+    };
     if let Some(d) = driver {
         if d < minimum_cu126 {
             return cpu(
@@ -416,7 +455,10 @@ fn nvidia_profile(gpus: &[&Gpu], os: Os) -> Profile {
                 return cuda(
                     "cuda-cu130",
                     "PyTorch CUDA 13.0 build",
-                    format!("{} is {} (Blackwell), which needs CUDA 12.8 or newer", best.name, cc_text),
+                    format!(
+                        "{} is {} (Blackwell), which needs CUDA 12.8 or newer",
+                        best.name, cc_text
+                    ),
                     REFERENCE_TORCH,
                     true,
                     warnings,
@@ -426,7 +468,10 @@ fn nvidia_profile(gpus: &[&Gpu], os: Os) -> Profile {
                 return cuda(
                     "cuda-cu130",
                     "PyTorch CUDA 13.0 build",
-                    format!("{} is {} (Blackwell), which needs CUDA 12.8 or newer", best.name, cc_text),
+                    format!(
+                        "{} is {} (Blackwell), which needs CUDA 12.8 or newer",
+                        best.name, cc_text
+                    ),
                     REFERENCE_TORCH,
                     true,
                     warnings,
@@ -441,7 +486,10 @@ fn nvidia_profile(gpus: &[&Gpu], os: Os) -> Profile {
                 return cuda(
                     "cuda-cu128",
                     "PyTorch CUDA 12.8 build (fallback)",
-                    format!("{} is Blackwell and driver {} predates CUDA 13.0", best.name, driver_s),
+                    format!(
+                        "{} is Blackwell and driver {} predates CUDA 13.0",
+                        best.name, driver_s
+                    ),
                     TORCH_CU128_FALLBACK,
                     false,
                     warnings,
@@ -471,7 +519,9 @@ fn nvidia_profile(gpus: &[&Gpu], os: Os) -> Profile {
             warnings,
         );
     }
-    let with_driver = truthy(driver_text).map(|d| format!(" with driver {d}")).unwrap_or_default();
+    let with_driver = truthy(driver_text)
+        .map(|d| format!(" with driver {d}"))
+        .unwrap_or_default();
     cuda(
         "cuda-cu126",
         "PyTorch CUDA 12.6 build",
@@ -506,7 +556,11 @@ fn intel_profile(gpus: &[&Gpu]) -> Profile {
 }
 
 fn rocm_profile(gpu: &Gpu, version: &str) -> Profile {
-    let shown = if version.is_empty() { String::new() } else { format!(" {version}") };
+    let shown = if version.is_empty() {
+        String::new()
+    } else {
+        format!(" {version}")
+    };
     Profile {
         port: "rocm".into(),
         backend: Backend::Rocm,
@@ -547,17 +601,27 @@ fn apple_warnings(facts: &DeviceFacts) -> Vec<String> {
 fn select_raw(facts: &DeviceFacts, prefer: Prefer, options: &ProbeOptions) -> Profile {
     let of = |v: Vendor| facts.gpus.iter().filter(move |g| g.vendor == v);
     let nvidia: Vec<&Gpu> = of(Vendor::Nvidia).filter(|g| g.driver.is_some()).collect();
-    let nvidia_without_driver: Vec<&Gpu> = of(Vendor::Nvidia).filter(|g| g.driver.is_none()).collect();
+    let nvidia_without_driver: Vec<&Gpu> =
+        of(Vendor::Nvidia).filter(|g| g.driver.is_none()).collect();
     let intel: Vec<&Gpu> = of(Vendor::Intel).collect();
     let apple: Vec<&Gpu> = of(Vendor::Apple).collect();
 
     if prefer == Prefer::Cpu {
-        return cpu("CPU was requested explicitly".into(), None, None, None, Vec::new());
+        return cpu(
+            "CPU was requested explicitly".into(),
+            None,
+            None,
+            None,
+            Vec::new(),
+        );
     }
 
     // --- Apple ---------------------------------------------------------------
     if facts.os == Os::Macos {
-        let gpu_name = apple.first().map(|g| g.name.clone()).unwrap_or_else(|| "Apple Silicon".into());
+        let gpu_name = apple
+            .first()
+            .map(|g| g.name.clone())
+            .unwrap_or_else(|| "Apple Silicon".into());
         if facts.arch != Arch::Arm64 && facts.translated {
             return mps(
                 "Apple Silicon, but this Python is an Intel build running under Rosetta".into(),
@@ -605,7 +669,10 @@ fn select_raw(facts: &DeviceFacts, prefer: Prefer, options: &ProbeOptions) -> Pr
                 Vec::new(),
             );
         }
-        let chip = apple.first().map(|g| g.name.as_str()).unwrap_or(arch_str(facts.arch));
+        let chip = apple
+            .first()
+            .map(|g| g.name.as_str())
+            .unwrap_or(arch_str(facts.arch));
         return mps(
             format!("Apple Silicon ({chip}) trains on the Metal backend"),
             gpu_name,
@@ -642,11 +709,22 @@ fn select_raw(facts: &DeviceFacts, prefer: Prefer, options: &ProbeOptions) -> Pr
 
     // --- Intel -----------------------------------------------------------------
     if !intel.is_empty() && matches!(prefer, Prefer::Auto | Prefer::Xpu) {
-        let supported: Vec<&Gpu> = intel.iter().copied().filter(|g| intel_xpu_re().is_match(&g.name)).collect();
-        let experimental: Vec<&Gpu> =
-            intel.iter().copied().filter(|g| intel_experimental_re().is_match(&g.name)).collect();
+        let supported: Vec<&Gpu> = intel
+            .iter()
+            .copied()
+            .filter(|g| intel_xpu_re().is_match(&g.name))
+            .collect();
+        let experimental: Vec<&Gpu> = intel
+            .iter()
+            .copied()
+            .filter(|g| intel_experimental_re().is_match(&g.name))
+            .collect();
         if !supported.is_empty() || prefer == Prefer::Xpu {
-            return intel_profile(if supported.is_empty() { &intel } else { &supported });
+            return intel_profile(if supported.is_empty() {
+                &intel
+            } else {
+                &supported
+            });
         }
         if !experimental.is_empty() {
             let mut profile = intel_profile(&experimental);
@@ -670,10 +748,22 @@ fn select_raw(facts: &DeviceFacts, prefer: Prefer, options: &ProbeOptions) -> Pr
             )
         }
         Prefer::Xpu => {
-            return cpu("XPU was requested but no Intel GPU was found".into(), None, None, None, Vec::new())
+            return cpu(
+                "XPU was requested but no Intel GPU was found".into(),
+                None,
+                None,
+                None,
+                Vec::new(),
+            )
         }
         Prefer::Mps => {
-            return cpu("MPS is only available on Apple Silicon Macs".into(), None, None, None, Vec::new())
+            return cpu(
+                "MPS is only available on Apple Silicon Macs".into(),
+                None,
+                None,
+                None,
+                Vec::new(),
+            )
         }
         _ => {}
     }
@@ -683,21 +773,31 @@ fn select_raw(facts: &DeviceFacts, prefer: Prefer, options: &ProbeOptions) -> Pr
     if let Some(first_amd) = amd.first() {
         // New in 2.0, opt-in only: ROCm on Linux. `Auto` reaches this only with
         // the experimental switch, so default behaviour matches hardware.py.
-        let opted_in = prefer == Prefer::Rocm || (prefer == Prefer::Auto && options.experimental_rocm);
+        let opted_in =
+            prefer == Prefer::Rocm || (prefer == Prefer::Auto && options.experimental_rocm);
         if opted_in && facts.os == Os::Linux {
             if let Some(version) = rocm_version(facts) {
                 return rocm_profile(first_amd, version);
             }
         }
         return cpu(
-            format!("{} is an AMD GPU, which GradMesh 5 does not train on yet", first_amd.name),
+            format!(
+                "{} is an AMD GPU, which GradMesh 5 does not train on yet",
+                first_amd.name
+            ),
             Some(first_amd),
             None,
             None,
             Vec::new(),
         );
     }
-    cpu("no supported GPU was detected".into(), None, None, None, Vec::new())
+    cpu(
+        "no supported GPU was detected".into(),
+        None,
+        None,
+        None,
+        Vec::new(),
+    )
 }
 
 #[cfg(test)]
@@ -732,8 +832,12 @@ mod tests {
         }
     }
 
-    const OFF: ProbeOptions = ProbeOptions { experimental_rocm: false };
-    const ON: ProbeOptions = ProbeOptions { experimental_rocm: true };
+    const OFF: ProbeOptions = ProbeOptions {
+        experimental_rocm: false,
+    };
+    const ON: ProbeOptions = ProbeOptions {
+        experimental_rocm: true,
+    };
 
     #[test]
     fn prefer_parses() {
@@ -747,7 +851,11 @@ mod tests {
 
     #[test]
     fn rocm_is_opt_in_only() {
-        let facts = linux(vec![gpu(Vendor::Amd, "AMD Radeon RX 7900 XTX", Some("rocm 6.4.1"))]);
+        let facts = linux(vec![gpu(
+            Vendor::Amd,
+            "AMD Radeon RX 7900 XTX",
+            Some("rocm 6.4.1"),
+        )]);
         let auto = select_profile_with(&facts, Prefer::Auto, &OFF);
         assert_eq!(auto.port, "cpu");
         assert!(!auto.can_train);
@@ -766,9 +874,16 @@ mod tests {
     #[test]
     fn rocm_needs_the_runtime_and_linux() {
         let no_runtime = linux(vec![gpu(Vendor::Amd, "AMD Radeon RX 7900 XTX", None)]);
-        assert_eq!(select_profile_with(&no_runtime, Prefer::Rocm, &ON).port, "cpu");
+        assert_eq!(
+            select_profile_with(&no_runtime, Prefer::Rocm, &ON).port,
+            "cpu"
+        );
 
-        let mut windows = linux(vec![gpu(Vendor::Amd, "AMD Radeon RX 7900 XTX", Some("rocm 6.4"))]);
+        let mut windows = linux(vec![gpu(
+            Vendor::Amd,
+            "AMD Radeon RX 7900 XTX",
+            Some("rocm 6.4"),
+        )]);
         windows.os = Os::Windows;
         assert_eq!(select_profile_with(&windows, Prefer::Rocm, &ON).port, "cpu");
     }
@@ -777,8 +892,14 @@ mod tests {
     fn rocm_env_does_not_beat_nvidia_or_intel() {
         let mut nv = gpu(Vendor::Nvidia, "NVIDIA GeForce RTX 4090", Some("580.95.05"));
         nv.compute_capability = Some(8.9);
-        let facts = linux(vec![nv, gpu(Vendor::Amd, "AMD Radeon RX 7900 XTX", Some("rocm"))]);
-        assert_eq!(select_profile_with(&facts, Prefer::Auto, &ON).port, "cuda-cu130");
+        let facts = linux(vec![
+            nv,
+            gpu(Vendor::Amd, "AMD Radeon RX 7900 XTX", Some("rocm")),
+        ]);
+        assert_eq!(
+            select_profile_with(&facts, Prefer::Auto, &ON).port,
+            "cuda-cu130"
+        );
         assert_eq!(select_profile_with(&facts, Prefer::Rocm, &ON).port, "rocm");
         assert_eq!(rocm_version(&facts), Some(""));
     }

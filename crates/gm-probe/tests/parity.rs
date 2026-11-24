@@ -5,7 +5,9 @@
 //! fabricated machines. Every case is replayed here and must match field by
 //! field, including the human-readable text.
 
-use gm_probe::{host_profile_with, select_profile_with, Prefer, ProbeOptions, Profile, REFERENCE_TORCH};
+use gm_probe::{
+    host_profile_with, select_profile_with, Prefer, ProbeOptions, Profile, REFERENCE_TORCH,
+};
 use gm_types::{Arch, DeviceFacts, Gpu, Os, Vendor};
 use serde_json::Value;
 
@@ -83,14 +85,44 @@ fn diff(case: &str, which: &str, rust: &Profile, py: &Value) -> Vec<String> {
     };
     let s = |k: &str| py[k].as_str().unwrap_or_default().to_string();
     check("port", rust.port == s("port"), rust.port.clone(), s("port"));
-    check("backend", rust.backend.as_str() == s("backend"), rust.backend.as_str().into(), s("backend"));
-    check("label", rust.label == s("label"), rust.label.clone(), s("label"));
-    check("reason", rust.reason == s("reason"), rust.reason.clone(), s("reason"));
-    check("torch", rust.torch == s("torch"), rust.torch.clone(), s("torch"));
+    check(
+        "backend",
+        rust.backend.as_str() == s("backend"),
+        rust.backend.as_str().into(),
+        s("backend"),
+    );
+    check(
+        "label",
+        rust.label == s("label"),
+        rust.label.clone(),
+        s("label"),
+    );
+    check(
+        "reason",
+        rust.reason == s("reason"),
+        rust.reason.clone(),
+        s("reason"),
+    );
+    check(
+        "torch",
+        rust.torch == s("torch"),
+        rust.torch.clone(),
+        s("torch"),
+    );
     let reference = py["reference"].as_bool().unwrap();
-    check("reference", rust.reference == reference, rust.reference.to_string(), reference.to_string());
+    check(
+        "reference",
+        rust.reference == reference,
+        rust.reference.to_string(),
+        reference.to_string(),
+    );
     let can_train = py["can_train"].as_bool().unwrap();
-    check("can_train", rust.can_train == can_train, rust.can_train.to_string(), can_train.to_string());
+    check(
+        "can_train",
+        rust.can_train == can_train,
+        rust.can_train.to_string(),
+        can_train.to_string(),
+    );
     // Python always carries an int (default 0); Rust leaves it None where no
     // single device is addressed (cpu, mps).
     let gpu_index = py["gpu_index"].as_u64().unwrap() as u32;
@@ -101,47 +133,111 @@ fn diff(case: &str, which: &str, rust: &Profile, py: &Value) -> Vec<String> {
         gpu_index.to_string(),
     );
     let gpu_name = opt_str(&py["gpu_name"]);
-    check("gpu_name", rust.gpu_name == gpu_name, format!("{:?}", rust.gpu_name), format!("{gpu_name:?}"));
+    check(
+        "gpu_name",
+        rust.gpu_name == gpu_name,
+        format!("{:?}", rust.gpu_name),
+        format!("{gpu_name:?}"),
+    );
     let blocked = opt_str(&py["blocked"]);
-    check("blocked", rust.blocked == blocked, format!("{:?}", rust.blocked), format!("{blocked:?}"));
+    check(
+        "blocked",
+        rust.blocked == blocked,
+        format!("{:?}", rust.blocked),
+        format!("{blocked:?}"),
+    );
     let fix = opt_str(&py["fix"]);
-    check("fix", rust.fix == fix, format!("{:?}", rust.fix), format!("{fix:?}"));
-    let warnings: Vec<String> =
-        py["warnings"].as_array().unwrap().iter().map(|w| w.as_str().unwrap().to_string()).collect();
-    check("warnings", rust.warnings == warnings, format!("{:?}", rust.warnings), format!("{warnings:?}"));
+    check(
+        "fix",
+        rust.fix == fix,
+        format!("{:?}", rust.fix),
+        format!("{fix:?}"),
+    );
+    let warnings: Vec<String> = py["warnings"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|w| w.as_str().unwrap().to_string())
+        .collect();
+    check(
+        "warnings",
+        rust.warnings == warnings,
+        format!("{:?}", rust.warnings),
+        format!("{warnings:?}"),
+    );
     out
 }
 
 #[test]
 fn matches_hardware_py() {
     let data: Value = serde_json::from_str(CASES).expect("parity_cases.json parses");
-    assert_eq!(data["reference_torch"].as_str(), Some(REFERENCE_TORCH), "reference torch moved; regenerate");
+    assert_eq!(
+        data["reference_torch"].as_str(),
+        Some(REFERENCE_TORCH),
+        "reference torch moved; regenerate"
+    );
     let cases = data["cases"].as_array().unwrap();
-    assert!(cases.len() >= 40, "expected at least 40 parity cases, got {}", cases.len());
+    assert!(
+        cases.len() >= 40,
+        "expected at least 40 parity cases, got {}",
+        cases.len()
+    );
 
     // Experimental ROCm stays off: auto must behave exactly like Python.
-    let options = ProbeOptions { experimental_rocm: false };
+    let options = ProbeOptions {
+        experimental_rocm: false,
+    };
     let mut failures = Vec::new();
     for case in cases {
         let name = case["name"].as_str().unwrap();
         let prefer: Prefer = case["prefer"].as_str().unwrap().parse().unwrap();
         let facts = facts(&case["facts"]);
-        failures.extend(diff(name, "select", &select_profile_with(&facts, prefer, &options), &case["select"]));
-        failures.extend(diff(name, "host", &host_profile_with(&facts, prefer, &options), &case["host"]));
+        failures.extend(diff(
+            name,
+            "select",
+            &select_profile_with(&facts, prefer, &options),
+            &case["select"],
+        ));
+        failures.extend(diff(
+            name,
+            "host",
+            &host_profile_with(&facts, prefer, &options),
+            &case["host"],
+        ));
     }
-    assert!(failures.is_empty(), "{} mismatches with hardware.py:\n{}", failures.len(), failures.join("\n"));
+    assert!(
+        failures.is_empty(),
+        "{} mismatches with hardware.py:\n{}",
+        failures.len(),
+        failures.join("\n")
+    );
 }
 
 #[test]
 fn every_port_and_block_is_covered() {
     let data: Value = serde_json::from_str(CASES).unwrap();
     let cases = data["cases"].as_array().unwrap();
-    for port in ["cuda-cu130", "cuda-cu126", "cuda-cu128", "xpu", "mps", "cpu"] {
-        assert!(cases.iter().any(|c| c["select"]["port"] == port), "no parity case selects {port}");
+    for port in [
+        "cuda-cu130",
+        "cuda-cu126",
+        "cuda-cu128",
+        "xpu",
+        "mps",
+        "cpu",
+    ] {
+        assert!(
+            cases.iter().any(|c| c["select"]["port"] == port),
+            "no parity case selects {port}"
+        );
     }
     for prefer in Prefer::ALL {
-        assert!(cases.iter().any(|c| c["prefer"] == prefer.as_str()), "no parity case prefers {prefer}");
+        assert!(
+            cases.iter().any(|c| c["prefer"] == prefer.as_str()),
+            "no parity case prefers {prefer}"
+        );
     }
     assert!(cases.iter().any(|c| !c["select"]["blocked"].is_null()));
-    assert!(cases.iter().any(|c| c["host"]["port"] == "cpu" && c["facts"]["os"] == "macos"));
+    assert!(cases
+        .iter()
+        .any(|c| c["host"]["port"] == "cpu" && c["facts"]["os"] == "macos"));
 }

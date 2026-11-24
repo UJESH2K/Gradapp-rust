@@ -64,7 +64,12 @@ fn gb(mb: u64) -> String {
 /// One line for logs and the UI, e.g.
 /// `linux 6.8.0 x86_64 (rosetta) | AMD Ryzen 9 7950X, 32 threads | 64 GB RAM | GPU0 NVIDIA GeForce RTX 4090 [nvidia, cc 8.9, driver 580.95.05, 24 GB]`.
 pub fn summary(facts: &DeviceFacts) -> String {
-    let mut out = format!("{} {} {}", os_str(facts.os), facts.os_version, arch_str(facts.arch));
+    let mut out = format!(
+        "{} {} {}",
+        os_str(facts.os),
+        facts.os_version,
+        arch_str(facts.arch)
+    );
     if facts.translated {
         out.push_str(" (rosetta)");
     }
@@ -97,7 +102,12 @@ pub fn summary(facts: &DeviceFacts) -> String {
         if let Some(mb) = gpu.memory_mb {
             extra.push(gb(mb));
         }
-        out.push_str(&format!(" | GPU{} {} [{}]", gpu.index, gpu.name, extra.join(", ")));
+        out.push_str(&format!(
+            " | GPU{} {} [{}]",
+            gpu.index,
+            gpu.name,
+            extra.join(", ")
+        ));
     }
     out
 }

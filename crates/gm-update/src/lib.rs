@@ -177,6 +177,8 @@ fn unavailable(current: &str) -> UpdateInfo {
         url: None,
         published_at: None,
         installable: false,
+        reason: None,
+        manifest_url: None,
     }
 }
 
@@ -225,6 +227,8 @@ pub fn evaluate(
         url: release.html_url.clone(),
         published_at: release.published_at.clone(),
         installable: available && release.has_manifest(),
+        reason: None,
+        manifest_url: None,
     };
     (info, None)
 }

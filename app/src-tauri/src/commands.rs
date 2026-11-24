@@ -43,7 +43,11 @@ pub async fn get_ports(state: State<'_, AppBackend>) -> Res<Vec<PortEntry>> {
 }
 
 #[tauri::command]
-pub async fn install_port(app: AppHandle, state: State<'_, AppBackend>, port_id: String) -> Res<gm_types::PortStatus> {
+pub async fn install_port(
+    app: AppHandle,
+    state: State<'_, AppBackend>,
+    port_id: String,
+) -> Res<gm_types::PortStatus> {
     state.install_port(&app, port_id)
 }
 
@@ -60,7 +64,11 @@ pub async fn discover_stop(state: State<'_, AppBackend>) -> Res<()> {
 }
 
 #[tauri::command]
-pub async fn join(app: AppHandle, state: State<'_, AppBackend>, invite: String) -> Res<gm_types::Invite> {
+pub async fn join(
+    app: AppHandle,
+    state: State<'_, AppBackend>,
+    invite: String,
+) -> Res<gm_types::Invite> {
     state.join(&app, &invite)
 }
 
@@ -71,7 +79,11 @@ pub async fn leave(app: AppHandle, state: State<'_, AppBackend>) -> Res<()> {
 }
 
 #[tauri::command]
-pub async fn host_start(app: AppHandle, state: State<'_, AppBackend>, mesh_name: Option<String>) -> Res<HostInfo> {
+pub async fn host_start(
+    app: AppHandle,
+    state: State<'_, AppBackend>,
+    mesh_name: Option<String>,
+) -> Res<HostInfo> {
     state.host_start(&app, mesh_name)
 }
 
@@ -99,10 +111,18 @@ pub async fn datasets(state: State<'_, AppBackend>) -> Res<Vec<Dataset>> {
 /// Ask the release feed for a newer build. Uses Tauri's signed updater, so a
 /// found update is always installable in place.
 #[tauri::command]
-pub async fn check_update(app: AppHandle, state: State<'_, AppBackend>, pending: State<'_, PendingUpdate>) -> Res<UpdateInfo> {
+pub async fn check_update(
+    app: AppHandle,
+    state: State<'_, AppBackend>,
+    pending: State<'_, PendingUpdate>,
+) -> Res<UpdateInfo> {
     // INTEGRATE: gm-update can add a link-only fallback (installable=false) for builds
     // the signed updater cannot replace, e.g. distro packages.
-    let feed = if state.settings().update_channel == "beta" { BETA_FEED } else { STABLE_FEED };
+    let feed = if state.settings().update_channel == "beta" {
+        BETA_FEED
+    } else {
+        STABLE_FEED
+    };
     let url = tauri::Url::parse(feed).map_err(|e| e.to_string())?;
     let updater = app
         .updater_builder()
@@ -110,7 +130,10 @@ pub async fn check_update(app: AppHandle, state: State<'_, AppBackend>, pending:
         .map_err(|e| e.to_string())?
         .build()
         .map_err(|e| e.to_string())?;
-    let found = updater.check().await.map_err(|e| format!("Could not check for updates: {e}"))?;
+    let found = updater
+        .check()
+        .await
+        .map_err(|e| format!("Could not check for updates: {e}"))?;
     let info = match &found {
         Some(update) => UpdateInfo {
             available: true,
@@ -120,6 +143,8 @@ pub async fn check_update(app: AppHandle, state: State<'_, AppBackend>, pending:
             url: Some("https://github.com/UJESH2K/gradapp/releases/latest".into()),
             published_at: update.date.map(|d| d.to_string()),
             installable: true,
+            reason: None,
+            manifest_url: None,
         },
         None => UpdateInfo {
             available: false,
@@ -129,6 +154,8 @@ pub async fn check_update(app: AppHandle, state: State<'_, AppBackend>, pending:
             url: None,
             published_at: None,
             installable: false,
+            reason: None,
+            manifest_url: None,
         },
     };
     *pending.0.lock().unwrap_or_else(|p| p.into_inner()) = found;
@@ -142,13 +169,22 @@ pub async fn check_update(app: AppHandle, state: State<'_, AppBackend>, pending:
 /// Download and install the pending update, streaming UpdateProgress events.
 /// The UI then offers `restart_app`.
 #[tauri::command]
-pub async fn install_update(app: AppHandle, state: State<'_, AppBackend>, pending: State<'_, PendingUpdate>) -> Res<()> {
+pub async fn install_update(
+    app: AppHandle,
+    state: State<'_, AppBackend>,
+    pending: State<'_, PendingUpdate>,
+) -> Res<()> {
     let taken = pending.0.lock().unwrap_or_else(|p| p.into_inner()).take();
     let update = match taken {
         Some(update) => update,
         None => {
             check_update(app.clone(), state.clone(), pending.clone()).await?;
-            pending.0.lock().unwrap_or_else(|p| p.into_inner()).take().ok_or("GradApp is already up to date.")?
+            pending
+                .0
+                .lock()
+                .unwrap_or_else(|p| p.into_inner())
+                .take()
+                .ok_or("GradApp is already up to date.")?
         }
     };
     let mut downloaded: u64 = 0;
@@ -157,7 +193,10 @@ pub async fn install_update(app: AppHandle, state: State<'_, AppBackend>, pendin
         .download_and_install(
             move |chunk, total| {
                 downloaded += chunk as u64;
-                emit(&progress_app, AppEvent::UpdateProgress { downloaded, total });
+                emit(
+                    &progress_app,
+                    AppEvent::UpdateProgress { downloaded, total },
+                );
             },
             || {},
         )
@@ -178,11 +217,19 @@ pub async fn get_settings(state: State<'_, AppBackend>) -> Res<Settings> {
 }
 
 #[tauri::command]
-pub async fn set_settings(app: AppHandle, state: State<'_, AppBackend>, settings: Settings) -> Res<Settings> {
+pub async fn set_settings(
+    app: AppHandle,
+    state: State<'_, AppBackend>,
+    settings: Settings,
+) -> Res<Settings> {
     let before = state.settings();
     if before.start_at_login != settings.start_at_login {
         let launcher = app.autolaunch();
-        let result = if settings.start_at_login { launcher.enable() } else { launcher.disable() };
+        let result = if settings.start_at_login {
+            launcher.enable()
+        } else {
+            launcher.disable()
+        };
         result.map_err(|e| format!("Could not change start at login: {e}"))?;
     }
     state.save_settings(settings)
@@ -192,7 +239,9 @@ pub async fn set_settings(app: AppHandle, state: State<'_, AppBackend>, settings
 pub async fn open_data_dir(app: AppHandle, state: State<'_, AppBackend>) -> Res<()> {
     let dir = std::path::PathBuf::from(state.settings().data_dir);
     std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
-    app.opener().open_path(dir.to_string_lossy(), None::<&str>).map_err(|e| e.to_string())
+    app.opener()
+        .open_path(dir.to_string_lossy(), None::<&str>)
+        .map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -200,7 +249,9 @@ pub async fn open_url(app: AppHandle, url: String) -> Res<()> {
     if !(url.starts_with("https://") || url.starts_with("http://")) {
         return Err("Only web links can be opened.".into());
     }
-    app.opener().open_url(url, None::<&str>).map_err(|e| e.to_string())
+    app.opener()
+        .open_url(url, None::<&str>)
+        .map_err(|e| e.to_string())
 }
 
 #[tauri::command]

@@ -99,11 +99,15 @@ enum PortsCmd {
 }
 
 fn prefer(cli: &Cli) -> Result<Prefer> {
-    cli.prefer.parse().map_err(|_| anyhow!("unknown --prefer {}", cli.prefer))
+    cli.prefer
+        .parse()
+        .map_err(|_| anyhow!("unknown --prefer {}", cli.prefer))
 }
 
 fn env_root(cli: &Cli) -> PathBuf {
-    cli.ports_dir.clone().unwrap_or_else(gm_ports::default_env_root)
+    cli.ports_dir
+        .clone()
+        .unwrap_or_else(gm_ports::default_env_root)
 }
 
 /// The port id for this machine, or the one given.
@@ -142,15 +146,31 @@ async fn main() -> Result<()> {
     match &cli.cmd {
         Cmd::Version => {
             println!("gmctl {}", gm_types::APP_VERSION);
-            println!("engine {}  protocol {}", gm_types::ENGINE_VERSION, gm_types::MESH_PROTOCOL);
-            println!("platform {}", gm_ports::current_platform().unwrap_or("unsupported"));
+            println!(
+                "engine {}  protocol {}",
+                gm_types::ENGINE_VERSION,
+                gm_types::MESH_PROTOCOL
+            );
+            println!(
+                "platform {}",
+                gm_ports::current_platform().unwrap_or("unsupported")
+            );
         }
         Cmd::Probe { json, host } => {
             let facts = gm_probe::detect();
             let p = prefer(&cli)?;
-            let profile = if *host { gm_probe::host_profile(&facts, p) } else { gm_probe::select_profile(&facts, p) };
+            let profile = if *host {
+                gm_probe::host_profile(&facts, p)
+            } else {
+                gm_probe::select_profile(&facts, p)
+            };
             if *json {
-                println!("{}", serde_json::to_string_pretty(&serde_json::json!({"facts": facts, "profile": profile}))?);
+                println!(
+                    "{}",
+                    serde_json::to_string_pretty(
+                        &serde_json::json!({"facts": facts, "profile": profile})
+                    )?
+                );
             } else {
                 println!("{}", gm_probe::summary(&facts));
                 for g in &facts.gpus {
@@ -164,7 +184,10 @@ async fn main() -> Result<()> {
                         g.memory_mb
                     );
                 }
-                println!("port   {}  ({}, torch {})", profile.port, profile.label, profile.torch);
+                println!(
+                    "port   {}  ({}, torch {})",
+                    profile.port, profile.label, profile.torch
+                );
                 println!("why    {}", profile.reason);
                 for w in &profile.warnings {
                     println!("warn   {w}");
@@ -178,8 +201,15 @@ async fn main() -> Result<()> {
             }
         }
         Cmd::Ports { cmd } => ports(&cli, cmd).await?,
-        Cmd::Discover { seconds, json, manual } => {
-            let opts = gm_net::DiscoverOptions { manual: manual.clone(), ..Default::default() };
+        Cmd::Discover {
+            seconds,
+            json,
+            manual,
+        } => {
+            let opts = gm_net::DiscoverOptions {
+                manual: manual.clone(),
+                ..Default::default()
+            };
             let cancel = opts.cancel.clone();
             let secs = *seconds;
             tokio::spawn(async move {
@@ -189,7 +219,10 @@ async fn main() -> Result<()> {
             let quiet = *json;
             let meshes = gm_net::discover(opts, |e| {
                 if let (false, AppEvent::MeshFound { mesh }) = (quiet, &e) {
-                    eprintln!("  found {} via {:?} ({} nodes)", mesh.coordinator, mesh.source, mesh.nodes_active);
+                    eprintln!(
+                        "  found {} via {:?} ({} nodes)",
+                        mesh.coordinator, mesh.source, mesh.nodes_active
+                    );
                 }
             })
             .await;
@@ -211,9 +244,18 @@ async fn main() -> Result<()> {
                 }
             }
         }
-        Cmd::Join { address, token, name, engine } => join(&cli, address, token.clone(), name.clone(), engine.clone()).await?,
+        Cmd::Join {
+            address,
+            token,
+            name,
+            engine,
+        } => join(&cli, address, token.clone(), name.clone(), engine.clone()).await?,
         Cmd::UpdateCheck { repo, beta } => {
-            let ch = if *beta { gm_update::Channel::Beta } else { gm_update::Channel::Stable };
+            let ch = if *beta {
+                gm_update::Channel::Beta
+            } else {
+                gm_update::Channel::Stable
+            };
             let info = gm_update::check(gm_types::APP_VERSION, repo, ch).await;
             println!("{}", serde_json::to_string_pretty(&info)?);
         }
@@ -229,7 +271,9 @@ async fn ports(cli: &Cli, cmd: &PortsCmd) -> Result<()> {
         PortsCmd::List => {
             let here = gm_ports::current_platform();
             for p in reg.all() {
-                let ok = here.map(|h| p.platforms.iter().any(|x| x == h)).unwrap_or(false);
+                let ok = here
+                    .map(|h| p.platforms.iter().any(|x| x == h))
+                    .unwrap_or(false);
                 println!(
                     "{:<11} {:<5} py{} torch {:<7} {}{}{}",
                     p.id,
@@ -245,20 +289,34 @@ async fn ports(cli: &Cli, cmd: &PortsCmd) -> Result<()> {
         PortsCmd::Plan { port } => {
             let id = pick_port(cli, port.clone())?;
             let spec = reg.require(&id)?;
-            println!("{}", serde_json::to_string_pretty(&gm_ports::plan(spec, &fp))?);
+            println!(
+                "{}",
+                serde_json::to_string_pretty(&gm_ports::plan(spec, &fp))?
+            );
         }
         PortsCmd::Status { port } => {
             let id = pick_port(cli, port.clone())?;
             let spec = reg.require(&id)?;
-            println!("{}", serde_json::to_string_pretty(&gm_ports::status(spec, &root, &fp).await)?);
+            println!(
+                "{}",
+                serde_json::to_string_pretty(&gm_ports::status(spec, &root, &fp).await)?
+            );
         }
-        PortsCmd::Install { port, skip_verify, wheelhouse } => {
+        PortsCmd::Install {
+            port,
+            skip_verify,
+            wheelhouse,
+        } => {
             let id = pick_port(cli, port.clone())?;
             let spec = reg.require(&id)?;
             install(spec, &root, *skip_verify, wheelhouse.clone()).await?;
         }
         PortsCmd::Gc { keep } => {
-            let keep: Vec<String> = if keep.is_empty() { vec![pick_port(cli, None)?] } else { keep.clone() };
+            let keep: Vec<String> = if keep.is_empty() {
+                vec![pick_port(cli, None)?]
+            } else {
+                keep.clone()
+            };
             let refs: Vec<&str> = keep.iter().map(String::as_str).collect();
             for removed in gm_ports::gc(&root, &refs)? {
                 println!("removed {removed}");
@@ -276,7 +334,11 @@ async fn install(
 ) -> Result<gm_types::PortStatus> {
     let uv = gm_ports::uv::ensure(&gm_ports::data_dir()).await?;
     let opts = gm_ports::ProvisionOptions {
-        verify: if skip_verify { VerifyMode::Skip } else { VerifyMode::Backend },
+        verify: if skip_verify {
+            VerifyMode::Skip
+        } else {
+            VerifyMode::Backend
+        },
         wheelhouse,
         ..Default::default()
     };
@@ -293,7 +355,12 @@ async fn install(
     .await?;
     println!("{}", serde_json::to_string_pretty(&status)?);
     if status.state != gm_types::PortState::Ready {
-        bail!("port {} is {:?}: {}", spec.id, status.state, status.message.clone().unwrap_or_default());
+        bail!(
+            "port {} is {:?}: {}",
+            spec.id,
+            status.state,
+            status.message.clone().unwrap_or_default()
+        );
     }
     Ok(status)
 }
@@ -305,11 +372,19 @@ async fn join(
     name: Option<String>,
     engine: Option<PathBuf>,
 ) -> Result<()> {
-    let invite = gm_net::parse_address(address).ok_or_else(|| anyhow!("can't read address {address}"))?;
+    let invite =
+        gm_net::parse_address(address).ok_or_else(|| anyhow!("can't read address {address}"))?;
     let client = gm_net::CoordinatorClient::new(invite.coordinator.clone(), None);
-    let health = client.health().await.with_context(|| format!("no GradMesh coordinator at {}", invite.coordinator))?;
+    let health = client
+        .health()
+        .await
+        .with_context(|| format!("no GradMesh coordinator at {}", invite.coordinator))?;
     if health.protocol != gm_types::MESH_PROTOCOL {
-        eprintln!("warning: mesh speaks protocol {}, this app {}", health.protocol, gm_types::MESH_PROTOCOL);
+        eprintln!(
+            "warning: mesh speaks protocol {}, this app {}",
+            health.protocol,
+            gm_types::MESH_PROTOCOL
+        );
     }
     let token = match token.or(invite.token.clone()) {
         Some(t) => t,
@@ -336,9 +411,13 @@ async fn join(
     if st.state != gm_types::PortState::Ready {
         st = install(spec, &root, false, None).await?;
     }
-    let python = st.python_path.clone().ok_or_else(|| anyhow!("port has no python"))?;
+    let python = st
+        .python_path
+        .clone()
+        .ok_or_else(|| anyhow!("port has no python"))?;
 
-    let mut launch = gm_supervisor::WorkerLaunch::new(python, engine_dir(engine)?, &invite.coordinator, &token);
+    let mut launch =
+        gm_supervisor::WorkerLaunch::new(python, engine_dir(engine)?, &invite.coordinator, &token);
     launch.name = name;
     launch.backend = Some(profile.backend);
     launch.gpu_index = profile.gpu_index;

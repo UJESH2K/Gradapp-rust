@@ -14,8 +14,8 @@ use gm_net::beacon::beacon_packet;
 use gm_net::client::CoordinatorClient;
 use gm_net::join::{shell_script, JoinConfig, JoinInfo, JoinSurface, AGENT_FILES};
 use gm_net::{
-    discover, download, probe_health, read_invite, Beacon, BeaconConfig, CancellationToken, DiscoverOptions, InviteKind,
-    NetError,
+    discover, download, probe_health, read_invite, Beacon, BeaconConfig, CancellationToken,
+    DiscoverOptions, InviteKind, NetError,
 };
 use gm_types::{AppEvent, DiscoverySource};
 use serde_json::{json, Value};
@@ -35,11 +35,16 @@ async fn spawn_on(ip: Ipv4Addr, router: Router) -> SocketAddr {
 }
 
 fn authed(headers: &HeaderMap, token: &Mutex<String>) -> bool {
-    headers.get("x-mesh-token").and_then(|v| v.to_str().ok()) == Some(token.lock().unwrap().as_str())
+    headers.get("x-mesh-token").and_then(|v| v.to_str().ok())
+        == Some(token.lock().unwrap().as_str())
 }
 
 fn unauthorized() -> Response {
-    (StatusCode::UNAUTHORIZED, Json(json!({"detail": "Invalid or missing mesh token"}))).into_response()
+    (
+        StatusCode::UNAUTHORIZED,
+        Json(json!({"detail": "Invalid or missing mesh token"})),
+    )
+        .into_response()
 }
 
 /// A stand-in for the FastAPI coordinator: the routes and auth gm-net uses.
@@ -193,25 +198,45 @@ fn quiet_opts() -> DiscoverOptions {
 async fn probe_reads_health_and_latency() {
     let coord = mock_coordinator("mesh-a").await;
     let client = gm_net::lan_client();
-    let hit = probe_health(&client, "127.0.0.1", coord.port(), Duration::from_secs(1)).await.unwrap();
+    let hit = probe_health(&client, "127.0.0.1", coord.port(), Duration::from_secs(1))
+        .await
+        .unwrap();
     assert_eq!(hit.health.mesh_id, "mesh-a");
     assert_eq!(hit.health.nodes_active, 2);
     assert!(hit.health.torch_ready);
     assert!(hit.latency_ms < 1000);
     // A join port is not a coordinator.
     let join = mock_join("gradapp").await;
-    assert!(probe_health(&client, "127.0.0.1", join.port(), Duration::from_secs(1)).await.is_none());
+    assert!(
+        probe_health(&client, "127.0.0.1", join.port(), Duration::from_secs(1))
+            .await
+            .is_none()
+    );
     // Closed port.
-    let closed = std::net::TcpListener::bind("127.0.0.1:0").unwrap().local_addr().unwrap().port();
-    assert!(probe_health(&client, "127.0.0.1", closed, Duration::from_millis(500)).await.is_none());
+    let closed = std::net::TcpListener::bind("127.0.0.1:0")
+        .unwrap()
+        .local_addr()
+        .unwrap()
+        .port();
+    assert!(
+        probe_health(&client, "127.0.0.1", closed, Duration::from_millis(500))
+            .await
+            .is_none()
+    );
 }
 
 #[tokio::test]
 async fn read_invite_both_kinds() {
     let a = read_invite("127.0.0.1", mock_join("gradapp").await.port()).await;
-    assert_eq!((a.token.as_deref(), a.mesh_name.as_deref(), a.kind), (Some("tok-json"), Some("Lab"), Some(InviteKind::Gradapp)));
+    assert_eq!(
+        (a.token.as_deref(), a.mesh_name.as_deref(), a.kind),
+        (Some("tok-json"), Some("Lab"), Some(InviteKind::Gradapp))
+    );
     let b = read_invite("127.0.0.1", mock_join("dashboard").await.port()).await;
-    assert_eq!((b.token.as_deref(), b.mesh_name, b.kind), (Some("tok-sh"), None, Some(InviteKind::Dashboard)));
+    assert_eq!(
+        (b.token.as_deref(), b.mesh_name, b.kind),
+        (Some("tok-sh"), None, Some(InviteKind::Dashboard))
+    );
     let c = read_invite("127.0.0.1", mock_join("none").await.port()).await;
     assert_eq!((c.token, c.kind), (None, None));
     assert!(c.web.starts_with("http://127.0.0.1:"));
@@ -234,7 +259,11 @@ async fn discover_sweep_manual_dedupe_and_invite() {
     };
     let started = Instant::now();
     let found = discover(opts, move |e| sink.lock().unwrap().push(e)).await;
-    assert!(started.elapsed() < Duration::from_secs(5), "took {:?}", started.elapsed());
+    assert!(
+        started.elapsed() < Duration::from_secs(5),
+        "took {:?}",
+        started.elapsed()
+    );
     assert_eq!(found.len(), 1, "{found:?}");
     let m = &found[0];
     assert_eq!(m.mesh_id, "mesh-d");
@@ -248,9 +277,23 @@ async fn discover_sweep_manual_dedupe_and_invite() {
     assert!(m.latency_ms.is_some());
 
     let events = events.lock().unwrap();
-    assert!(matches!(events.first(), Some(AppEvent::ScanProgress { scanned: 0, total: 40 })));
-    assert!(events.iter().any(|e| matches!(e, AppEvent::ScanProgress { scanned: 40, total: 40 })));
-    assert!(events.iter().any(|e| matches!(e, AppEvent::MeshFound { mesh } if mesh.token.is_some())));
+    assert!(matches!(
+        events.first(),
+        Some(AppEvent::ScanProgress {
+            scanned: 0,
+            total: 40
+        })
+    ));
+    assert!(events.iter().any(|e| matches!(
+        e,
+        AppEvent::ScanProgress {
+            scanned: 40,
+            total: 40
+        }
+    )));
+    assert!(events
+        .iter()
+        .any(|e| matches!(e, AppEvent::MeshFound { mesh } if mesh.token.is_some())));
 }
 
 #[tokio::test]
@@ -268,14 +311,25 @@ async fn sweep_full_slash24_is_fast() {
     let took = started.elapsed();
     assert_eq!(found.len(), 1);
     assert_eq!(found[0].source, DiscoverySource::Sweep);
-    assert!(took < Duration::from_secs(3), "254-host sweep took {took:?}");
+    assert!(
+        took < Duration::from_secs(3),
+        "254-host sweep took {took:?}"
+    );
 }
 
 #[tokio::test]
 async fn manual_gradapp_link_carries_token() {
     let coord = mock_coordinator("mesh-m").await;
-    let link = gm_net::invite_link(&format!("http://127.0.0.1:{}", coord.port()), "from-link", Some("Linked"));
-    let opts = DiscoverOptions { manual: vec![link, "not a host!".into()], web_port: 1, ..quiet_opts() };
+    let link = gm_net::invite_link(
+        &format!("http://127.0.0.1:{}", coord.port()),
+        "from-link",
+        Some("Linked"),
+    );
+    let opts = DiscoverOptions {
+        manual: vec![link, "not a host!".into()],
+        web_port: 1,
+        ..quiet_opts()
+    };
     let found = discover(opts, |_| {}).await;
     assert_eq!(found.len(), 1);
     assert_eq!(found[0].source, DiscoverySource::Manual);
@@ -306,11 +360,19 @@ async fn discover_is_cancellable() {
     let started = Instant::now();
     let found = discover(opts, |_| {}).await;
     assert!(found.is_empty());
-    assert!(started.elapsed() < Duration::from_secs(2), "cancel took {:?}", started.elapsed());
+    assert!(
+        started.elapsed() < Duration::from_secs(2),
+        "cancel took {:?}",
+        started.elapsed()
+    );
 }
 
 fn free_udp_port() -> u16 {
-    std::net::UdpSocket::bind("127.0.0.1:0").unwrap().local_addr().unwrap().port()
+    std::net::UdpSocket::bind("127.0.0.1:0")
+        .unwrap()
+        .local_addr()
+        .unwrap()
+        .port()
 }
 
 /// Beacon → listener round trip. Multicast is not reliably routable inside CI
@@ -321,7 +383,14 @@ async fn beacon_round_trip_on_loopback() {
     let coord = mock_coordinator("mesh-b").await;
     let join = mock_join("gradapp").await;
     let port = free_udp_port();
-    let packet = beacon_packet("mesh-b", Some("Beaconed"), "5.1.1", 2, coord.port(), join.port());
+    let packet = beacon_packet(
+        "mesh-b",
+        Some("Beaconed"),
+        "5.1.1",
+        2,
+        coord.port(),
+        join.port(),
+    );
     let beacon = Beacon::start_with(
         packet,
         BeaconConfig {
@@ -337,7 +406,12 @@ async fn beacon_round_trip_on_loopback() {
     let first = Arc::new(Mutex::new(None::<Duration>));
     let sink = first.clone();
     let started = Instant::now();
-    let opts = DiscoverOptions { beacon: true, beacon_port: port, listen_for: Duration::from_millis(1200), ..quiet_opts() };
+    let opts = DiscoverOptions {
+        beacon: true,
+        beacon_port: port,
+        listen_for: Duration::from_millis(1200),
+        ..quiet_opts()
+    };
     let found = discover(opts, move |e| {
         if matches!(e, AppEvent::MeshFound { .. }) {
             sink.lock().unwrap().get_or_insert(started.elapsed());
@@ -350,7 +424,10 @@ async fn beacon_round_trip_on_loopback() {
     assert_eq!(found[0].web, format!("http://127.0.0.1:{}", join.port()));
     assert_eq!(found[0].token.as_deref(), Some("tok-json"));
     let first = first.lock().unwrap().unwrap();
-    assert!(first < Duration::from_secs(1), "first beacon hit after {first:?}");
+    assert!(
+        first < Duration::from_secs(1),
+        "first beacon hit after {first:?}"
+    );
 
     // Ignoring our own mesh id.
     let opts = DiscoverOptions {
@@ -374,25 +451,43 @@ async fn client_calls() {
     assert_eq!(c.runs().await.unwrap().len(), 2);
     assert_eq!(c.run("r1").await.unwrap()["status"], "running");
     match c.run("nope").await {
-        Err(NetError::Http { status: 404, detail }) => assert_eq!(detail, "Unknown run"),
+        Err(NetError::Http {
+            status: 404,
+            detail,
+        }) => assert_eq!(detail, "Unknown run"),
         other => panic!("{other:?}"),
     }
-    assert_eq!(c.create_run(&json!({"model":"m"})).await.unwrap()["id"], "r3");
+    assert_eq!(
+        c.create_run(&json!({"model":"m"})).await.unwrap()["id"],
+        "r3"
+    );
     match c.create_run(&json!({})).await {
-        Err(NetError::Http { status: 422, detail }) => assert_eq!(detail, "field required; bad epochs"),
+        Err(NetError::Http {
+            status: 422,
+            detail,
+        }) => assert_eq!(detail, "field required; bad epochs"),
         other => panic!("{other:?}"),
     }
     assert_eq!(c.stop_run("r1").await.unwrap()["status"], "stopped");
     assert!(c.datasets().await.unwrap()["datasets"].is_array());
     assert_eq!(c.policy().await.unwrap()["policy"]["min_gflops"], 1.0);
-    assert_eq!(c.put_policy(&json!({"min_gflops": 2.0})).await.unwrap()["policy"]["min_gflops"], 2.0);
+    assert_eq!(
+        c.put_policy(&json!({"min_gflops": 2.0})).await.unwrap()["policy"]["min_gflops"],
+        2.0
+    );
     assert!(matches!(c.run("../etc").await, Err(NetError::Blocked(_))));
-    assert!(matches!(c.call(reqwest::Method::GET, "/register_node", None).await, Err(NetError::Blocked(_))));
+    assert!(matches!(
+        c.call(reqwest::Method::GET, "/register_node", None).await,
+        Err(NetError::Blocked(_))
+    ));
 
     // Events: SSE with replay, keepalive comment skipped.
     use futures::StreamExt;
     let events: Vec<_> = c.events(2).await.unwrap().collect().await;
-    let kinds: Vec<_> = events.iter().map(|e| e.as_ref().unwrap().kind().unwrap().to_string()).collect();
+    let kinds: Vec<_> = events
+        .iter()
+        .map(|e| e.as_ref().unwrap().kind().unwrap().to_string())
+        .collect();
     assert_eq!(kinds, ["run.progress", "run.progress", "stream.ready"]);
 
     // follow_events reconnects (mock closes each time) until cancelled.
@@ -421,7 +516,10 @@ async fn client_calls() {
     assert!(clone.mesh().await.is_ok());
     let stale = CoordinatorClient::new(&base, Some(TOKEN.into()));
     match stale.mesh().await {
-        Err(e) => assert_eq!((e.status(), e.to_string()), (Some(401), "Invalid or missing mesh token".into())),
+        Err(e) => assert_eq!(
+            (e.status(), e.to_string()),
+            (Some(401), "Invalid or missing mesh token".into())
+        ),
         Ok(_) => panic!("stale token accepted"),
     }
     // Nothing listening.
@@ -433,7 +531,11 @@ async fn client_calls() {
 /// would normalise `..` away before sending).
 async fn raw_get(addr: SocketAddr, method: &str, path: &str, host: &str) -> (u16, String, String) {
     let mut s = tokio::net::TcpStream::connect(addr).await.unwrap();
-    s.write_all(format!("{method} {path} HTTP/1.1\r\nHost: {host}\r\nConnection: close\r\n\r\n").as_bytes()).await.unwrap();
+    s.write_all(
+        format!("{method} {path} HTTP/1.1\r\nHost: {host}\r\nConnection: close\r\n\r\n").as_bytes(),
+    )
+    .await
+    .unwrap();
     let mut out = Vec::new();
     s.read_to_end(&mut out).await.unwrap();
     let text = String::from_utf8_lossy(&out).to_string();
@@ -465,28 +567,46 @@ async fn join_surface_routes_and_traversal() {
     });
     cfg.health_upstream = Some(format!("http://127.0.0.1:{}", coord.port()));
     cfg.public_port = Some(3000);
-    let surface = JoinSurface::serve((Ipv4Addr::LOCALHOST, 0).into(), cfg).await.unwrap();
+    let surface = JoinSurface::serve((Ipv4Addr::LOCALHOST, 0).into(), cfg)
+        .await
+        .unwrap();
     let addr = surface.local_addr();
 
     // /gradapp.json: v1 key order; Host header decides the advertised name.
     let (st, head, body) = raw_get(addr, "GET", "/gradapp.json", "10.0.0.7:3000").await;
     assert_eq!(st, 200);
     assert!(head.contains("content-type: application/json"));
-    assert!(head.contains("cache-control: no-store") && head.contains("x-content-type-options: nosniff"));
+    assert!(
+        head.contains("cache-control: no-store")
+            && head.contains("x-content-type-options: nosniff")
+    );
     assert_eq!(
         body,
         r#"{"app":"gradapp","meshName":"Lab","meshId":"mesh-j","version":"2.0.0","coordinator":"http://10.0.0.7:8000","web":"http://10.0.0.7:3000","token":"tok-j","coordinatorPort":8000}"#
     );
     // localhost Host → LAN address.
     let (_, _, body) = raw_get(addr, "GET", "/join.sh", "localhost:3000").await;
-    assert_eq!(body, shell_script("http://192.168.1.20:3000", "http://192.168.1.20:8000", "tok-j", AGENT_FILES));
+    assert_eq!(
+        body,
+        shell_script(
+            "http://192.168.1.20:3000",
+            "http://192.168.1.20:8000",
+            "tok-j",
+            AGENT_FILES
+        )
+    );
     let (st, _, body) = raw_get(addr, "GET", "/join.ps1/", "10.0.0.7").await;
     assert_eq!(st, 200);
-    assert!(body.contains("$MeshToken = 'tok-j'") && body.contains("$MeshWeb = 'http://10.0.0.7:3000'"));
+    assert!(
+        body.contains("$MeshToken = 'tok-j'") && body.contains("$MeshWeb = 'http://10.0.0.7:3000'")
+    );
     let (st, _, body) = raw_get(addr, "GET", "/", "10.0.0.7").await;
     assert_eq!(st, 200);
     assert!(body.contains("irm http://10.0.0.7:3000/join.ps1 | iex"));
-    assert_eq!(raw_get(addr, "GET", "/api/health", "x").await.2, r#"{"status":"ok","app":"gradapp"}"#);
+    assert_eq!(
+        raw_get(addr, "GET", "/api/health", "x").await.2,
+        r#"{"status":"ok","app":"gradapp"}"#
+    );
 
     // Agent files: allowlisted and present → 200 with v1 content types.
     let (st, head, body) = raw_get(addr, "GET", "/api/agent/worker.py", "x").await;
@@ -496,7 +616,10 @@ async fn join_surface_routes_and_traversal() {
     assert_eq!(st, 200);
     assert!(head.contains("content-type: text/plain; charset=utf-8"));
     // Allowlisted but missing → 404 "Missing".
-    assert_eq!(raw_get(addr, "GET", "/api/agent/hardware.py", "x").await.2, "Missing\n");
+    assert_eq!(
+        raw_get(addr, "GET", "/api/agent/hardware.py", "x").await.2,
+        "Missing\n"
+    );
 
     for path in [
         "/api/agent/../../etc/passwd",
@@ -516,7 +639,10 @@ async fn join_surface_routes_and_traversal() {
     ] {
         let (st, _, body) = raw_get(addr, "GET", path, "x").await;
         assert_eq!(st, 404, "{path}");
-        assert!(!body.contains("SECRET") && !body.contains("root:"), "{path}");
+        assert!(
+            !body.contains("SECRET") && !body.contains("root:"),
+            "{path}"
+        );
     }
 
     let (st, _, _) = raw_get(addr, "POST", "/join.sh", "x").await;
@@ -532,16 +658,28 @@ async fn join_surface_routes_and_traversal() {
     // No token yet → 503 everywhere except /health; picked up per request.
     *token.lock().unwrap() = None;
     assert_eq!(raw_get(addr, "GET", "/gradapp.json", "x").await.0, 503);
-    assert_eq!(raw_get(addr, "GET", "/api/agent/worker.py", "x").await.0, 503);
+    assert_eq!(
+        raw_get(addr, "GET", "/api/agent/worker.py", "x").await.0,
+        503
+    );
     *token.lock().unwrap() = Some("tok-new".into());
-    assert!(raw_get(addr, "GET", "/gradapp.json", "x").await.2.contains("tok-new"));
+    assert!(raw_get(addr, "GET", "/gradapp.json", "x")
+        .await
+        .2
+        .contains("tok-new"));
 
     // read_invite against the real surface (both routes).
     let inv = read_invite("127.0.0.1", addr.port()).await;
-    assert_eq!((inv.token.as_deref(), inv.kind), (Some("tok-new"), Some(InviteKind::Gradapp)));
+    assert_eq!(
+        (inv.token.as_deref(), inv.kind),
+        (Some("tok-new"), Some(InviteKind::Gradapp))
+    );
 
     surface.shutdown().await.unwrap();
-    assert!(tokio::net::TcpStream::connect(addr).await.is_err(), "port still open after shutdown");
+    assert!(
+        tokio::net::TcpStream::connect(addr).await.is_err(),
+        "port still open after shutdown"
+    );
 }
 
 #[tokio::test]
@@ -551,23 +689,42 @@ async fn download_streams_with_progress() {
     let server = spawn(
         Router::new()
             .route("/file.bin", get(move || async move { p.as_ref().clone() }))
-            .route("/redirect", get(|| async { axum::response::Redirect::temporary("/file.bin") })),
+            .route(
+                "/redirect",
+                get(|| async { axum::response::Redirect::temporary("/file.bin") }),
+            ),
     )
     .await;
     let dir = tempfile::tempdir().unwrap();
     let target = dir.path().join("nested/dir/file.bin");
     let mut calls = Vec::new();
-    let n = download(&format!("http://127.0.0.1:{}/redirect", server.port()), &target, |got, total| calls.push((got, total)))
-        .await
-        .unwrap();
+    let n = download(
+        &format!("http://127.0.0.1:{}/redirect", server.port()),
+        &target,
+        |got, total| calls.push((got, total)),
+    )
+    .await
+    .unwrap();
     assert_eq!(n, payload.len() as u64);
     assert_eq!(std::fs::read(&target).unwrap(), *payload);
     assert!(!dir.path().join("nested/dir/file.bin.part").exists());
-    assert!(calls.windows(2).all(|w| w[0].0 < w[1].0), "progress is monotonic");
-    assert_eq!(calls.last().unwrap(), &(payload.len() as u64, Some(payload.len() as u64)));
+    assert!(
+        calls.windows(2).all(|w| w[0].0 < w[1].0),
+        "progress is monotonic"
+    );
+    assert_eq!(
+        calls.last().unwrap(),
+        &(payload.len() as u64, Some(payload.len() as u64))
+    );
 
     let missing = dir.path().join("missing.bin");
-    let err = download(&format!("http://127.0.0.1:{}/nope", server.port()), &missing, |_, _| {}).await.unwrap_err();
+    let err = download(
+        &format!("http://127.0.0.1:{}/nope", server.port()),
+        &missing,
+        |_, _| {},
+    )
+    .await
+    .unwrap_err();
     assert_eq!(err.status(), Some(404));
     assert!(!missing.exists());
 }
@@ -586,21 +743,41 @@ async fn beacon_query_over_multicast() {
     let coord = mock_coordinator_on(Ipv4Addr::UNSPECIFIED, "mesh-q").await;
     let port = free_udp_port();
     let packet = beacon_packet("mesh-q", None, "5.1.1", 0, coord.port(), 1);
-    let _beacon = Beacon::start_with(packet, BeaconConfig { interval: Duration::from_secs(60), port, ..BeaconConfig::default() });
+    let _beacon = Beacon::start_with(
+        packet,
+        BeaconConfig {
+            interval: Duration::from_secs(60),
+            port,
+            ..BeaconConfig::default()
+        },
+    );
     // Let the first (immediate) tick pass so only the query can find it.
     tokio::time::sleep(Duration::from_millis(300)).await;
     let started = Instant::now();
-    let opts = DiscoverOptions { beacon: true, beacon_port: port, listen_for: Duration::from_millis(1000), ..quiet_opts() };
+    let opts = DiscoverOptions {
+        beacon: true,
+        beacon_port: port,
+        listen_for: Duration::from_millis(1000),
+        ..quiet_opts()
+    };
     let first = Arc::new(Mutex::new(None::<Duration>));
     let sink = first.clone();
     let found = discover(opts, move |_| {
         sink.lock().unwrap().get_or_insert(started.elapsed());
     })
     .await;
-    assert_eq!(found.len(), 1, "no beacon over multicast/broadcast after {:?}", started.elapsed());
+    assert_eq!(
+        found.len(),
+        1,
+        "no beacon over multicast/broadcast after {:?}",
+        started.elapsed()
+    );
     assert_eq!(found[0].source, DiscoverySource::Beacon);
     let first = first.lock().unwrap().unwrap();
-    assert!(first < Duration::from_millis(500), "query answered after {first:?}");
+    assert!(
+        first < Duration::from_millis(500),
+        "query answered after {first:?}"
+    );
 }
 
 /// Against a real Python coordinator (desktop/engine `uvicorn coordinator.app:app`):
@@ -621,7 +798,10 @@ async fn live_coordinator() {
     assert!(c.policy().await.unwrap()["policy"].is_object());
     assert!(c.put_policy(&json!({})).await.is_ok());
     match c.put_policy(&json!({"no_such_key": 1.0})).await {
-        Err(NetError::Http { status: 400, detail }) => assert!(detail.contains("no_such_key")),
+        Err(NetError::Http {
+            status: 400,
+            detail,
+        }) => assert!(detail.contains("no_such_key")),
         other => panic!("{other:?}"),
     }
     // SSE: replay then stream.ready.
@@ -644,7 +824,12 @@ async fn live_coordinator() {
 
     // mDNS: the coordinator registers gradmesh.local and _gradmesh._tcp.
     let started = Instant::now();
-    let opts = DiscoverOptions { mdns: true, coordinator_port: port, listen_for: Duration::from_millis(2000), ..quiet_opts() };
+    let opts = DiscoverOptions {
+        mdns: true,
+        coordinator_port: port,
+        listen_for: Duration::from_millis(2000),
+        ..quiet_opts()
+    };
     let first = Arc::new(Mutex::new(None::<Duration>));
     let sink = first.clone();
     let found = discover(opts, move |_| {
@@ -658,12 +843,27 @@ async fn live_coordinator() {
 
     // Everything at once, defaults (real /24 sweep of this machine's LAN).
     let started = Instant::now();
-    let found = discover(DiscoverOptions { coordinator_port: port, ..DiscoverOptions::default() }, |e| {
-        if let AppEvent::MeshFound { mesh } = e {
-            eprintln!("{:?}: {:?} via {:?}", started.elapsed(), mesh.hostname, mesh.source);
-        }
-    })
+    let found = discover(
+        DiscoverOptions {
+            coordinator_port: port,
+            ..DiscoverOptions::default()
+        },
+        |e| {
+            if let AppEvent::MeshFound { mesh } = e {
+                eprintln!(
+                    "{:?}: {:?} via {:?}",
+                    started.elapsed(),
+                    mesh.hostname,
+                    mesh.source
+                );
+            }
+        },
+    )
     .await;
-    eprintln!("full discovery: {} mesh(es) in {:?}", found.len(), started.elapsed());
+    eprintln!(
+        "full discovery: {} mesh(es) in {:?}",
+        found.len(),
+        started.elapsed()
+    );
     assert!(found.iter().any(|m| m.mesh_id == health.mesh_id));
 }

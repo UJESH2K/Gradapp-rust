@@ -5,7 +5,9 @@
 //! are what `app/ui/js/api.js` (and its mock) already expect, so moving them is
 //! a pure relocation. See docs/devlog/app.md, "gm-types change requests".
 
-use gm_types::{Backend, DeviceFacts, Invite, PortSpec, PortStatus, ProcStatus, Profile, UpdateInfo};
+use gm_types::{
+    Backend, DeviceFacts, Invite, PortSpec, PortStatus, ProcStatus, Profile, UpdateInfo,
+};
 use serde::{Deserialize, Serialize};
 
 /// `get_device`: the probe's facts and the port it selected.
@@ -176,7 +178,9 @@ impl Default for Settings {
             auto_rejoin: true,
             notifications: true,
             update_channel: "stable".into(),
-            data_dir: crate::backend::default_data_dir().to_string_lossy().into_owned(),
+            data_dir: crate::backend::default_data_dir()
+                .to_string_lossy()
+                .into_owned(),
             preferred_backend: None,
             last_invite: None,
         }

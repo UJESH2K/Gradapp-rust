@@ -17,7 +17,10 @@ pub struct AddressDefaults {
 
 impl Default for AddressDefaults {
     fn default() -> Self {
-        Self { port: COORDINATOR_PORT, web_port: WEB_PORT }
+        Self {
+            port: COORDINATOR_PORT,
+            web_port: WEB_PORT,
+        }
     }
 }
 
@@ -42,7 +45,11 @@ pub fn parse_address_with(text: &str, defaults: AddressDefaults) -> Option<Invit
         // v1: text.replace(/^gradapp:\/*/i, "gradapp://")
         let rest = text["gradapp:".len()..].trim_start_matches('/');
         let url = Url::parse(&format!("gradapp://{rest}")).ok()?;
-        let param = |key: &str| url.query_pairs().find(|(k, _)| k == key).map(|(_, v)| v.into_owned());
+        let param = |key: &str| {
+            url.query_pairs()
+                .find(|(k, _)| k == key)
+                .map(|(_, v)| v.into_owned())
+        };
         let server = param("server").filter(|s| !s.is_empty())?;
         let parsed = parse_address_with(&server, defaults)?;
         return Some(Invite {
@@ -51,7 +58,11 @@ pub fn parse_address_with(text: &str, defaults: AddressDefaults) -> Option<Invit
             ..parsed
         });
     }
-    let candidate = if has_scheme(text) { text.to_string() } else { format!("http://{text}") };
+    let candidate = if has_scheme(text) {
+        text.to_string()
+    } else {
+        format!("http://{text}")
+    };
     let url = Url::parse(&candidate).ok()?;
     let hostname = url.host_str().unwrap_or("").to_string();
     let given = url.port().filter(|p| *p != 0);
@@ -69,7 +80,8 @@ pub fn parse_address_with(text: &str, defaults: AddressDefaults) -> Option<Invit
 }
 
 fn starts_with_ignore_case(text: &str, prefix: &str) -> bool {
-    text.len() >= prefix.len() && text.as_bytes()[..prefix.len()].eq_ignore_ascii_case(prefix.as_bytes())
+    text.len() >= prefix.len()
+        && text.as_bytes()[..prefix.len()].eq_ignore_ascii_case(prefix.as_bytes())
 }
 
 /// v1: /^[a-z]+:\/\//i
@@ -79,8 +91,16 @@ fn has_scheme(text: &str) -> bool {
 }
 
 /// JavaScript's `encodeURIComponent` set: everything but A-Z a-z 0-9 - _ . ! ~ * ' ( ).
-const URI_COMPONENT: &AsciiSet =
-    &NON_ALPHANUMERIC.remove(b'-').remove(b'_').remove(b'.').remove(b'!').remove(b'~').remove(b'*').remove(b'\'').remove(b'(').remove(b')');
+const URI_COMPONENT: &AsciiSet = &NON_ALPHANUMERIC
+    .remove(b'-')
+    .remove(b'_')
+    .remove(b'.')
+    .remove(b'!')
+    .remove(b'~')
+    .remove(b'*')
+    .remove(b'\'')
+    .remove(b'(')
+    .remove(b')');
 
 /// `encodeURIComponent`.
 pub fn encode_uri_component(value: &str) -> String {
@@ -112,35 +132,125 @@ mod tests {
 
     #[test]
     fn plain_ip_and_hostnames() {
-        assert_eq!(p("192.168.1.20"), triple("192.168.1.20", "http://192.168.1.20:8000", "http://192.168.1.20:3000"));
-        assert_eq!(p("  192.168.1.20 \n"), triple("192.168.1.20", "http://192.168.1.20:8000", "http://192.168.1.20:3000"));
-        assert_eq!(p("gradmesh.local"), triple("gradmesh.local", "http://gradmesh.local:8000", "http://gradmesh.local:3000"));
+        assert_eq!(
+            p("192.168.1.20"),
+            triple(
+                "192.168.1.20",
+                "http://192.168.1.20:8000",
+                "http://192.168.1.20:3000"
+            )
+        );
+        assert_eq!(
+            p("  192.168.1.20 \n"),
+            triple(
+                "192.168.1.20",
+                "http://192.168.1.20:8000",
+                "http://192.168.1.20:3000"
+            )
+        );
+        assert_eq!(
+            p("gradmesh.local"),
+            triple(
+                "gradmesh.local",
+                "http://gradmesh.local:8000",
+                "http://gradmesh.local:3000"
+            )
+        );
         // WHATWG lowercases hostnames of special schemes.
-        assert_eq!(p("GradMesh.Local"), triple("gradmesh.local", "http://gradmesh.local:8000", "http://gradmesh.local:3000"));
-        assert_eq!(p("localhost"), triple("localhost", "http://localhost:8000", "http://localhost:3000"));
+        assert_eq!(
+            p("GradMesh.Local"),
+            triple(
+                "gradmesh.local",
+                "http://gradmesh.local:8000",
+                "http://gradmesh.local:3000"
+            )
+        );
+        assert_eq!(
+            p("localhost"),
+            triple(
+                "localhost",
+                "http://localhost:8000",
+                "http://localhost:3000"
+            )
+        );
     }
 
     #[test]
     fn ports() {
         // Dashboard port → coordinator on the default port.
-        assert_eq!(p("http://192.168.1.20:3000"), triple("192.168.1.20", "http://192.168.1.20:8000", "http://192.168.1.20:3000"));
-        assert_eq!(p("192.168.1.20:3000"), triple("192.168.1.20", "http://192.168.1.20:8000", "http://192.168.1.20:3000"));
-        assert_eq!(p("http://192.168.1.20:8000"), triple("192.168.1.20", "http://192.168.1.20:8000", "http://192.168.1.20:3000"));
+        assert_eq!(
+            p("http://192.168.1.20:3000"),
+            triple(
+                "192.168.1.20",
+                "http://192.168.1.20:8000",
+                "http://192.168.1.20:3000"
+            )
+        );
+        assert_eq!(
+            p("192.168.1.20:3000"),
+            triple(
+                "192.168.1.20",
+                "http://192.168.1.20:8000",
+                "http://192.168.1.20:3000"
+            )
+        );
+        assert_eq!(
+            p("http://192.168.1.20:8000"),
+            triple(
+                "192.168.1.20",
+                "http://192.168.1.20:8000",
+                "http://192.168.1.20:3000"
+            )
+        );
         // Any other port is the coordinator's.
-        assert_eq!(p("192.168.1.20:9000"), triple("192.168.1.20", "http://192.168.1.20:9000", "http://192.168.1.20:3000"));
+        assert_eq!(
+            p("192.168.1.20:9000"),
+            triple(
+                "192.168.1.20",
+                "http://192.168.1.20:9000",
+                "http://192.168.1.20:3000"
+            )
+        );
         // :80 is http's default, so WHATWG drops it → default port.
-        assert_eq!(p("http://10.0.0.2:80"), triple("10.0.0.2", "http://10.0.0.2:8000", "http://10.0.0.2:3000"));
+        assert_eq!(
+            p("http://10.0.0.2:80"),
+            triple("10.0.0.2", "http://10.0.0.2:8000", "http://10.0.0.2:3000")
+        );
         // https default 443 dropped too; a path is ignored.
-        assert_eq!(p("https://mesh.example:443/join?x=1"), triple("mesh.example", "http://mesh.example:8000", "http://mesh.example:3000"));
-        assert_eq!(p("https://mesh.example:8443/"), triple("mesh.example", "http://mesh.example:8443", "http://mesh.example:3000"));
-        let custom = parse_address_with("h:3100", AddressDefaults { port: 8100, web_port: 3100 }).unwrap();
+        assert_eq!(
+            p("https://mesh.example:443/join?x=1"),
+            triple(
+                "mesh.example",
+                "http://mesh.example:8000",
+                "http://mesh.example:3000"
+            )
+        );
+        assert_eq!(
+            p("https://mesh.example:8443/"),
+            triple(
+                "mesh.example",
+                "http://mesh.example:8443",
+                "http://mesh.example:3000"
+            )
+        );
+        let custom = parse_address_with(
+            "h:3100",
+            AddressDefaults {
+                port: 8100,
+                web_port: 3100,
+            },
+        )
+        .unwrap();
         assert_eq!(custom.coordinator, "http://h:8100");
         assert_eq!(custom.web, "http://h:3100");
     }
 
     #[test]
     fn ipv6_and_rejects() {
-        assert_eq!(p("[::1]:8000"), triple("[::1]", "http://[::1]:8000", "http://[::1]:3000"));
+        assert_eq!(
+            p("[::1]:8000"),
+            triple("[::1]", "http://[::1]:8000", "http://[::1]:3000")
+        );
         assert_eq!(p(""), None);
         assert_eq!(p("   "), None);
         assert_eq!(p("host:notaport"), None);
@@ -151,7 +261,8 @@ mod tests {
 
     #[test]
     fn gradapp_links() {
-        let link = "gradapp://join?server=http%3A%2F%2F192.168.1.20%3A8000&token=abc%2B1&name=Lab%20Mesh";
+        let link =
+            "gradapp://join?server=http%3A%2F%2F192.168.1.20%3A8000&token=abc%2B1&name=Lab%20Mesh";
         let i = parse_address(link).unwrap();
         assert_eq!(i.hostname, "192.168.1.20");
         assert_eq!(i.coordinator, "http://192.168.1.20:8000");
@@ -171,7 +282,10 @@ mod tests {
 
         assert_eq!(parse_address("gradapp://join?token=x"), None);
         assert_eq!(parse_address("gradapp://join?server=&token=x"), None);
-        assert_eq!(parse_address("gradapp://join?server=bad%20host&token=x"), None);
+        assert_eq!(
+            parse_address("gradapp://join?server=bad%20host&token=x"),
+            None
+        );
     }
 
     #[test]

@@ -33,7 +33,8 @@ pub fn parse_beacon(bytes: &[u8]) -> Option<BeaconPacket> {
         return None;
     }
     let packet: BeaconPacket = serde_json::from_slice(bytes).ok()?;
-    (packet.magic == BEACON_MAGIC && !packet.mesh_id.is_empty() && packet.coordinator_port != 0).then_some(packet)
+    (packet.magic == BEACON_MAGIC && !packet.mesh_id.is_empty() && packet.coordinator_port != 0)
+        .then_some(packet)
 }
 
 /// Build a packet with the magic filled in.
@@ -67,7 +68,9 @@ pub fn bind_beacon_listener(port: u16, group: Ipv4Addr) -> io::Result<UdpSocket>
     socket.set_reuse_port(true)?;
     socket.set_nonblocking(true)?;
     socket.bind(&SocketAddrV4::new(Ipv4Addr::UNSPECIFIED, port).into())?;
-    let mut joined = socket.join_multicast_v4(&group, &Ipv4Addr::UNSPECIFIED).is_ok();
+    let mut joined = socket
+        .join_multicast_v4(&group, &Ipv4Addr::UNSPECIFIED)
+        .is_ok();
     for lan in lan_addresses() {
         joined |= socket.join_multicast_v4(&group, &lan.address).is_ok();
     }
@@ -120,14 +123,24 @@ impl Beacon {
     /// Multicast `packet` every `interval` on every real LAN interface and to
     /// the broadcast address. Must be called inside a Tokio runtime.
     pub fn start(packet: BeaconPacket, interval: Duration) -> Self {
-        Self::start_with(packet, BeaconConfig { interval, ..BeaconConfig::default() })
+        Self::start_with(
+            packet,
+            BeaconConfig {
+                interval,
+                ..BeaconConfig::default()
+            },
+        )
     }
 
     pub fn start_with(packet: BeaconPacket, config: BeaconConfig) -> Self {
         let cancel = CancellationToken::new();
         let (tx, rx) = watch::channel(packet);
         let task = tokio::spawn(run_beacon(config, rx, cancel.clone()));
-        Self { cancel, packet: tx, task: Some(task) }
+        Self {
+            cancel,
+            packet: tx,
+            task: Some(task),
+        }
     }
 
     /// Change what is announced (e.g. `nodes_active`); sent immediately.
@@ -164,17 +177,26 @@ fn sender_socket(bind: Ipv4Addr, multicast_if: Option<Ipv4Addr>) -> io::Result<U
 }
 
 fn directed_broadcast(lan: &LanAddress) -> Option<Ipv4Addr> {
-    (lan.prefix <= 30).then(|| Ipv4Addr::from(u32::from(lan.address) | !(u32::MAX << (32 - lan.prefix as u32))))
+    (lan.prefix <= 30)
+        .then(|| Ipv4Addr::from(u32::from(lan.address) | !(u32::MAX << (32 - lan.prefix as u32))))
 }
 
-async fn run_beacon(config: BeaconConfig, mut packet: watch::Receiver<BeaconPacket>, cancel: CancellationToken) {
+async fn run_beacon(
+    config: BeaconConfig,
+    mut packet: watch::Receiver<BeaconPacket>,
+    cancel: CancellationToken,
+) {
     let mut per_iface: HashMap<Ipv4Addr, UdpSocket> = HashMap::new();
     let any = sender_socket(Ipv4Addr::UNSPECIFIED, None).ok();
     let mut ticker = tokio::time::interval(config.interval.max(Duration::from_millis(50)));
     ticker.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Delay);
     let mut warned = false;
     // Hear queries so a scanning peer finds us at once, not at the next tick.
-    let queries = if config.answer_queries { bind_beacon_listener(config.port, config.group).ok() } else { None };
+    let queries = if config.answer_queries {
+        bind_beacon_listener(config.port, config.group).ok()
+    } else {
+        None
+    };
     let mut buf = [0u8; 256];
     let mut last_sent: Option<tokio::time::Instant> = None;
     loop {
@@ -198,7 +220,10 @@ async fn run_beacon(config: BeaconConfig, mut packet: watch::Receiver<BeaconPack
             Err(_) => continue,
         };
         let lans: Vec<LanAddress> = if config.multicast || config.broadcast {
-            lan_addresses().into_iter().filter(|a| !a.is_virtual).collect()
+            lan_addresses()
+                .into_iter()
+                .filter(|a| !a.is_virtual)
+                .collect()
         } else {
             Vec::new()
         };
@@ -213,21 +238,31 @@ async fn run_beacon(config: BeaconConfig, mut packet: watch::Receiver<BeaconPack
                     Err(e) => errors.push(format!("{}: {e}", lan.name)),
                 }
             }
-            let Some(socket) = per_iface.get(&lan.address) else { continue };
+            let Some(socket) = per_iface.get(&lan.address) else {
+                continue;
+            };
             if config.multicast {
-                if let Err(e) = socket.send_to(&bytes, SocketAddrV4::new(config.group, config.port)).await {
+                if let Err(e) = socket
+                    .send_to(&bytes, SocketAddrV4::new(config.group, config.port))
+                    .await
+                {
                     errors.push(format!("multicast {}: {e}", lan.name));
                 }
             }
             if config.broadcast {
                 if let Some(bcast) = directed_broadcast(lan) {
-                    let _ = socket.send_to(&bytes, SocketAddrV4::new(bcast, config.port)).await;
+                    let _ = socket
+                        .send_to(&bytes, SocketAddrV4::new(bcast, config.port))
+                        .await;
                 }
             }
         }
         if let Some(any) = &any {
             if config.broadcast {
-                if let Err(e) = any.send_to(&bytes, SocketAddrV4::new(Ipv4Addr::BROADCAST, config.port)).await {
+                if let Err(e) = any
+                    .send_to(&bytes, SocketAddrV4::new(Ipv4Addr::BROADCAST, config.port))
+                    .await
+                {
                     errors.push(format!("broadcast: {e}"));
                 }
             }
@@ -269,6 +304,9 @@ mod tests {
             prefix: 24,
             is_virtual: false,
         };
-        assert_eq!(directed_broadcast(&lan), Some(Ipv4Addr::new(192, 168, 1, 255)));
+        assert_eq!(
+            directed_broadcast(&lan),
+            Some(Ipv4Addr::new(192, 168, 1, 255))
+        );
     }
 }

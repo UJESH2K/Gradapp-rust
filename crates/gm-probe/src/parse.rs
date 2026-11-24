@@ -45,11 +45,17 @@ fn is_digits(s: &str) -> bool {
 /// Vendor from a marketing or PCI name. hardware.py `_vendor_from_name`.
 pub fn vendor_from_name(name: &str) -> Vendor {
     let lowered = name.to_lowercase();
-    if ["nvidia", "geforce", "quadro", "tesla", "rtx "].iter().any(|t| lowered.contains(t)) {
+    if ["nvidia", "geforce", "quadro", "tesla", "rtx "]
+        .iter()
+        .any(|t| lowered.contains(t))
+    {
         Vendor::Nvidia
     } else if lowered.contains("intel") || lowered.contains(" arc") {
         Vendor::Intel
-    } else if ["amd", "radeon", "advanced micro devices"].iter().any(|t| lowered.contains(t)) {
+    } else if ["amd", "radeon", "advanced micro devices"]
+        .iter()
+        .any(|t| lowered.contains(t))
+    {
         Vendor::Amd
     } else if lowered.contains("apple") {
         Vendor::Apple
@@ -123,8 +129,14 @@ pub fn parse_nvidia_smi(text: &str, with_capability: bool) -> Vec<Gpu> {
         };
         let fallback_index = gpus.len() as u32;
         let mut gpu = new_gpu(Vendor::Nvidia, name, 0);
-        gpu.index = if is_digits(index) { index.parse().unwrap_or(fallback_index) } else { fallback_index };
-        gpu.compute_capability = py_float(capability).filter(|c| c.is_finite()).map(|c| c as f32);
+        gpu.index = if is_digits(index) {
+            index.parse().unwrap_or(fallback_index)
+        } else {
+            fallback_index
+        };
+        gpu.compute_capability = py_float(capability)
+            .filter(|c| c.is_finite())
+            .map(|c| c as f32);
         gpu.driver = (!driver.is_empty()).then(|| driver.to_string());
         gpu.memory_mb = memory_mb;
         gpus.push(gpu);
@@ -173,7 +185,9 @@ fn json_str(value: &Value, key: &str) -> Option<String> {
 
 fn json_u64(value: &Value, key: &str) -> Option<u64> {
     match value.get(key)? {
-        Value::Number(n) => n.as_u64().or_else(|| n.as_f64().filter(|f| *f >= 0.0).map(|f| f as u64)),
+        Value::Number(n) => n
+            .as_u64()
+            .or_else(|| n.as_f64().filter(|f| *f >= 0.0).map(|f| f as u64)),
         Value::String(s) => s.trim().parse().ok(),
         _ => None,
     }
@@ -187,11 +201,15 @@ fn video_controllers(data: &Value) -> Vec<Gpu> {
     };
     let mut gpus = Vec::new();
     for (index, entry) in entries.into_iter().enumerate() {
-        let Some(name) = json_str(entry, "Name") else { continue };
+        let Some(name) = json_str(entry, "Name") else {
+            continue;
+        };
         let mut gpu = new_gpu(vendor_from_name(&name), &name, index as u32);
         gpu.driver = json_str(entry, "DriverVersion");
         // AdapterRAM is a uint32, so it saturates at 4 GB on bigger cards.
-        gpu.memory_mb = json_u64(entry, "AdapterRAM").filter(|b| *b > 0).map(|b| b / (1024 * 1024));
+        gpu.memory_mb = json_u64(entry, "AdapterRAM")
+            .filter(|b| *b > 0)
+            .map(|b| b / (1024 * 1024));
         gpus.push(gpu);
     }
     gpus
@@ -203,7 +221,9 @@ fn video_controllers(data: &Value) -> Vec<Gpu> {
 /// several; both are accepted. `index` is the position in the CIM list, as in
 /// hardware.py. Unparseable output yields no GPUs.
 pub fn parse_win32_video_controllers(json: &str) -> Vec<Gpu> {
-    serde_json::from_str::<Value>(strip_bom(json)).map(|v| video_controllers(&v)).unwrap_or_default()
+    serde_json::from_str::<Value>(strip_bom(json))
+        .map(|v| video_controllers(&v))
+        .unwrap_or_default()
 }
 
 /// Parses the output of [`WINDOWS_INVENTORY_SCRIPT`].
@@ -228,7 +248,8 @@ pub fn parse_windows_inventory(json: &str) -> Option<WindowsInventory> {
 fn lspci_class_re() -> &'static Regex {
     static RE: OnceLock<Regex> = OnceLock::new();
     RE.get_or_init(|| {
-        Regex::new(r#""(VGA compatible controller|3D controller|Display controller)""#).expect("static regex")
+        Regex::new(r#""(VGA compatible controller|3D controller|Display controller)""#)
+            .expect("static regex")
     })
 }
 
@@ -246,8 +267,15 @@ pub fn parse_lspci_mm(text: &str) -> Vec<Gpu> {
         if !lspci_class_re().is_match(line) {
             continue;
         }
-        let fields: Vec<&str> = quoted_re().captures_iter(line).map(|c| c.get(1).map_or("", |m| m.as_str())).collect();
-        let name = if fields.len() >= 3 { fields[1..3].join(" ") } else { line.to_string() };
+        let fields: Vec<&str> = quoted_re()
+            .captures_iter(line)
+            .map(|c| c.get(1).map_or("", |m| m.as_str()))
+            .collect();
+        let name = if fields.len() >= 3 {
+            fields[1..3].join(" ")
+        } else {
+            line.to_string()
+        };
         let index = gpus.len() as u32;
         gpus.push(new_gpu(vendor_from_name(&name), name.trim(), index));
     }
@@ -290,7 +318,11 @@ pub fn parse_drm_cards(entries: &[(String, String)]) -> Vec<Gpu> {
         .enumerate()
         .map(|(index, (card, id))| {
             let vendor = pci_vendor(id);
-            new_gpu(vendor, &format!("{} GPU ({})", vendor_word(vendor), card), index as u32)
+            new_gpu(
+                vendor,
+                &format!("{} GPU ({})", vendor_word(vendor), card),
+                index as u32,
+            )
         })
         .collect()
 }
@@ -312,13 +344,19 @@ pub fn parse_cpuinfo(text: &str) -> (Option<String>, Option<u32>) {
     let mut fallback = None;
     let mut count = 0u32;
     for line in text.lines() {
-        let Some((key, value)) = line.split_once(':') else { continue };
+        let Some((key, value)) = line.split_once(':') else {
+            continue;
+        };
         let key = key.trim();
         let value = value.trim();
         match key {
             "processor" => count += 1,
-            "model name" | "cpu model" if model.is_none() && !value.is_empty() => model = Some(value.to_string()),
-            "Hardware" | "Model" if fallback.is_none() && !value.is_empty() => fallback = Some(value.to_string()),
+            "model name" | "cpu model" if model.is_none() && !value.is_empty() => {
+                model = Some(value.to_string())
+            }
+            "Hardware" | "Model" if fallback.is_none() && !value.is_empty() => {
+                fallback = Some(value.to_string())
+            }
             _ => {}
         }
     }
@@ -364,18 +402,26 @@ pub struct SysctlFacts {
 /// The sysctl invocation [`parse_sysctl`] expects. Names are printed as
 /// `name: value` (no `-n`) so a name an older or Intel macOS does not know
 /// (it prints an error and exits non-zero) cannot shift the others.
-pub const SYSCTL_NAMES: [&str; 4] =
-    ["hw.memsize", "machdep.cpu.brand_string", "sysctl.proc_translated", "hw.optional.arm64"];
+pub const SYSCTL_NAMES: [&str; 4] = [
+    "hw.memsize",
+    "machdep.cpu.brand_string",
+    "sysctl.proc_translated",
+    "hw.optional.arm64",
+];
 
 /// Parses `sysctl hw.memsize machdep.cpu.brand_string sysctl.proc_translated hw.optional.arm64`.
 pub fn parse_sysctl(text: &str) -> SysctlFacts {
     let mut facts = SysctlFacts::default();
     for line in text.lines() {
-        let Some((key, value)) = line.split_once(':') else { continue };
+        let Some((key, value)) = line.split_once(':') else {
+            continue;
+        };
         let value = value.trim();
         match key.trim() {
             "hw.memsize" => facts.memsize = value.parse().ok(),
-            "machdep.cpu.brand_string" if !value.is_empty() => facts.brand = Some(value.to_string()),
+            "machdep.cpu.brand_string" if !value.is_empty() => {
+                facts.brand = Some(value.to_string())
+            }
             "sysctl.proc_translated" => facts.translated = value == "1",
             "hw.optional.arm64" => facts.arm64 = value == "1",
             _ => {}
@@ -404,11 +450,17 @@ pub fn apple_gpu_name(name: &str, cores: Option<u32>) -> String {
 /// (`ram_mb`) as their memory. Other GPUs (Intel Macs) keep their name and
 /// vendor. An empty result means "use [`apple_fallback_gpus`]".
 pub fn parse_system_profiler(json: &str, ram_mb: Option<u64>) -> Vec<Gpu> {
-    let Ok(data) = serde_json::from_str::<Value>(strip_bom(json)) else { return Vec::new() };
-    let Some(entries) = data.get("SPDisplaysDataType").and_then(Value::as_array) else { return Vec::new() };
+    let Ok(data) = serde_json::from_str::<Value>(strip_bom(json)) else {
+        return Vec::new();
+    };
+    let Some(entries) = data.get("SPDisplaysDataType").and_then(Value::as_array) else {
+        return Vec::new();
+    };
     let mut gpus = Vec::new();
     for (index, entry) in entries.iter().enumerate() {
-        let name = json_str(entry, "sppci_model").or_else(|| json_str(entry, "_name")).unwrap_or_else(|| "Apple GPU".into());
+        let name = json_str(entry, "sppci_model")
+            .or_else(|| json_str(entry, "_name"))
+            .unwrap_or_else(|| "Apple GPU".into());
         if !name.to_lowercase().contains("apple") {
             gpus.push(new_gpu(vendor_from_name(&name), &name, index as u32));
             continue;
@@ -428,7 +480,11 @@ pub fn parse_system_profiler(json: &str, ram_mb: Option<u64>) -> Vec<Gpu> {
 /// The GPU of an Apple Silicon Mac whose system_profiler said nothing usable:
 /// named after the chip (`machdep.cpu.brand_string`), or "Apple Silicon" when
 /// the brand is missing or Rosetta's "VirtualApple".
-pub fn apple_fallback_gpus(brand: Option<&str>, apple_silicon: bool, ram_mb: Option<u64>) -> Vec<Gpu> {
+pub fn apple_fallback_gpus(
+    brand: Option<&str>,
+    apple_silicon: bool,
+    ram_mb: Option<u64>,
+) -> Vec<Gpu> {
     if !apple_silicon {
         return Vec::new();
     }
@@ -460,12 +516,25 @@ pub fn assemble_gpus(nvidia: Vec<Gpu>, listed: Vec<Gpu>) -> (Vec<Gpu>, Option<St
     let mut note = None;
     let mut out = nvidia;
     if out.is_empty() && listed.iter().any(|g| g.vendor == Vendor::Nvidia) {
-        note = Some("an NVIDIA GPU is present but nvidia-smi is not, so the driver is not installed".to_string());
-        out.extend(listed.iter().filter(|g| g.vendor == Vendor::Nvidia).cloned().map(|mut g| {
-            g.driver = None;
-            g
-        }));
+        note = Some(
+            "an NVIDIA GPU is present but nvidia-smi is not, so the driver is not installed"
+                .to_string(),
+        );
+        out.extend(
+            listed
+                .iter()
+                .filter(|g| g.vendor == Vendor::Nvidia)
+                .cloned()
+                .map(|mut g| {
+                    g.driver = None;
+                    g
+                }),
+        );
     }
-    out.extend(listed.into_iter().filter(|g| matches!(g.vendor, Vendor::Intel | Vendor::Amd | Vendor::Apple)));
+    out.extend(
+        listed
+            .into_iter()
+            .filter(|g| matches!(g.vendor, Vendor::Intel | Vendor::Amd | Vendor::Apple)),
+    );
     (out, note)
 }

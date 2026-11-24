@@ -17,7 +17,10 @@ use backend::AppBackend;
 
 pub fn run() {
     let _ = tracing_subscriber::fmt()
-        .with_env_filter(tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| "gradapp=info".into()))
+        .with_env_filter(
+            tracing_subscriber::EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| "gradapp=info".into()),
+        )
         .try_init();
 
     let started_hidden = std::env::args().any(|a| a == "--hidden");
@@ -30,7 +33,10 @@ pub fn run() {
                 let _ = app.emit("gm://invite", link.clone());
             }
         }))
-        .plugin(tauri_plugin_autostart::init(MacosLauncher::LaunchAgent, Some(vec!["--hidden"])))
+        .plugin(tauri_plugin_autostart::init(
+            MacosLauncher::LaunchAgent,
+            Some(vec!["--hidden"]),
+        ))
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_opener::init())
@@ -85,14 +91,24 @@ pub fn run() {
             let check = handle.clone();
             tauri::async_runtime::spawn(async move {
                 tokio::time::sleep(Duration::from_secs(6)).await;
-                let info = commands::check_update(check.clone(), check.state(), check.state()).await;
+                let info =
+                    commands::check_update(check.clone(), check.state(), check.state()).await;
                 if let Ok(info) = info {
-                    let hidden = check.get_webview_window("main").map(|w| !w.is_visible().unwrap_or(false)).unwrap_or(true);
-                    if info.available && hidden && check.state::<AppBackend>().settings().notifications {
+                    let hidden = check
+                        .get_webview_window("main")
+                        .map(|w| !w.is_visible().unwrap_or(false))
+                        .unwrap_or(true);
+                    if info.available
+                        && hidden
+                        && check.state::<AppBackend>().settings().notifications
+                    {
                         let _ = check
                             .notification()
                             .builder()
-                            .title(format!("GradApp {} is available", info.latest.clone().unwrap_or_default()))
+                            .title(format!(
+                                "GradApp {} is available",
+                                info.latest.clone().unwrap_or_default()
+                            ))
                             .body("Open GradApp to update.")
                             .show();
                     }
@@ -103,7 +119,12 @@ pub fn run() {
         .on_window_event(|window, event| {
             // Close to tray: the window goes, contributing carries on.
             if let WindowEvent::CloseRequested { api, .. } = event {
-                if window.app_handle().state::<AppBackend>().settings().close_to_tray {
+                if window
+                    .app_handle()
+                    .state::<AppBackend>()
+                    .settings()
+                    .close_to_tray
+                {
                     api.prevent_close();
                     let _ = window.hide();
                 }

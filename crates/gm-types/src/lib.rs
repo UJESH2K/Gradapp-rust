@@ -290,6 +290,16 @@ pub struct Invite {
     pub mesh_name: Option<String>,
 }
 
+/// One coordinator event (`GET /events`), in words, for the live feed.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct MeshEvent {
+    /// Unix seconds.
+    pub at: f64,
+    /// The coordinator's kind, e.g. "node.joined", "round.completed".
+    pub kind: String,
+    pub text: String,
+}
+
 // ---------------------------------------------------------------------------
 // Updates
 // ---------------------------------------------------------------------------
@@ -304,6 +314,15 @@ pub struct UpdateInfo {
     pub published_at: Option<String>,
     /// The Tauri signed updater can install it in place (vs. link only).
     pub installable: bool,
+    /// Why the check could not decide (offline, rate-limited, ...); `None`
+    /// for a clean "up to date" or "update available".
+    #[serde(default)]
+    pub reason: Option<String>,
+    /// `latest.json` of the offered release, when installable. The Beta
+    /// channel points the Tauri updater here (the fixed
+    /// `/releases/latest/download/latest.json` never serves pre-releases).
+    #[serde(default)]
+    pub manifest_url: Option<String>,
 }
 
 // ---------------------------------------------------------------------------
@@ -345,15 +364,45 @@ pub struct ProcStatus {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum AppEvent {
-    MeshFound { mesh: DiscoveredMesh },
-    ScanProgress { scanned: u32, total: u32 },
-    PortProgress { port: String, step: String, percent: Option<f32>, line: Option<String> },
-    PortStatus { status: PortStatus },
-    Proc { status: ProcStatus },
-    Log { role: ProcRole, line: String },
-    Update { info: UpdateInfo },
-    UpdateProgress { downloaded: u64, total: Option<u64> },
-    Notice { level: String, title: String, body: String },
+    MeshFound {
+        mesh: DiscoveredMesh,
+    },
+    ScanProgress {
+        scanned: u32,
+        total: u32,
+    },
+    PortProgress {
+        port: String,
+        step: String,
+        percent: Option<f32>,
+        line: Option<String>,
+    },
+    PortStatus {
+        status: PortStatus,
+    },
+    Proc {
+        status: ProcStatus,
+    },
+    Log {
+        role: ProcRole,
+        line: String,
+    },
+    Update {
+        info: UpdateInfo,
+    },
+    UpdateProgress {
+        downloaded: u64,
+        total: Option<u64>,
+    },
+    Notice {
+        level: String,
+        title: String,
+        body: String,
+    },
+    /// A new event on the mesh this app is in (joined or hosting).
+    MeshEvent {
+        event: MeshEvent,
+    },
 }
 
 #[cfg(test)]
@@ -371,7 +420,10 @@ mod tests {
 
     #[test]
     fn event_is_tagged() {
-        let e = AppEvent::ScanProgress { scanned: 1, total: 254 };
+        let e = AppEvent::ScanProgress {
+            scanned: 1,
+            total: 254,
+        };
         let v = serde_json::to_value(&e).unwrap();
         assert_eq!(v["kind"], "scan_progress");
     }

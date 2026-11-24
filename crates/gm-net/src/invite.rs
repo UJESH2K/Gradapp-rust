@@ -42,20 +42,35 @@ pub fn health_from_value(v: &Value) -> Option<MeshHealth> {
     if v.get("status").and_then(Value::as_str) != Some("ok") {
         return None;
     }
-    let mesh_id = v.get("mesh_id").and_then(Value::as_str).filter(|s| !s.is_empty())?;
+    let mesh_id = v
+        .get("mesh_id")
+        .and_then(Value::as_str)
+        .filter(|s| !s.is_empty())?;
     Some(MeshHealth {
         status: "ok".into(),
-        version: v.get("version").and_then(Value::as_str).unwrap_or_default().to_string(),
+        version: v
+            .get("version")
+            .and_then(Value::as_str)
+            .unwrap_or_default()
+            .to_string(),
         protocol: v.get("protocol").and_then(Value::as_u64).unwrap_or(0) as u32,
         mesh_id: mesh_id.to_string(),
-        torch_ready: v.get("torch_ready").and_then(Value::as_bool).unwrap_or(false),
+        torch_ready: v
+            .get("torch_ready")
+            .and_then(Value::as_bool)
+            .unwrap_or(false),
         nodes_active: v.get("nodes_active").and_then(Value::as_u64).unwrap_or(0) as u32,
     })
 }
 
 /// `GET http://host:port/health` within `timeout`; `None` for anything that
 /// is not a GradMesh coordinator. Latency is the full request round-trip.
-pub async fn probe_health(client: &reqwest::Client, hostname: &str, port: u16, timeout: Duration) -> Option<HealthHit> {
+pub async fn probe_health(
+    client: &reqwest::Client,
+    hostname: &str,
+    port: u16,
+    timeout: Duration,
+) -> Option<HealthHit> {
     let url = format!("http://{hostname}:{port}/health");
     let started = Instant::now();
     let response = client.get(&url).timeout(timeout).send().await.ok()?;
@@ -64,7 +79,12 @@ pub async fn probe_health(client: &reqwest::Client, hostname: &str, port: u16, t
     }
     let body: Value = response.json().await.ok()?;
     let latency_ms = started.elapsed().as_millis().min(u32::MAX as u128) as u32;
-    Some(HealthHit { hostname: hostname.to_string(), port, health: health_from_value(&body)?, latency_ms })
+    Some(HealthHit {
+        hostname: hostname.to_string(),
+        port,
+        health: health_from_value(&body)?,
+        latency_ms,
+    })
 }
 
 /// Where an invite came from.
@@ -92,39 +112,79 @@ pub async fn read_invite(hostname: &str, web_port: u16) -> InviteInfo {
     read_invite_with(&lan_client(), hostname, web_port).await
 }
 
-pub async fn read_invite_with(client: &reqwest::Client, hostname: &str, web_port: u16) -> InviteInfo {
+pub async fn read_invite_with(
+    client: &reqwest::Client,
+    hostname: &str,
+    web_port: u16,
+) -> InviteInfo {
     let web = format!("http://{hostname}:{web_port}");
-    if let Ok(response) = client.get(format!("{web}/gradapp.json")).timeout(Duration::from_millis(2500)).send().await {
+    if let Ok(response) = client
+        .get(format!("{web}/gradapp.json"))
+        .timeout(Duration::from_millis(2500))
+        .send()
+        .await
+    {
         if response.status().is_success() {
             if let Ok(info) = response.json::<Value>().await {
-                if let Some(token) = info.get("token").and_then(Value::as_str).filter(|t| !t.is_empty()) {
-                    let mesh_name =
-                        info.get("meshName").and_then(Value::as_str).filter(|n| !n.is_empty()).map(str::to_string);
-                    return InviteInfo { web, token: Some(token.to_string()), mesh_name, kind: Some(InviteKind::Gradapp) };
+                if let Some(token) = info
+                    .get("token")
+                    .and_then(Value::as_str)
+                    .filter(|t| !t.is_empty())
+                {
+                    let mesh_name = info
+                        .get("meshName")
+                        .and_then(Value::as_str)
+                        .filter(|n| !n.is_empty())
+                        .map(str::to_string);
+                    return InviteInfo {
+                        web,
+                        token: Some(token.to_string()),
+                        mesh_name,
+                        kind: Some(InviteKind::Gradapp),
+                    };
                 }
             }
         }
     }
-    if let Ok(response) = client.get(format!("{web}/join.sh")).timeout(Duration::from_millis(3000)).send().await {
+    if let Ok(response) = client
+        .get(format!("{web}/join.sh"))
+        .timeout(Duration::from_millis(3000))
+        .send()
+        .await
+    {
         if response.status().is_success() {
             if let Ok(text) = response.text().await {
                 if let Some(token) = mesh_token_from_script(&text) {
-                    return InviteInfo { web, token: Some(token), mesh_name: None, kind: Some(InviteKind::Dashboard) };
+                    return InviteInfo {
+                        web,
+                        token: Some(token),
+                        mesh_name: None,
+                        kind: Some(InviteKind::Dashboard),
+                    };
                 }
             }
         }
     }
-    InviteInfo { web, token: None, mesh_name: None, kind: None }
+    InviteInfo {
+        web,
+        token: None,
+        mesh_name: None,
+        kind: None,
+    }
 }
 
 /// v1: `text.match(/^MESH_TOKEN="([^"]+)"/m)?.[1]`
 pub fn mesh_token_from_script(text: &str) -> Option<String> {
     const PREFIX: &str = "MESH_TOKEN=\"";
     let line_starts = std::iter::once(0).chain(
-        text.char_indices().filter(|(_, c)| matches!(c, '\n' | '\r' | '\u{2028}' | '\u{2029}')).map(|(i, c)| i + c.len_utf8()),
+        text.char_indices()
+            .filter(|(_, c)| matches!(c, '\n' | '\r' | '\u{2028}' | '\u{2029}'))
+            .map(|(i, c)| i + c.len_utf8()),
     );
     for start in line_starts {
-        let Some(rest) = text[start..].strip_prefix(PREFIX) else { continue };
+        let Some(rest) = text[start..].strip_prefix(PREFIX) else {
+            continue;
+        };
         if let Some(end) = rest.find('"') {
             if end > 0 {
                 return Some(rest[..end].to_string());
@@ -140,14 +200,26 @@ mod tests {
 
     #[test]
     fn token_from_script() {
-        assert_eq!(mesh_token_from_script("#!/bin/sh\nMESH_TOKEN=\"abc\"\n").as_deref(), Some("abc"));
-        assert_eq!(mesh_token_from_script("MESH_TOKEN=\"x-1\"").as_deref(), Some("x-1"));
-        assert_eq!(mesh_token_from_script("a\r\nMESH_TOKEN=\"crlf\"\r\n").as_deref(), Some("crlf"));
+        assert_eq!(
+            mesh_token_from_script("#!/bin/sh\nMESH_TOKEN=\"abc\"\n").as_deref(),
+            Some("abc")
+        );
+        assert_eq!(
+            mesh_token_from_script("MESH_TOKEN=\"x-1\"").as_deref(),
+            Some("x-1")
+        );
+        assert_eq!(
+            mesh_token_from_script("a\r\nMESH_TOKEN=\"crlf\"\r\n").as_deref(),
+            Some("crlf")
+        );
         assert_eq!(mesh_token_from_script("  MESH_TOKEN=\"indented\""), None);
         assert_eq!(mesh_token_from_script("MESH_TOKEN=\"\"\n"), None);
         assert_eq!(mesh_token_from_script("MESH_TOKEN=unquoted\n"), None);
         let golden = include_str!("../tests/fixtures/join.sh");
-        assert_eq!(mesh_token_from_script(golden).as_deref(), Some("tok-ABC_123"));
+        assert_eq!(
+            mesh_token_from_script(golden).as_deref(),
+            Some("tok-ABC_123")
+        );
     }
 
     #[test]

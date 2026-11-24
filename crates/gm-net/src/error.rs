@@ -34,7 +34,10 @@ impl NetError {
         } else if err.is_decode() {
             NetError::Decode(err.to_string())
         } else if let Some(status) = err.status() {
-            NetError::Http { status: status.as_u16(), detail: format!("HTTP {}", status.as_u16()) }
+            NetError::Http {
+                status: status.as_u16(),
+                detail: format!("HTTP {}", status.as_u16()),
+            }
         } else {
             NetError::Unreachable(what.to_string())
         }

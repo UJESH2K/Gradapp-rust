@@ -58,7 +58,12 @@ fn render(template: &str, values: &[(&str, &str)]) -> String {
     while let Some(start) = rest.find("@@") {
         out.push_str(&rest[..start]);
         let after = &rest[start + 2..];
-        match after.find("@@").and_then(|end| values.iter().find(|(k, _)| *k == &after[..end]).map(|(_, v)| (end, v))) {
+        match after.find("@@").and_then(|end| {
+            values
+                .iter()
+                .find(|(k, _)| *k == &after[..end])
+                .map(|(_, v)| (end, v))
+        }) {
             Some((end, value)) => {
                 out.push_str(value);
                 rest = &after[end + 2..];
@@ -76,14 +81,30 @@ fn render(template: &str, values: &[(&str, &str)]) -> String {
 /// v1 `shellScript`.
 pub fn shell_script(web: &str, coordinator: &str, token: &str, files: &[&str]) -> String {
     let files = files.join(" ");
-    render(SH_TEMPLATE, &[("WEB", web), ("COORDINATOR", coordinator), ("TOKEN", token), ("FILES", &files)])
+    render(
+        SH_TEMPLATE,
+        &[
+            ("WEB", web),
+            ("COORDINATOR", coordinator),
+            ("TOKEN", token),
+            ("FILES", &files),
+        ],
+    )
 }
 
 /// v1 `powershellScript`.
 pub fn powershell_script(web: &str, coordinator: &str, token: &str, files: &[&str]) -> String {
     // The template holds `'@@FILES@@'`; v1 renders `'a', 'b', ...`.
     let files = files.join("', '");
-    render(PS1_TEMPLATE, &[("WEB", web), ("COORDINATOR", coordinator), ("TOKEN", token), ("FILES", &files)])
+    render(
+        PS1_TEMPLATE,
+        &[
+            ("WEB", web),
+            ("COORDINATOR", coordinator),
+            ("TOKEN", token),
+            ("FILES", &files),
+        ],
+    )
 }
 
 fn html_escape(value: &str) -> String {
@@ -102,7 +123,13 @@ fn html_escape(value: &str) -> String {
 
 /// v1 `joinPage`.
 pub fn join_page(web: &str, mesh_name: &str) -> String {
-    render(HTML_TEMPLATE, &[("WEB", &html_escape(web)), ("MESH_NAME", &html_escape(mesh_name))])
+    render(
+        HTML_TEMPLATE,
+        &[
+            ("WEB", &html_escape(web)),
+            ("MESH_NAME", &html_escape(mesh_name)),
+        ],
+    )
 }
 
 /// What the surface publishes, read per request so a rotated token or a new
@@ -137,7 +164,10 @@ pub struct JoinConfig {
 }
 
 impl JoinConfig {
-    pub fn new(engine_dir: impl Into<PathBuf>, info: impl Fn() -> JoinInfo + Send + Sync + 'static) -> Self {
+    pub fn new(
+        engine_dir: impl Into<PathBuf>,
+        info: impl Fn() -> JoinInfo + Send + Sync + 'static,
+    ) -> Self {
         Self {
             info: Arc::new(info),
             engine_dir: engine_dir.into(),
@@ -167,7 +197,10 @@ impl JoinSurface {
     pub async fn serve(addr: SocketAddr, cfg: JoinConfig) -> io::Result<Self> {
         let listener = tokio::net::TcpListener::bind(addr).await?;
         let bound = listener.local_addr()?;
-        let shared = Arc::new(Shared { port: cfg.public_port.unwrap_or(bound.port()), cfg });
+        let shared = Arc::new(Shared {
+            port: cfg.public_port.unwrap_or(bound.port()),
+            cfg,
+        });
         let app = Router::new().fallback(handle).with_state(shared);
         let (stop, stopped) = oneshot::channel::<()>();
         let task = tokio::spawn(async move {
@@ -177,7 +210,11 @@ impl JoinSurface {
                 })
                 .await
         });
-        Ok(Self { addr: bound, stop: Some(stop), task: Some(task) })
+        Ok(Self {
+            addr: bound,
+            stop: Some(stop),
+            task: Some(task),
+        })
     }
 
     pub fn local_addr(&self) -> SocketAddr {
@@ -210,22 +247,34 @@ fn send(status: StatusCode, content_type: &'static str, body: impl Into<Body>) -
     let h = r.headers_mut();
     h.insert(header::CONTENT_TYPE, HeaderValue::from_static(content_type));
     h.insert(header::CACHE_CONTROL, HeaderValue::from_static("no-store"));
-    h.insert(header::X_CONTENT_TYPE_OPTIONS, HeaderValue::from_static("nosniff"));
+    h.insert(
+        header::X_CONTENT_TYPE_OPTIONS,
+        HeaderValue::from_static("nosniff"),
+    );
     r
 }
 
 /// v1: Host header's name unless it is localhost/127.x, else the LAN address.
 fn public_hostname(headers: &HeaderMap, lan_address: &str) -> String {
-    let host_header = headers.get(header::HOST).and_then(|h| h.to_str().ok()).unwrap_or("");
+    let host_header = headers
+        .get(header::HOST)
+        .and_then(|h| h.to_str().ok())
+        .unwrap_or("");
     let name = host_header.split(':').next().unwrap_or("");
-    if !name.is_empty() && !host_header.starts_with("localhost") && !host_header.starts_with("127.") {
+    if !name.is_empty() && !host_header.starts_with("localhost") && !host_header.starts_with("127.")
+    {
         name.to_string()
     } else {
         lan_address.to_string()
     }
 }
 
-async fn handle(State(shared): State<Arc<Shared>>, method: Method, headers: HeaderMap, uri: Uri) -> Response {
+async fn handle(
+    State(shared): State<Arc<Shared>>,
+    method: Method,
+    headers: HeaderMap,
+    uri: Uri,
+) -> Response {
     let cfg = &shared.cfg;
     if method != Method::GET && method != Method::HEAD {
         return send(StatusCode::METHOD_NOT_ALLOWED, "text/plain", "GET only\n");
@@ -241,7 +290,11 @@ async fn handle(State(shared): State<Arc<Shared>>, method: Method, headers: Head
 
     let info = (cfg.info)();
     let Some(token) = info.token.as_deref().filter(|t| !t.is_empty()) else {
-        return send(StatusCode::SERVICE_UNAVAILABLE, "text/plain", "# The mesh is still starting. Try again in a moment.\n");
+        return send(
+            StatusCode::SERVICE_UNAVAILABLE,
+            "text/plain",
+            "# The mesh is still starting. Try again in a moment.\n",
+        );
     };
     let hostname = public_hostname(&headers, &info.lan_address);
     let web = format!("http://{hostname}:{}", shared.port);
@@ -250,9 +303,19 @@ async fn handle(State(shared): State<Arc<Shared>>, method: Method, headers: Head
 
     match route {
         "/join.ps1" => {
-            return send(StatusCode::OK, "text/plain; charset=utf-8", powershell_script(&web, &coordinator, token, &files))
+            return send(
+                StatusCode::OK,
+                "text/plain; charset=utf-8",
+                powershell_script(&web, &coordinator, token, &files),
+            )
         }
-        "/join.sh" => return send(StatusCode::OK, "text/plain; charset=utf-8", shell_script(&web, &coordinator, token, &files)),
+        "/join.sh" => {
+            return send(
+                StatusCode::OK,
+                "text/plain; charset=utf-8",
+                shell_script(&web, &coordinator, token, &files),
+            )
+        }
         "/gradapp.json" => {
             // Built by hand to keep v1's key order (JSON.stringify).
             let body = format!(
@@ -267,17 +330,33 @@ async fn handle(State(shared): State<Arc<Shared>>, method: Method, headers: Head
             );
             return send(StatusCode::OK, "application/json", body);
         }
-        "/api/health" => return send(StatusCode::OK, "application/json", r#"{"status":"ok","app":"gradapp"}"#),
+        "/api/health" => {
+            return send(
+                StatusCode::OK,
+                "application/json",
+                r#"{"status":"ok","app":"gradapp"}"#,
+            )
+        }
         "/" | "/join" => {
-            return send(StatusCode::OK, "text/html; charset=utf-8", join_page(&web, info.mesh_name.as_deref().unwrap_or("GradMesh")))
+            return send(
+                StatusCode::OK,
+                "text/html; charset=utf-8",
+                join_page(&web, info.mesh_name.as_deref().unwrap_or("GradMesh")),
+            )
         }
         "/logo.png" | "/favicon.ico" => {
-            let Some(dir) = &cfg.assets_dir else { return send(StatusCode::NOT_FOUND, "text/plain", "Missing\n") };
+            let Some(dir) = &cfg.assets_dir else {
+                return send(StatusCode::NOT_FOUND, "text/plain", "Missing\n");
+            };
             return match tokio::fs::read(dir.join("logo.png")).await {
                 Ok(bytes) => {
                     let mut r = Response::new(Body::from(bytes));
-                    r.headers_mut().insert(header::CONTENT_TYPE, HeaderValue::from_static("image/png"));
-                    r.headers_mut().insert(header::CACHE_CONTROL, HeaderValue::from_static("public, max-age=86400"));
+                    r.headers_mut()
+                        .insert(header::CONTENT_TYPE, HeaderValue::from_static("image/png"));
+                    r.headers_mut().insert(
+                        header::CACHE_CONTROL,
+                        HeaderValue::from_static("public, max-age=86400"),
+                    );
                     r
                 }
                 Err(_) => send(StatusCode::NOT_FOUND, "text/plain", "Missing\n"),
@@ -296,7 +375,11 @@ async fn handle(State(shared): State<Arc<Shared>>, method: Method, headers: Head
         if !cfg.agent_files.contains(&file) || file.contains(['/', '\\']) || file.starts_with('.') {
             return send(StatusCode::NOT_FOUND, "text/plain", "Not an agent file\n");
         }
-        let content_type = if file.ends_with(".py") { "text/x-python; charset=utf-8" } else { "text/plain; charset=utf-8" };
+        let content_type = if file.ends_with(".py") {
+            "text/x-python; charset=utf-8"
+        } else {
+            "text/plain; charset=utf-8"
+        };
         return match tokio::fs::read(cfg.engine_dir.join(&file)).await {
             Ok(bytes) => send(StatusCode::OK, content_type, bytes),
             Err(_) => send(StatusCode::NOT_FOUND, "text/plain", "Missing\n"),
@@ -307,16 +390,29 @@ async fn handle(State(shared): State<Arc<Shared>>, method: Method, headers: Head
 
 async fn proxy_health(upstream: &str) -> Response {
     let url = format!("{}/health", upstream.trim_end_matches('/'));
-    let result = crate::invite::lan_client().get(&url).timeout(Duration::from_secs(3)).send().await;
+    let result = crate::invite::lan_client()
+        .get(&url)
+        .timeout(Duration::from_secs(3))
+        .send()
+        .await;
     match result {
         Ok(r) => {
-            let status = StatusCode::from_u16(r.status().as_u16()).unwrap_or(StatusCode::BAD_GATEWAY);
+            let status =
+                StatusCode::from_u16(r.status().as_u16()).unwrap_or(StatusCode::BAD_GATEWAY);
             match r.bytes().await {
                 Ok(body) => send(status, "application/json", body),
-                Err(_) => send(StatusCode::BAD_GATEWAY, "application/json", r#"{"status":"unreachable"}"#),
+                Err(_) => send(
+                    StatusCode::BAD_GATEWAY,
+                    "application/json",
+                    r#"{"status":"unreachable"}"#,
+                ),
             }
         }
-        Err(_) => send(StatusCode::BAD_GATEWAY, "application/json", r#"{"status":"unreachable"}"#),
+        Err(_) => send(
+            StatusCode::BAD_GATEWAY,
+            "application/json",
+            r#"{"status":"unreachable"}"#,
+        ),
     }
 }
 
@@ -330,15 +426,31 @@ mod tests {
 
     #[test]
     fn scripts_match_v1_golden() {
-        let (web, coord, tok) = ("http://192.168.1.20:3000", "http://192.168.1.20:8000", "tok-ABC_123");
-        assert_eq!(shell_script(web, coord, tok, AGENT_FILES), include_str!("../tests/fixtures/join.sh"));
-        assert_eq!(powershell_script(web, coord, tok, AGENT_FILES), include_str!("../tests/fixtures/join.ps1"));
-        assert_eq!(join_page(web, "Lab <\"A\"> & co"), include_str!("../tests/fixtures/join.html"));
+        let (web, coord, tok) = (
+            "http://192.168.1.20:3000",
+            "http://192.168.1.20:8000",
+            "tok-ABC_123",
+        );
+        assert_eq!(
+            shell_script(web, coord, tok, AGENT_FILES),
+            include_str!("../tests/fixtures/join.sh")
+        );
+        assert_eq!(
+            powershell_script(web, coord, tok, AGENT_FILES),
+            include_str!("../tests/fixtures/join.ps1")
+        );
+        assert_eq!(
+            join_page(web, "Lab <\"A\"> & co"),
+            include_str!("../tests/fixtures/join.html")
+        );
     }
 
     #[test]
     fn render_is_single_pass() {
-        assert_eq!(render("a@@X@@b@@Y@@", &[("X", "@@Y@@"), ("Y", "1")]), "a@@Y@@b1");
+        assert_eq!(
+            render("a@@X@@b@@Y@@", &[("X", "@@Y@@"), ("Y", "1")]),
+            "a@@Y@@b1"
+        );
         assert_eq!(render("keep @@ alone", &[]), "keep @@ alone");
     }
 

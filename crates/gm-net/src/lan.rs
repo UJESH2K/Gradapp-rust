@@ -20,23 +20,46 @@ pub struct LanAddress {
 /// zerotier|wireguard|utun|tun\d|tap\d|vpn|npcap|loopback|bluetooth/i
 pub fn is_virtual_adapter(name: &str) -> bool {
     const WORDS: &[&str] = &[
-        "vethernet", "virtualbox", "vbox", "vmware", "vmnet", "hyper-v", "wsl", "docker", "br-", "veth",
-        "tailscale", "zerotier", "wireguard", "utun", "vpn", "npcap", "loopback", "bluetooth",
+        "vethernet",
+        "virtualbox",
+        "vbox",
+        "vmware",
+        "vmnet",
+        "hyper-v",
+        "wsl",
+        "docker",
+        "br-",
+        "veth",
+        "tailscale",
+        "zerotier",
+        "wireguard",
+        "utun",
+        "vpn",
+        "npcap",
+        "loopback",
+        "bluetooth",
     ];
     let lower = name.to_ascii_lowercase();
-    WORDS.iter().any(|w| lower.contains(w)) || has_word_digit(&lower, "tun") || has_word_digit(&lower, "tap")
+    WORDS.iter().any(|w| lower.contains(w))
+        || has_word_digit(&lower, "tun")
+        || has_word_digit(&lower, "tap")
 }
 
 /// `prefix` immediately followed by an ASCII digit, anywhere in `s`.
 fn has_word_digit(s: &str, prefix: &str) -> bool {
-    s.match_indices(prefix)
-        .any(|(i, _)| s.as_bytes().get(i + prefix.len()).is_some_and(|b| b.is_ascii_digit()))
+    s.match_indices(prefix).any(|(i, _)| {
+        s.as_bytes()
+            .get(i + prefix.len())
+            .is_some_and(|b| b.is_ascii_digit())
+    })
 }
 
 /// v1: /wi-?fi|wlan|wireless|en0|eth|ethernet/i → 0 (preferred), else 1.
 fn wireless_rank(name: &str) -> u8 {
     let lower = name.to_ascii_lowercase();
-    let hit = ["wifi", "wi-fi", "wlan", "wireless", "en0", "eth"].iter().any(|w| lower.contains(w));
+    let hit = ["wifi", "wi-fi", "wlan", "wireless", "en0", "eth"]
+        .iter()
+        .any(|w| lower.contains(w));
     if hit {
         0
     } else {
@@ -65,7 +88,9 @@ pub fn lan_addresses() -> Vec<LanAddress> {
         .unwrap_or_default()
         .into_iter()
         .filter_map(|iface| {
-            let if_addrs::IfAddr::V4(v4) = &iface.addr else { return None };
+            let if_addrs::IfAddr::V4(v4) = &iface.addr else {
+                return None;
+            };
             if iface.is_loopback() || v4.ip.is_loopback() || v4.ip.is_link_local() {
                 return None;
             }
@@ -84,7 +109,10 @@ pub fn lan_addresses() -> Vec<LanAddress> {
 
 /// The address to advertise, or 127.0.0.1 with no LAN.
 pub fn primary_lan_address() -> Ipv4Addr {
-    lan_addresses().first().map(|a| a.address).unwrap_or(Ipv4Addr::LOCALHOST)
+    lan_addresses()
+        .first()
+        .map(|a| a.address)
+        .unwrap_or(Ipv4Addr::LOCALHOST)
 }
 
 /// The hosts on one adapter's subnet: the real subnet when it is /24 or
@@ -136,13 +164,37 @@ mod tests {
     #[test]
     fn virtual_filter_matches_v1() {
         for name in [
-            "vEthernet (WSL)", "VirtualBox Host-Only", "vboxnet0", "VMware Network Adapter VMnet8", "vmnet1",
-            "docker0", "br-1a2b", "veth12ab", "tailscale0", "ZeroTier One", "utun3", "tun0", "tap1",
-            "Npcap Loopback", "Bluetooth Network Connection", "NordVPN", "wsl", "Hyper-V",
+            "vEthernet (WSL)",
+            "VirtualBox Host-Only",
+            "vboxnet0",
+            "VMware Network Adapter VMnet8",
+            "vmnet1",
+            "docker0",
+            "br-1a2b",
+            "veth12ab",
+            "tailscale0",
+            "ZeroTier One",
+            "utun3",
+            "tun0",
+            "tap1",
+            "Npcap Loopback",
+            "Bluetooth Network Connection",
+            "NordVPN",
+            "wsl",
+            "Hyper-V",
         ] {
             assert!(is_virtual_adapter(name), "{name} should be virtual");
         }
-        for name in ["en0", "Wi-Fi", "wlan0", "eth0", "Ethernet 2", "enp3s0", "wlp2s0", "tunnel"] {
+        for name in [
+            "en0",
+            "Wi-Fi",
+            "wlan0",
+            "eth0",
+            "Ethernet 2",
+            "enp3s0",
+            "wlp2s0",
+            "tunnel",
+        ] {
             assert!(!is_virtual_adapter(name), "{name} should be real");
         }
     }
@@ -169,7 +221,10 @@ mod tests {
         let b = subnet_hosts(Ipv4Addr::new(192, 168, 1, 70), 26);
         assert_eq!(b.len(), 62);
         assert_eq!(b[0], Ipv4Addr::new(192, 168, 1, 65));
-        assert_eq!(subnet_hosts(Ipv4Addr::new(1, 2, 3, 4), 32), vec![Ipv4Addr::new(1, 2, 3, 4)]);
+        assert_eq!(
+            subnet_hosts(Ipv4Addr::new(1, 2, 3, 4), 32),
+            vec![Ipv4Addr::new(1, 2, 3, 4)]
+        );
         assert_eq!(subnet_hosts(Ipv4Addr::new(1, 2, 3, 5), 31).len(), 2);
     }
 

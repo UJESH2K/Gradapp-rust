@@ -19,7 +19,10 @@ use std::net::{IpAddr, Ipv4Addr, SocketAddr, SocketAddrV4};
 use std::time::{Duration, Instant};
 
 use futures::stream::{FuturesUnordered, StreamExt};
-use gm_types::{AppEvent, DiscoveredMesh, DiscoverySource, BEACON_GROUP, BEACON_PORT, COORDINATOR_PORT, WEB_PORT};
+use gm_types::{
+    AppEvent, DiscoveredMesh, DiscoverySource, BEACON_GROUP, BEACON_PORT, COORDINATOR_PORT,
+    WEB_PORT,
+};
 use tokio::sync::mpsc;
 use tokio_util::sync::CancellationToken;
 
@@ -116,7 +119,10 @@ enum Msg {
 /// v1: /^\d+\.\d+\.\d+\.\d+$/
 fn is_ipv4_literal(host: &str) -> bool {
     let parts: Vec<&str> = host.split('.').collect();
-    parts.len() == 4 && parts.iter().all(|p| !p.is_empty() && p.bytes().all(|b| b.is_ascii_digit()))
+    parts.len() == 4
+        && parts
+            .iter()
+            .all(|p| !p.is_empty() && p.bytes().all(|b| b.is_ascii_digit()))
 }
 
 /// The deduplicating recorder (v1 `record`). Public so its preference rule is
@@ -132,7 +138,10 @@ impl MeshTable {
         let mut own: HashSet<String> = own_addresses.into_iter().collect();
         own.insert("127.0.0.1".into());
         own.insert("localhost".into());
-        Self { meshes: Vec::new(), own }
+        Self {
+            meshes: Vec::new(),
+            own,
+        }
     }
 
     /// Record a sighting. Dedupes by mesh id: the first address wins, except
@@ -167,8 +176,16 @@ impl MeshTable {
 
     /// Apply an invite read for `hostname`; ignored if the entry moved to
     /// another address meanwhile.
-    fn apply_invite(&mut self, mesh_id: &str, hostname: &str, invite: InviteInfo) -> Option<&DiscoveredMesh> {
-        let entry = self.meshes.iter_mut().find(|m| m.mesh_id == mesh_id && m.hostname == hostname)?;
+    fn apply_invite(
+        &mut self,
+        mesh_id: &str,
+        hostname: &str,
+        invite: InviteInfo,
+    ) -> Option<&DiscoveredMesh> {
+        let entry = self
+            .meshes
+            .iter_mut()
+            .find(|m| m.mesh_id == mesh_id && m.hostname == hostname)?;
         let mut changed = false;
         if invite.token.is_some() && invite.token != entry.token {
             entry.token = invite.token;
@@ -184,7 +201,11 @@ impl MeshTable {
     /// Best first: this machine's mesh, then the busiest.
     pub fn into_sorted(self) -> Vec<DiscoveredMesh> {
         let mut out = self.meshes;
-        out.sort_by(|a, b| b.local.cmp(&a.local).then(b.nodes_active.cmp(&a.nodes_active)));
+        out.sort_by(|a, b| {
+            b.local
+                .cmp(&a.local)
+                .then(b.nodes_active.cmp(&a.nodes_active))
+        });
         out
     }
 }
@@ -232,14 +253,25 @@ where
         let tx = tx.clone();
         let (client, opts) = (client.clone(), opts.clone());
         async move {
-            let defaults = AddressDefaults { port: opts.coordinator_port, web_port: opts.web_port };
+            let defaults = AddressDefaults {
+                port: opts.coordinator_port,
+                web_port: opts.web_port,
+            };
             let mut probes = FuturesUnordered::new();
             for text in &opts.manual {
-                let Some(invite) = parse_address_with(text, defaults) else { continue };
-                let Some(port) = url::Url::parse(&invite.coordinator).ok().and_then(|u| u.port()) else { continue };
+                let Some(invite) = parse_address_with(text, defaults) else {
+                    continue;
+                };
+                let Some(port) = url::Url::parse(&invite.coordinator)
+                    .ok()
+                    .and_then(|u| u.port())
+                else {
+                    continue;
+                };
                 let client = client.clone();
                 probes.push(async move {
-                    let hit = probe_health(&client, &invite.hostname, port, opts.confirm_timeout).await;
+                    let hit =
+                        probe_health(&client, &invite.hostname, port, opts.confirm_timeout).await;
                     hit.map(|hit| Candidate {
                         hit,
                         source: DiscoverySource::Manual,
@@ -267,21 +299,33 @@ where
             }
             let targets: Vec<String> = match opts.sweep_targets {
                 Some(t) => t,
-                None => sweep_targets(&lans).into_iter().map(|ip| ip.to_string()).collect(),
+                None => sweep_targets(&lans)
+                    .into_iter()
+                    .map(|ip| ip.to_string())
+                    .collect(),
             };
             let total = targets.len() as u32;
             let _ = tx.send(Msg::Progress { scanned: 0, total }).await;
             let mut results = futures::stream::iter(targets)
                 .map(|host| {
                     let client = client.clone();
-                    async move { probe_health(&client, &host, opts.coordinator_port, opts.sweep_timeout).await }
+                    async move {
+                        probe_health(&client, &host, opts.coordinator_port, opts.sweep_timeout)
+                            .await
+                    }
                 })
                 .buffer_unordered(opts.concurrency.max(1));
             let mut scanned = 0u32;
             while let Some(hit) = results.next().await {
                 scanned += 1;
                 if let Some(hit) = hit {
-                    let c = Candidate { hit, source: DiscoverySource::Sweep, web_port: opts.web_port, token: None, mesh_name: None };
+                    let c = Candidate {
+                        hit,
+                        source: DiscoverySource::Sweep,
+                        web_port: opts.web_port,
+                        token: None,
+                        mesh_name: None,
+                    };
                     let _ = tx.send(Msg::Found(c)).await;
                 }
                 if scanned & 15 == 0 || scanned == total {
@@ -307,7 +351,9 @@ where
         let (client, opts, listen) = (client.clone(), opts.clone(), listen.clone());
         async move {
             if opts.mdns {
-                listen.run_until_cancelled(resolve_mdns(&client, &opts, &tx)).await;
+                listen
+                    .run_until_cancelled(resolve_mdns(&client, &opts, &tx))
+                    .await;
             }
         }
     };
@@ -319,9 +365,13 @@ where
         let (listen, cancel) = (listen.clone(), cancel.clone());
         let listen_for = opts.listen_for;
         async move {
-            cancel.run_until_cancelled(async { tokio::join!(manual, sweep) }).await;
+            cancel
+                .run_until_cancelled(async { tokio::join!(manual, sweep) })
+                .await;
             let until = started + listen_for;
-            cancel.run_until_cancelled(tokio::time::sleep_until(until.into())).await;
+            cancel
+                .run_until_cancelled(tokio::time::sleep_until(until.into()))
+                .await;
             listen.cancel();
         }
     };
@@ -367,19 +417,38 @@ where
 }
 
 /// Send a beacon query to the group (on every interface) and to broadcast.
-async fn send_query(socket: &tokio::net::UdpSocket, opts: &DiscoverOptions, lans: &[crate::lan::LanAddress]) {
+async fn send_query(
+    socket: &tokio::net::UdpSocket,
+    opts: &DiscoverOptions,
+    lans: &[crate::lan::LanAddress],
+) {
     let query = BEACON_QUERY.as_bytes();
     let sock = socket2::SockRef::from(socket);
     let _ = sock.set_broadcast(true);
     let _ = sock.set_multicast_ttl_v4(1);
     for lan in lans.iter().filter(|l| !l.is_virtual) {
         if sock.set_multicast_if_v4(&lan.address).is_ok() {
-            let _ = socket.send_to(query, SocketAddrV4::new(opts.beacon_group, opts.beacon_port)).await;
+            let _ = socket
+                .send_to(
+                    query,
+                    SocketAddrV4::new(opts.beacon_group, opts.beacon_port),
+                )
+                .await;
         }
     }
     let _ = sock.set_multicast_if_v4(&Ipv4Addr::UNSPECIFIED);
-    let _ = socket.send_to(query, SocketAddrV4::new(opts.beacon_group, opts.beacon_port)).await;
-    let _ = socket.send_to(query, SocketAddrV4::new(Ipv4Addr::BROADCAST, opts.beacon_port)).await;
+    let _ = socket
+        .send_to(
+            query,
+            SocketAddrV4::new(opts.beacon_group, opts.beacon_port),
+        )
+        .await;
+    let _ = socket
+        .send_to(
+            query,
+            SocketAddrV4::new(Ipv4Addr::BROADCAST, opts.beacon_port),
+        )
+        .await;
 }
 
 async fn listen_beacons(
@@ -392,7 +461,10 @@ async fn listen_beacons(
     let socket = match bind_beacon_listener(opts.beacon_port, opts.beacon_group) {
         Ok(s) => s,
         Err(e) => {
-            tracing::debug!("beacon listener unavailable on port {}: {e}", opts.beacon_port);
+            tracing::debug!(
+                "beacon listener unavailable on port {}: {e}",
+                opts.beacon_port
+            );
             return;
         }
     };
@@ -454,7 +526,12 @@ async fn resolve_mdns(client: &reqwest::Client, opts: &DiscoverOptions, tx: &mps
         let host = opts.mdns_hostname.clone();
         let port = opts.coordinator_port;
         async move {
-            if let Ok(Ok(addrs)) = tokio::time::timeout(Duration::from_secs(3), tokio::net::lookup_host((host.as_str(), port))).await {
+            if let Ok(Ok(addrs)) = tokio::time::timeout(
+                Duration::from_secs(3),
+                tokio::net::lookup_host((host.as_str(), port)),
+            )
+            .await
+            {
                 for a in addrs.filter(|a| a.is_ipv4()) {
                     let _ = addr_tx.send((a.ip(), port));
                 }
@@ -469,9 +546,16 @@ async fn resolve_mdns(client: &reqwest::Client, opts: &DiscoverOptions, tx: &mps
         let host = format!("{}.", opts.mdns_hostname.trim_end_matches('.'));
         let service = opts.mdns_service.clone();
         let port = opts.coordinator_port;
-        let receivers = daemon.as_ref().map(|d| (d.resolve_hostname(&host, Some(5000)).ok(), d.browse(&service).ok()));
+        let receivers = daemon.as_ref().map(|d| {
+            (
+                d.resolve_hostname(&host, Some(5000)).ok(),
+                d.browse(&service).ok(),
+            )
+        });
         async move {
-            let Some((hosts, services)) = receivers else { return };
+            let Some((hosts, services)) = receivers else {
+                return;
+            };
             let hosts = async {
                 let Some(rx) = hosts else { return };
                 while let Ok(event) = rx.recv_async().await {

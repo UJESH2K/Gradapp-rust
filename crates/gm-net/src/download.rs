@@ -26,7 +26,10 @@ fn web_client() -> reqwest::Client {
 }
 
 fn part_path(target: &Path) -> PathBuf {
-    let mut name = target.file_name().map(|n| n.to_os_string()).unwrap_or_default();
+    let mut name = target
+        .file_name()
+        .map(|n| n.to_os_string())
+        .unwrap_or_default();
     name.push(".part");
     target.with_file_name(name)
 }
@@ -40,7 +43,14 @@ pub async fn download<F>(url: &str, target: &Path, on_progress: F) -> Result<u64
 where
     F: FnMut(u64, Option<u64>),
 {
-    download_with(&web_client(), url, target, Duration::from_secs(600), on_progress).await
+    download_with(
+        &web_client(),
+        url,
+        target,
+        Duration::from_secs(600),
+        on_progress,
+    )
+    .await
 }
 
 /// [`download`] with your own client and overall timeout.
@@ -54,10 +64,18 @@ pub async fn download_with<F>(
 where
     F: FnMut(u64, Option<u64>),
 {
-    let response = client.get(url).timeout(timeout).send().await.map_err(|e| NetError::from_reqwest(e, url))?;
+    let response = client
+        .get(url)
+        .timeout(timeout)
+        .send()
+        .await
+        .map_err(|e| NetError::from_reqwest(e, url))?;
     let status = response.status();
     if !status.is_success() {
-        return Err(NetError::Http { status: status.as_u16(), detail: format!("HTTP {} for {url}", status.as_u16()) });
+        return Err(NetError::Http {
+            status: status.as_u16(),
+            detail: format!("HTTP {} for {url}", status.as_u16()),
+        });
     }
     let total = response.content_length().filter(|n| *n > 0);
     if let Some(dir) = target.parent().filter(|d| !d.as_os_str().is_empty()) {
@@ -76,7 +94,9 @@ where
     }
     if let Some(expected) = total {
         if received != expected {
-            return Err(NetError::Decode(format!("short download: {received} of {expected} bytes")));
+            return Err(NetError::Decode(format!(
+                "short download: {received} of {expected} bytes"
+            )));
         }
     }
     file.flush().await?;
@@ -103,6 +123,9 @@ mod tests {
 
     #[test]
     fn part_name() {
-        assert_eq!(part_path(Path::new("/a/b/app.tar.gz")), PathBuf::from("/a/b/app.tar.gz.part"));
+        assert_eq!(
+            part_path(Path::new("/a/b/app.tar.gz")),
+            PathBuf::from("/a/b/app.tar.gz.part")
+        );
     }
 }

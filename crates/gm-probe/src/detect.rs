@@ -28,7 +28,10 @@ struct RunOutput {
 /// a full pipe, and a grandchild holding the pipe open cannot block us.
 fn run_raw(program: &Path, args: &[&str], timeout: Duration) -> Option<RunOutput> {
     let mut cmd = Command::new(program);
-    cmd.args(args).stdin(Stdio::null()).stdout(Stdio::piped()).stderr(Stdio::null());
+    cmd.args(args)
+        .stdin(Stdio::null())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::null());
     #[cfg(windows)]
     {
         use std::os::windows::process::CommandExt;
@@ -56,14 +59,21 @@ fn run_raw(program: &Path, args: &[&str], timeout: Duration) -> Option<RunOutput
             }
         }
     };
-    let remaining = deadline.saturating_duration_since(Instant::now()).max(Duration::from_millis(500));
+    let remaining = deadline
+        .saturating_duration_since(Instant::now())
+        .max(Duration::from_millis(500));
     let buf = rx.recv_timeout(remaining).ok()?;
-    Some(RunOutput { success: status.success(), stdout: String::from_utf8_lossy(&buf).into_owned() })
+    Some(RunOutput {
+        success: status.success(),
+        stdout: String::from_utf8_lossy(&buf).into_owned(),
+    })
 }
 
 /// stdout of a successful command, like hardware.py `_run`.
 fn run(program: impl AsRef<Path>, args: &[&str], timeout: Duration) -> Option<String> {
-    run_raw(program.as_ref(), args, timeout).filter(|o| o.success).map(|o| o.stdout)
+    run_raw(program.as_ref(), args, timeout)
+        .filter(|o| o.success)
+        .map(|o| o.stdout)
 }
 
 /// stdout whatever the exit code (sysctl exits 1 when one name is unknown).
@@ -75,8 +85,11 @@ fn run_any(program: impl AsRef<Path>, args: &[&str], timeout: Duration) -> Optio
 fn which(name: &str) -> Option<PathBuf> {
     let path = std::env::var_os("PATH")?;
     std::env::split_paths(&path).find_map(|dir| {
-        let candidates: &[String] =
-            if cfg!(windows) { &[format!("{name}.exe"), name.to_string()] } else { &[name.to_string()] };
+        let candidates: &[String] = if cfg!(windows) {
+            &[format!("{name}.exe"), name.to_string()]
+        } else {
+            &[name.to_string()]
+        };
         candidates.iter().map(|c| dir.join(c)).find(|p| p.is_file())
     })
 }
@@ -119,7 +132,9 @@ fn nvidia_smi() -> Option<PathBuf> {
 
 /// Every NVIDIA GPU nvidia-smi can see. hardware.py `_nvidia_gpus`.
 fn nvidia_gpus() -> Vec<Gpu> {
-    let Some(smi) = nvidia_smi() else { return Vec::new() };
+    let Some(smi) = nvidia_smi() else {
+        return Vec::new();
+    };
     let query = format!("--query-gpu={}", parse::NVIDIA_SMI_FIELDS);
     if let Some(raw) = run(&smi, &[&query, "--format=csv,noheader,nounits"], TIMEOUT) {
         return parse::parse_nvidia_smi(&raw, true);
@@ -132,21 +147,32 @@ fn nvidia_gpus() -> Vec<Gpu> {
 }
 
 fn hostname() -> String {
-    let from_env = |k: &str| std::env::var(k).ok().map(|s| s.trim().to_string()).filter(|s| !s.is_empty());
+    let from_env = |k: &str| {
+        std::env::var(k)
+            .ok()
+            .map(|s| s.trim().to_string())
+            .filter(|s| !s.is_empty())
+    };
     let found = if cfg!(windows) {
         from_env("COMPUTERNAME")
     } else {
         read("/proc/sys/kernel/hostname")
             .map(|s| s.trim().to_string())
             .filter(|s| !s.is_empty())
-            .or_else(|| run("hostname", &[], TIMEOUT).map(|s| s.trim().to_string()).filter(|s| !s.is_empty()))
+            .or_else(|| {
+                run("hostname", &[], TIMEOUT)
+                    .map(|s| s.trim().to_string())
+                    .filter(|s| !s.is_empty())
+            })
             .or_else(|| from_env("HOSTNAME"))
     };
     found.unwrap_or_else(|| "unknown".into())
 }
 
 fn cpu_threads() -> Option<u32> {
-    std::thread::available_parallelism().ok().map(|n| n.get() as u32)
+    std::thread::available_parallelism()
+        .ok()
+        .map(|n| n.get() as u32)
 }
 
 // ---------------------------------------------------------------------------
@@ -184,7 +210,9 @@ fn linux_display_devices() -> Vec<Gpu> {
         }
     }
     // No lspci, which is common in containers. sysfs still names the vendor.
-    let Ok(dir) = std::fs::read_dir("/sys/class/drm") else { return Vec::new() };
+    let Ok(dir) = std::fs::read_dir("/sys/class/drm") else {
+        return Vec::new();
+    };
     let entries: Vec<(String, String)> = dir
         .filter_map(Result::ok)
         .filter_map(|e| {
@@ -197,19 +225,27 @@ fn linux_display_devices() -> Vec<Gpu> {
 }
 
 fn linux_facts() -> OsFacts {
-    let (cpu_model, cpu_count) = read("/proc/cpuinfo").map(|t| parse::parse_cpuinfo(&t)).unwrap_or((None, None));
+    let (cpu_model, cpu_count) = read("/proc/cpuinfo")
+        .map(|t| parse::parse_cpuinfo(&t))
+        .unwrap_or((None, None));
     let mut listed = linux_display_devices();
     if listed.iter().any(|g| g.vendor == Vendor::Amd) {
         if let Some(version) = linux_rocm_version() {
             // DeviceFacts has no runtime field; see select::rocm_version.
-            let marker = if version.is_empty() { "rocm".to_string() } else { format!("rocm {version}") };
+            let marker = if version.is_empty() {
+                "rocm".to_string()
+            } else {
+                format!("rocm {version}")
+            };
             for gpu in listed.iter_mut().filter(|g| g.vendor == Vendor::Amd) {
                 gpu.driver = Some(marker.clone());
             }
         }
     }
     OsFacts {
-        os_version: read("/proc/sys/kernel/osrelease").map(|s| s.trim().to_string()).unwrap_or_default(),
+        os_version: read("/proc/sys/kernel/osrelease")
+            .map(|s| s.trim().to_string())
+            .unwrap_or_default(),
         os_name_pretty: read("/etc/os-release")
             .or_else(|| read("/usr/lib/os-release"))
             .and_then(|t| parse::parse_os_release(&t)),
@@ -225,7 +261,12 @@ fn linux_facts() -> OsFacts {
 fn windows_facts() -> OsFacts {
     let inventory = run(
         "powershell",
-        &["-NoProfile", "-NonInteractive", "-Command", parse::WINDOWS_INVENTORY_SCRIPT],
+        &[
+            "-NoProfile",
+            "-NonInteractive",
+            "-Command",
+            parse::WINDOWS_INVENTORY_SCRIPT,
+        ],
         SLOW_TIMEOUT,
     )
     .and_then(|raw| parse::parse_windows_inventory(&raw))
@@ -243,8 +284,12 @@ fn windows_facts() -> OsFacts {
 }
 
 fn macos_facts() -> OsFacts {
-    let sysctl = run_any("sysctl", &parse::SYSCTL_NAMES, TIMEOUT).map(|t| parse::parse_sysctl(&t)).unwrap_or_default();
-    let version = run("sw_vers", &["-productVersion"], TIMEOUT).map(|t| parse::parse_sw_vers(&t)).unwrap_or_default();
+    let sysctl = run_any("sysctl", &parse::SYSCTL_NAMES, TIMEOUT)
+        .map(|t| parse::parse_sysctl(&t))
+        .unwrap_or_default();
+    let version = run("sw_vers", &["-productVersion"], TIMEOUT)
+        .map(|t| parse::parse_sw_vers(&t))
+        .unwrap_or_default();
     let ram_mb = sysctl.memsize.map(|b| b / (1024 * 1024));
     let process = process_arch();
     let apple_silicon = process == Arch::Arm64 || sysctl.arm64;
@@ -254,9 +299,13 @@ fn macos_facts() -> OsFacts {
     let arch = if apple_silicon { Arch::Arm64 } else { process };
     let translated = sysctl.translated || (process == Arch::X86_64 && apple_silicon);
 
-    let mut listed = run("system_profiler", &["SPDisplaysDataType", "-json"], SLOW_TIMEOUT)
-        .map(|t| parse::parse_system_profiler(&t, ram_mb))
-        .unwrap_or_default();
+    let mut listed = run(
+        "system_profiler",
+        &["SPDisplaysDataType", "-json"],
+        SLOW_TIMEOUT,
+    )
+    .map(|t| parse::parse_system_profiler(&t, ram_mb))
+    .unwrap_or_default();
     if listed.is_empty() {
         listed = parse::apple_fallback_gpus(sysctl.brand.as_deref(), apple_silicon, ram_mb);
     }
@@ -300,7 +349,11 @@ pub fn detect() -> DeviceFacts {
             Os::Macos => macos_facts(),
             Os::Linux | Os::Other => linux_facts(),
         };
-        (nvidia.join().unwrap_or_default(), os_facts, host.join().unwrap_or_else(|_| "unknown".into()))
+        (
+            nvidia.join().unwrap_or_default(),
+            os_facts,
+            host.join().unwrap_or_else(|_| "unknown".into()),
+        )
     });
     let (gpus, _note) = parse::assemble_gpus(nvidia, os_facts.listed);
     DeviceFacts {
@@ -338,7 +391,12 @@ mod tests {
     #[test]
     fn failing_command_is_none_but_run_any_keeps_stdout() {
         assert!(run("sh", &["-c", "echo hi; exit 1"], TIMEOUT).is_none());
-        assert_eq!(run_any("sh", &["-c", "echo hi; exit 1"], TIMEOUT).unwrap().trim(), "hi");
+        assert_eq!(
+            run_any("sh", &["-c", "echo hi; exit 1"], TIMEOUT)
+                .unwrap()
+                .trim(),
+            "hi"
+        );
     }
 
     #[test]

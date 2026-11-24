@@ -23,19 +23,34 @@ pub const EVENT: &str = "gm://event";
 const LOG_CAP: usize = 2000;
 
 pub fn now() -> f64 {
-    SystemTime::now().duration_since(UNIX_EPOCH).map(|d| d.as_secs_f64()).unwrap_or(0.0)
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|d| d.as_secs_f64())
+        .unwrap_or(0.0)
 }
 
 pub fn default_data_dir() -> PathBuf {
-    dirs::data_local_dir().unwrap_or_else(std::env::temp_dir).join("GradApp")
+    dirs::data_local_dir()
+        .unwrap_or_else(std::env::temp_dir)
+        .join("GradApp")
 }
 
 fn config_path() -> PathBuf {
-    dirs::config_dir().unwrap_or_else(std::env::temp_dir).join("GradApp").join("settings.json")
+    dirs::config_dir()
+        .unwrap_or_else(std::env::temp_dir)
+        .join("GradApp")
+        .join("settings.json")
 }
 
 fn stopped(role: ProcRole) -> ProcStatus {
-    ProcStatus { role, state: ProcState::Stopped, pid: None, restarts: 0, last_line: None, exit_code: None }
+    ProcStatus {
+        role,
+        state: ProcState::Stopped,
+        pid: None,
+        restarts: 0,
+        last_line: None,
+        exit_code: None,
+    }
 }
 
 /// Shared state, managed by Tauri (`app.state::<AppBackend>()`).
@@ -77,7 +92,9 @@ impl AppBackend {
     }
 
     fn lock(&self) -> std::sync::MutexGuard<'_, Inner> {
-        self.inner.lock().unwrap_or_else(|poison| poison.into_inner())
+        self.inner
+            .lock()
+            .unwrap_or_else(|poison| poison.into_inner())
     }
 
     // ------------------------------------------------------------- settings
@@ -92,7 +109,8 @@ impl AppBackend {
             std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
         }
         let raw = serde_json::to_string_pretty(&next).map_err(|e| e.to_string())?;
-        std::fs::write(&path, raw).map_err(|e| format!("Could not save settings to {}: {e}", path.display()))?;
+        std::fs::write(&path, raw)
+            .map_err(|e| format!("Could not save settings to {}: {e}", path.display()))?;
         self.lock().settings = next.clone();
         Ok(next)
     }
@@ -112,7 +130,10 @@ impl AppBackend {
     }
 
     pub fn contributing(&self) -> bool {
-        !matches!(self.lock().worker.state, ProcState::Stopped | ProcState::Failed)
+        !matches!(
+            self.lock().worker.state,
+            ProcState::Stopped | ProcState::Failed
+        )
     }
 
     pub fn logs(&self) -> Vec<LogEntry> {
@@ -129,7 +150,11 @@ impl AppBackend {
         };
         {
             let mut inner = self.lock();
-            inner.logs.push_back(LogEntry { at: now(), source: source.into(), line: line.clone() });
+            inner.logs.push_back(LogEntry {
+                at: now(),
+                source: source.into(),
+                line: line.clone(),
+            });
             while inner.logs.len() > LOG_CAP {
                 inner.logs.pop_front();
             }
@@ -167,7 +192,11 @@ impl AppBackend {
                 ));
             }
         }
-        DeviceReport { facts, profile, overridden: preferred.is_some() }
+        DeviceReport {
+            facts,
+            profile,
+            overridden: preferred.is_some(),
+        }
     }
 
     // ----------------------------------------------------------------- ports
@@ -191,20 +220,32 @@ impl AppBackend {
                     .iter()
                     .find(|(id, _)| id == &spec.id)
                     .map(|(_, s)| *s)
-                    .unwrap_or(if compatible { PortState::NotInstalled } else { PortState::Blocked });
+                    .unwrap_or(if compatible {
+                        PortState::NotInstalled
+                    } else {
+                        PortState::Blocked
+                    });
                 let status = PortStatus {
                     port: spec.id.clone(),
                     state,
-                    env_dir: data.join("ports").join(&spec.id).to_string_lossy().into_owned(),
+                    env_dir: data
+                        .join("ports")
+                        .join(&spec.id)
+                        .to_string_lossy()
+                        .into_owned(),
                     python_path: None,
-                    torch: (state == PortState::Ready).then(|| format!("{}{}", spec.torch, spec.local_suffix)),
+                    torch: (state == PortState::Ready)
+                        .then(|| format!("{}{}", spec.torch, spec.local_suffix)),
                     device: None,
                     message: None,
                 };
                 PortEntry {
                     selected: spec.id == device.profile.port,
                     incompatible_reason: (!compatible).then(|| {
-                        format!("Built for {}; this machine is {platform}.", spec.platforms.join(", "))
+                        format!(
+                            "Built for {}; this machine is {platform}.",
+                            spec.platforms.join(", ")
+                        )
                     }),
                     compatible,
                     status,
@@ -228,12 +269,19 @@ impl AppBackend {
             .find(|entry| entry.spec.id == port_id)
             .ok_or_else(|| format!("Unknown port {port_id}"))?;
         if !entry.compatible {
-            return Err(entry.incompatible_reason.unwrap_or_else(|| "Not for this machine".into()));
+            return Err(entry
+                .incompatible_reason
+                .unwrap_or_else(|| "Not for this machine".into()));
         }
         self.set_port_state(&port_id, PortState::Installing);
         let mut status = entry.status.clone();
         status.state = PortState::Installing;
-        emit(app, AppEvent::PortStatus { status: status.clone() });
+        emit(
+            app,
+            AppEvent::PortStatus {
+                status: status.clone(),
+            },
+        );
 
         // INTEGRATE: `gm_ports::install(&spec, &data_dir, |progress| emit PortProgress)` on a
         // blocking task. The simulation below emits the same event sequence.
@@ -245,21 +293,40 @@ impl AppBackend {
             let backend = app.state::<AppBackend>();
             let steps: [(&str, f32, String); 6] = [
                 ("uv", 0.05, "uv 0.9 found in the app bundle".into()),
-                ("python", 0.18, format!("Downloading CPython {} (managed by uv)", spec.python)),
+                (
+                    "python",
+                    0.18,
+                    format!("Downloading CPython {} (managed by uv)", spec.python),
+                ),
                 ("venv", 0.3, format!("Created {}", status.env_dir)),
-                ("torch", 0.72, format!("Installing torch {}{}", spec.torch, spec.local_suffix)),
-                ("packages", 0.9, format!("Installing {} packages", spec.packages.len().max(1))),
-                ("verify", 1.0, format!("Test kernel ran on {}", spec.backend.as_str())),
+                (
+                    "torch",
+                    0.72,
+                    format!("Installing torch {}{}", spec.torch, spec.local_suffix),
+                ),
+                (
+                    "packages",
+                    0.9,
+                    format!("Installing {} packages", spec.packages.len().max(1)),
+                ),
+                (
+                    "verify",
+                    1.0,
+                    format!("Test kernel ran on {}", spec.backend.as_str()),
+                ),
             ];
             for (step, percent, line) in steps {
                 tokio::time::sleep(Duration::from_millis(600)).await;
                 backend.log(&app, ProcRole::Installer, line.clone());
-                emit(&app, AppEvent::PortProgress {
-                    port: spec.id.clone(),
-                    step: step.into(),
-                    percent: Some(percent),
-                    line: Some(line),
-                });
+                emit(
+                    &app,
+                    AppEvent::PortProgress {
+                        port: spec.id.clone(),
+                        step: step.into(),
+                        percent: Some(percent),
+                        line: Some(line),
+                    },
+                );
             }
             backend.set_port_state(&spec.id, PortState::Ready);
             let mut done = status.clone();
@@ -285,30 +352,41 @@ impl AppBackend {
                 if !app.state::<AppBackend>().discovering.load(Ordering::SeqCst) {
                     break;
                 }
-                emit(&app, AppEvent::ScanProgress { scanned: scanned.min(total), total });
+                emit(
+                    &app,
+                    AppEvent::ScanProgress {
+                        scanned: scanned.min(total),
+                        total,
+                    },
+                );
                 tokio::time::sleep(Duration::from_millis(250)).await;
             }
             let hosting = app.state::<AppBackend>().status().hosting;
             if let Some(host) = hosting {
-                emit(&app, AppEvent::MeshFound {
-                    mesh: DiscoveredMesh {
-                        mesh_id: host.mesh_id,
-                        hostname: hostname(),
-                        coordinator: host.coordinator,
-                        web: host.web,
-                        version: ENGINE_VERSION.into(),
-                        protocol: MESH_PROTOCOL,
-                        nodes_active: 1,
-                        torch_ready: true,
-                        local: true,
-                        source: DiscoverySource::Beacon,
-                        token: Some(host.token),
-                        mesh_name: Some(host.mesh_name),
-                        latency_ms: Some(1),
+                emit(
+                    &app,
+                    AppEvent::MeshFound {
+                        mesh: DiscoveredMesh {
+                            mesh_id: host.mesh_id,
+                            hostname: hostname(),
+                            coordinator: host.coordinator,
+                            web: host.web,
+                            version: ENGINE_VERSION.into(),
+                            protocol: MESH_PROTOCOL,
+                            nodes_active: 1,
+                            torch_ready: true,
+                            local: true,
+                            source: DiscoverySource::Beacon,
+                            token: Some(host.token),
+                            mesh_name: Some(host.mesh_name),
+                            latency_ms: Some(1),
+                        },
                     },
-                });
+                );
             }
-            app.state::<AppBackend>().discovering.store(false, Ordering::SeqCst);
+            app.state::<AppBackend>()
+                .discovering
+                .store(false, Ordering::SeqCst);
         });
     }
 
@@ -333,8 +411,21 @@ impl AppBackend {
 
         // INTEGRATE: `supervisor.start(ProcRole::Worker, port_python, ["-m","worker", ...])`;
         // its status changes and stdout lines arrive as Proc and Log events.
-        self.set_proc(app, ProcStatus { state: ProcState::Starting, ..stopped(ProcRole::Worker) });
-        self.log(app, ProcRole::Worker, format!("Joining {} on port {}", parsed.coordinator, device.profile.port));
+        self.set_proc(
+            app,
+            ProcStatus {
+                state: ProcState::Starting,
+                ..stopped(ProcRole::Worker)
+            },
+        );
+        self.log(
+            app,
+            ProcRole::Worker,
+            format!(
+                "Joining {} on port {}",
+                parsed.coordinator, device.profile.port
+            ),
+        );
         let app2 = app.clone();
         tauri::async_runtime::spawn(async move {
             tokio::time::sleep(Duration::from_millis(1200)).await;
@@ -342,12 +433,15 @@ impl AppBackend {
             if backend.lock().joined.is_none() {
                 return;
             }
-            backend.set_proc(&app2, ProcStatus {
-                state: ProcState::Running,
-                pid: Some(std::process::id()),
-                last_line: Some("Connected. Waiting for work.".into()),
-                ..stopped(ProcRole::Worker)
-            });
+            backend.set_proc(
+                &app2,
+                ProcStatus {
+                    state: ProcState::Running,
+                    pid: Some(std::process::id()),
+                    last_line: Some("Connected. Waiting for work.".into()),
+                    ..stopped(ProcRole::Worker)
+                },
+            );
             backend.log(&app2, ProcRole::Worker, "Connected. Waiting for work.");
         });
         Ok(parsed)
@@ -362,7 +456,11 @@ impl AppBackend {
 
     // ------------------------------------------------------------------ host
 
-    pub fn host_start(&self, app: &AppHandle, mesh_name: Option<String>) -> Result<HostInfo, String> {
+    pub fn host_start(
+        &self,
+        app: &AppHandle,
+        mesh_name: Option<String>,
+    ) -> Result<HostInfo, String> {
         if let Some(existing) = self.lock().hosting.clone() {
             return Ok(existing);
         }
@@ -371,18 +469,34 @@ impl AppBackend {
         let host = hostname();
         let ip = "127.0.0.1"; // INTEGRATE: gm_net::lan_ip()
         let token = format!("{:016x}", (now() * 1000.0) as u64 ^ 0x9e37_79b9_7f4a_7c15);
-        let name = mesh_name.filter(|n| !n.trim().is_empty()).unwrap_or_else(|| format!("{host}'s mesh"));
+        let name = mesh_name
+            .filter(|n| !n.trim().is_empty())
+            .unwrap_or_else(|| format!("{host}'s mesh"));
         let info = HostInfo {
             mesh_id: format!("m-{}", &token[..8]),
             mesh_name: name.clone(),
             coordinator: format!("http://{ip}:{COORDINATOR_PORT}"),
             web: format!("http://{ip}:{WEB_PORT}"),
-            invite_link: format!("gradapp://join?host={ip}&port={COORDINATOR_PORT}&token={token}&name={}", name.replace(' ', "%20")),
+            invite_link: format!(
+                "gradapp://join?host={ip}&port={COORDINATOR_PORT}&token={token}&name={}",
+                name.replace(' ', "%20")
+            ),
             token,
         };
         self.lock().hosting = Some(info.clone());
-        self.set_proc(app, ProcStatus { state: ProcState::Running, pid: Some(std::process::id()), ..stopped(ProcRole::Coordinator) });
-        self.log(app, ProcRole::Coordinator, format!("Coordinator listening on {}", info.coordinator));
+        self.set_proc(
+            app,
+            ProcStatus {
+                state: ProcState::Running,
+                pid: Some(std::process::id()),
+                ..stopped(ProcRole::Coordinator)
+            },
+        );
+        self.log(
+            app,
+            ProcRole::Coordinator,
+            format!("Coordinator listening on {}", info.coordinator),
+        );
         Ok(info)
     }
 
@@ -400,14 +514,29 @@ impl AppBackend {
             let inner = self.lock();
             (inner.joined.clone(), inner.hosting.clone())
         };
-        let coordinator = joined.as_ref().map(|j| j.coordinator.clone()).or(hosting.as_ref().map(|h| h.coordinator.clone()))?;
+        let coordinator = joined
+            .as_ref()
+            .map(|j| j.coordinator.clone())
+            .or(hosting.as_ref().map(|h| h.coordinator.clone()))?;
         // INTEGRATE: `gm_net::client(&coordinator).mesh().await` (GET /mesh + /events); map the
         // coordinator's node JSON into MeshNode.
         let device = self.device();
         let me = MeshNode {
             node_id: "self".into(),
-            display_name: self.settings().device_name.trim().to_string().chars().take(60).collect::<String>().if_empty(hostname()),
-            gpu: device.profile.gpu_name.clone().unwrap_or_else(|| "CPU".into()),
+            display_name: self
+                .settings()
+                .device_name
+                .trim()
+                .to_string()
+                .chars()
+                .take(60)
+                .collect::<String>()
+                .if_empty(hostname()),
+            gpu: device
+                .profile
+                .gpu_name
+                .clone()
+                .unwrap_or_else(|| "CPU".into()),
             backend: device.profile.backend,
             gpu_memory_mb: None,
             gflops: None,
@@ -426,8 +555,13 @@ impl AppBackend {
             warnings: device.profile.warnings.clone(),
         };
         Some(MeshSnapshot {
-            mesh_id: hosting.as_ref().map(|h| h.mesh_id.clone()).unwrap_or_else(|| "m-remote".into()),
-            mesh_name: hosting.map(|h| h.mesh_name).or(joined.and_then(|j| j.mesh_name)),
+            mesh_id: hosting
+                .as_ref()
+                .map(|h| h.mesh_id.clone())
+                .unwrap_or_else(|| "m-remote".into()),
+            mesh_name: hosting
+                .map(|h| h.mesh_name)
+                .or(joined.and_then(|j| j.mesh_name)),
             coordinator,
             version: ENGINE_VERSION.into(),
             torch_ready: true,
@@ -464,7 +598,11 @@ trait IfEmpty {
 }
 impl IfEmpty for String {
     fn if_empty(self, other: String) -> String {
-        if self.is_empty() { other } else { self }
+        if self.is_empty() {
+            other
+        } else {
+            self
+        }
     }
 }
 
@@ -476,7 +614,11 @@ pub fn hostname() -> String {
     std::env::var("HOSTNAME")
         .or_else(|_| std::env::var("COMPUTERNAME"))
         .ok()
-        .or_else(|| std::fs::read_to_string("/etc/hostname").ok().map(|s| s.trim().to_string()))
+        .or_else(|| {
+            std::fs::read_to_string("/etc/hostname")
+                .ok()
+                .map(|s| s.trim().to_string())
+        })
         .filter(|s| !s.is_empty())
         .unwrap_or_else(|| "this-computer".into())
 }
@@ -526,7 +668,9 @@ fn placeholder_facts() -> DeviceFacts {
         translated: false,
         hostname: hostname(),
         cpu_model: None,
-        cpu_cores: std::thread::available_parallelism().ok().map(|n| n.get() as u32),
+        cpu_cores: std::thread::available_parallelism()
+            .ok()
+            .map(|n| n.get() as u32),
         ram_mb: None,
         gpus: vec![],
         os_name_pretty: Some(std::env::consts::OS.to_string()),
@@ -535,7 +679,11 @@ fn placeholder_facts() -> DeviceFacts {
 
 fn placeholder_profile(facts: &DeviceFacts) -> Profile {
     let mps = facts.os == Os::Macos && facts.arch == Arch::Arm64;
-    let (port, backend, label) = if mps { ("mps", Backend::Mps, "Apple Silicon · Metal") } else { ("cpu", Backend::Cpu, "CPU only") };
+    let (port, backend, label) = if mps {
+        ("mps", Backend::Mps, "Apple Silicon · Metal")
+    } else {
+        ("cpu", Backend::Cpu, "CPU only")
+    };
     Profile {
         port: port.into(),
         backend,
@@ -552,7 +700,19 @@ fn placeholder_profile(facts: &DeviceFacts) -> Profile {
     }
 }
 
-fn spec(id: &str, backend: Backend, label: &str, index: Option<&str>, suffix: &str, platforms: &[&str], reference: bool, experimental: bool, min_driver: Option<u32>, notes: &str) -> PortSpec {
+#[allow(clippy::too_many_arguments)] // temporary mirror, removed when backend.rs reads gm-ports
+fn spec(
+    id: &str,
+    backend: Backend,
+    label: &str,
+    index: Option<&str>,
+    suffix: &str,
+    platforms: &[&str],
+    reference: bool,
+    experimental: bool,
+    min_driver: Option<u32>,
+    notes: &str,
+) -> PortSpec {
     PortSpec {
         id: id.into(),
         backend,
@@ -562,7 +722,11 @@ fn spec(id: &str, backend: Backend, label: &str, index: Option<&str>, suffix: &s
         torchvision: "0.24.1".into(),
         index_url: index.map(Into::into),
         local_suffix: suffix.into(),
-        packages: vec!["ultralytics==8.3.228".into(), "numpy<3".into(), "httpx".into()],
+        packages: vec![
+            "ultralytics==8.3.228".into(),
+            "numpy<3".into(),
+            "httpx".into(),
+        ],
         platforms: platforms.iter().map(|s| s.to_string()).collect(),
         reference,
         experimental,
@@ -574,12 +738,84 @@ fn spec(id: &str, backend: Backend, label: &str, index: Option<&str>, suffix: &s
 /// Mirrors ports/*.toml until gm-ports loads them.
 fn builtin_ports() -> Vec<PortSpec> {
     vec![
-        spec("cuda-cu130", Backend::Cuda, "NVIDIA · CUDA 13.0", Some("https://download.pytorch.org/whl/cu130"), "+cu130", &["windows-x86_64", "linux-x86_64", "linux-arm64"], true, false, Some(580), "Turing (RTX 20) and newer, including Blackwell."),
-        spec("cuda-cu126", Backend::Cuda, "NVIDIA · CUDA 12.6 (older drivers)", Some("https://download.pytorch.org/whl/cu126"), "+cu126", &["windows-x86_64", "linux-x86_64"], false, false, Some(560), "For drivers older than 580 and Pascal/Volta cards."),
-        spec("xpu", Backend::Xpu, "Intel Arc · XPU", Some("https://download.pytorch.org/whl/xpu"), "+xpu", &["windows-x86_64", "linux-x86_64"], true, false, None, "Arc A/B series and Core Ultra with Arc Graphics."),
-        spec("mps", Backend::Mps, "Apple Silicon · Metal", None, "", &["macos-arm64"], true, false, None, "M1 or later on macOS 14+."),
-        spec("rocm", Backend::Rocm, "AMD · ROCm 6.4", Some("https://download.pytorch.org/whl/rocm6.4"), "+rocm6.4", &["linux-x86_64"], false, true, None, "Experimental. Radeon RX 7000 / Instinct on Linux."),
-        spec("cpu", Backend::Cpu, "CPU only", Some("https://download.pytorch.org/whl/cpu"), "+cpu", &["windows-x86_64", "linux-x86_64", "linux-arm64", "macos-arm64", "macos-x86_64"], false, false, None, "Joins and is measured; receives no training work."),
+        spec(
+            "cuda-cu130",
+            Backend::Cuda,
+            "NVIDIA · CUDA 13.0",
+            Some("https://download.pytorch.org/whl/cu130"),
+            "+cu130",
+            &["windows-x86_64", "linux-x86_64", "linux-arm64"],
+            true,
+            false,
+            Some(580),
+            "Turing (RTX 20) and newer, including Blackwell.",
+        ),
+        spec(
+            "cuda-cu126",
+            Backend::Cuda,
+            "NVIDIA · CUDA 12.6 (older drivers)",
+            Some("https://download.pytorch.org/whl/cu126"),
+            "+cu126",
+            &["windows-x86_64", "linux-x86_64"],
+            false,
+            false,
+            Some(560),
+            "For drivers older than 580 and Pascal/Volta cards.",
+        ),
+        spec(
+            "xpu",
+            Backend::Xpu,
+            "Intel Arc · XPU",
+            Some("https://download.pytorch.org/whl/xpu"),
+            "+xpu",
+            &["windows-x86_64", "linux-x86_64"],
+            true,
+            false,
+            None,
+            "Arc A/B series and Core Ultra with Arc Graphics.",
+        ),
+        spec(
+            "mps",
+            Backend::Mps,
+            "Apple Silicon · Metal",
+            None,
+            "",
+            &["macos-arm64"],
+            true,
+            false,
+            None,
+            "M1 or later on macOS 14+.",
+        ),
+        spec(
+            "rocm",
+            Backend::Rocm,
+            "AMD · ROCm 6.4",
+            Some("https://download.pytorch.org/whl/rocm6.4"),
+            "+rocm6.4",
+            &["linux-x86_64"],
+            false,
+            true,
+            None,
+            "Experimental. Radeon RX 7000 / Instinct on Linux.",
+        ),
+        spec(
+            "cpu",
+            Backend::Cpu,
+            "CPU only",
+            Some("https://download.pytorch.org/whl/cpu"),
+            "+cpu",
+            &[
+                "windows-x86_64",
+                "linux-x86_64",
+                "linux-arm64",
+                "macos-arm64",
+                "macos-x86_64",
+            ],
+            false,
+            false,
+            None,
+            "Joins and is measured; receives no training work.",
+        ),
     ]
 }
 
@@ -599,14 +835,20 @@ fn parse_invite(raw: &str) -> Result<Invite, String> {
             let v = v.replace("%20", " ");
             match k {
                 "host" => host = v,
-                "port" => port = v.parse().map_err(|_| "The invite's port is not a number.")?,
+                "port" => {
+                    port = v
+                        .parse()
+                        .map_err(|_| "The invite's port is not a number.")?
+                }
                 "token" => token = Some(v),
                 "name" => name = Some(v),
                 _ => {}
             }
         }
     } else {
-        let stripped = text.trim_start_matches("http://").trim_start_matches("https://");
+        let stripped = text
+            .trim_start_matches("http://")
+            .trim_start_matches("https://");
         let authority = stripped.split('/').next().unwrap_or("");
         match authority.rsplit_once(':') {
             Some((h, p)) if p.chars().all(|c| c.is_ascii_digit()) && !p.is_empty() => {
@@ -634,9 +876,16 @@ mod tests {
 
     #[test]
     fn invite_forms() {
-        assert_eq!(parse_invite("192.168.1.20").unwrap().coordinator, "http://192.168.1.20:8000");
-        assert_eq!(parse_invite("http://box.local:8001/x").unwrap().coordinator, "http://box.local:8001");
-        let link = parse_invite("gradapp://join?host=10.0.0.5&port=8000&token=abc&name=Lab%20mesh").unwrap();
+        assert_eq!(
+            parse_invite("192.168.1.20").unwrap().coordinator,
+            "http://192.168.1.20:8000"
+        );
+        assert_eq!(
+            parse_invite("http://box.local:8001/x").unwrap().coordinator,
+            "http://box.local:8001"
+        );
+        let link = parse_invite("gradapp://join?host=10.0.0.5&port=8000&token=abc&name=Lab%20mesh")
+            .unwrap();
         assert_eq!(link.token.as_deref(), Some("abc"));
         assert_eq!(link.mesh_name.as_deref(), Some("Lab mesh"));
         assert!(parse_invite("  ").is_err());

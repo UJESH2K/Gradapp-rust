@@ -31,7 +31,16 @@ pub fn build(app: &AppHandle) -> tauri::Result<()> {
     let open = MenuItem::with_id(app, "open", "Open GradApp", true, None::<&str>)?;
     let toggle = MenuItem::with_id(app, "toggle", "Start contributing", true, None::<&str>)?;
     let quit = MenuItem::with_id(app, "quit", "Quit GradApp", true, None::<&str>)?;
-    let menu = Menu::with_items(app, &[&open, &PredefinedMenuItem::separator(app)?, &toggle, &PredefinedMenuItem::separator(app)?, &quit])?;
+    let menu = Menu::with_items(
+        app,
+        &[
+            &open,
+            &PredefinedMenuItem::separator(app)?,
+            &toggle,
+            &PredefinedMenuItem::separator(app)?,
+            &quit,
+        ],
+    )?;
 
     let tray = TrayIconBuilder::with_id("main")
         .icon(Image::from_bytes(ICON_IDLE)?)
@@ -59,7 +68,12 @@ pub fn build(app: &AppHandle) -> tauri::Result<()> {
             _ => {}
         })
         .on_tray_icon_event(|tray, event| {
-            if let TrayIconEvent::Click { button: MouseButton::Left, button_state: MouseButtonState::Up, .. } = event {
+            if let TrayIconEvent::Click {
+                button: MouseButton::Left,
+                button_state: MouseButtonState::Up,
+                ..
+            } = event
+            {
                 show_main(tray.app_handle());
             }
         })
@@ -73,17 +87,29 @@ pub fn build(app: &AppHandle) -> tauri::Result<()> {
 
 /// Bring the menu text and icon in line with the worker/coordinator state.
 pub fn refresh(app: &AppHandle) {
-    let Some(state) = app.try_state::<TrayState>() else { return };
+    let Some(state) = app.try_state::<TrayState>() else {
+        return;
+    };
     let backend = app.state::<AppBackend>();
     let contributing = backend.contributing();
     let active = contributing || backend.status().hosting.is_some();
     if let Some(item) = state.toggle.lock().unwrap().as_ref() {
-        let _ = item.set_text(if contributing { "Stop contributing" } else { "Start contributing" });
+        let _ = item.set_text(if contributing {
+            "Stop contributing"
+        } else {
+            "Start contributing"
+        });
     };
     if let Some(tray) = state.icon.lock().unwrap().as_ref() {
         if let Ok(image) = Image::from_bytes(if active { ICON_ACTIVE } else { ICON_IDLE }) {
             let _ = tray.set_icon(Some(image));
         }
-        let _ = tray.set_tooltip(Some(if contributing { "GradApp · contributing" } else if active { "GradApp · hosting" } else { "GradApp" }));
+        let _ = tray.set_tooltip(Some(if contributing {
+            "GradApp · contributing"
+        } else if active {
+            "GradApp · hosting"
+        } else {
+            "GradApp"
+        }));
     };
 }

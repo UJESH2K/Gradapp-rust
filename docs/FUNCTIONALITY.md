@@ -6,6 +6,10 @@ changes, change this file and add a DEVLOG entry saying why.
 
 Status legend: ✅ done · 🧪 implemented, needs hardware validation · 🚧 in progress · 📋 planned
 
+> **State on 2026-11-24:** every crate below is built and tested, and `gmctl` runs
+> the real path. The desktop window still uses placeholder data for install /
+> join / host until `app/src-tauri/src/backend.rs` is wired (🚧, next session).
+
 ## 1. First launch
 
 | Step | Behaviour | Code | Status |
@@ -20,9 +24,9 @@ Status legend: ✅ done · 🧪 implemented, needs hardware validation · 🚧 i
 |---|---|---|
 | Discover meshes on the WiFi/LAN: beacon (<1 s), mDNS, /24 sweep fallback; radar shows each mesh with node count, version and latency | `gm-net::discover` | ✅ |
 | Join by click, by pasting an IP / hostname / URL, or by a `gradapp://join?...` invite link | `gm-net::parse_address`, `read_invite` | ✅ |
-| Start the worker inside the port, no console window; restart after a crash with backoff | `gm-supervisor` + `worker_spec` | ✅ |
+| Start the worker inside the port, no console window; restart after a crash with backoff | `gm-supervisor` + `worker_spec` (gmctl ✅, window 🚧) | 🧪 |
 | Progress stepper from worker output (installing → verifying → registered → training) | `gm-supervisor::classify` | ✅ |
-| Stop contributing (UI or tray); closing the window keeps contributing in the tray | app | ✅ |
+| Stop contributing (UI or tray); closing the window keeps contributing in the tray | app | 🚧 |
 
 ## 3. Host a mesh
 
