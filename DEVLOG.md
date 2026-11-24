@@ -16,6 +16,35 @@ Format:
 
 ---
 
+## 2026-11-25 — GradApp 2.0.0 goes stable (2.0.0)
+
+### What
+- `v2.0.0-beta.1` built and published on all three platforms after the
+  signing secret was added: Windows setup .exe, macOS universal .dmg (+ the
+  updater's .app.tar.gz), Linux AppImage/.deb/.rpm, all signed, plus
+  `latest.json`.
+- Version bumped to **2.0.0** (stable). Website: announcement bar and
+  structured-data version now say 2.0.
+
+### Why
+- The beta was a GitHub *pre-release*, and everything public reads
+  `/releases/latest`, which skips pre-releases: the website's download
+  buttons, GradApp 1's "Check for updates", and GradApp 2's stable update
+  feed. So nobody could see v2. A stable `v2.0.0` release is what makes it
+  appear everywhere at once, with no separate deployment:
+  - gradapp.ujesh.in download buttons switch to the v2 installers
+    automatically (`website/app.js` matches the v2 file names);
+  - GradApp 1 shows "2.0.0 is available" and links to the release (v1 has no
+    installer-updater, so the person installs v2 once by hand);
+  - from then on GradApp 2 updates itself in place (signed `latest.json`).
+
+### Risk accepted
+- v2 has not yet been run on a real GPU machine; the owner chose to ship
+  2.0.0 now. First hardware reports go in the next entry; fixes ship as
+  2.0.1 through the in-app updater.
+- On Windows, v1 (Electron) and v2 (Tauri) install side by side; uninstall
+  "GradApp 1.0.1" from Apps & features after installing 2.0.0.
+
 ## 2026-11-25 — First CI run on Windows/macOS; first beta tag (2.0.0-beta.1)
 
 ### What happened
