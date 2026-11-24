@@ -743,6 +743,13 @@ async fn beacon_query_over_multicast() {
         eprintln!("skipped: no LAN interface for multicast");
         return;
     }
+    // GitHub's macOS runners are VMs whose network does not loop multicast or
+    // limited broadcast back to the host; the same test passes on Linux CI.
+    // Real Macs are on the hardware checklist (docs/devlog/qa-review.md).
+    if cfg!(target_os = "macos") && std::env::var_os("GITHUB_ACTIONS").is_some() {
+        eprintln!("skipped: macOS CI VM has no multicast loopback");
+        return;
+    }
     // The beacon arrives from the LAN address, so the coordinator must listen there.
     let coord = mock_coordinator_on(Ipv4Addr::UNSPECIFIED, "mesh-q").await;
     let port = free_udp_port();

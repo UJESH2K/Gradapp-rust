@@ -29,7 +29,12 @@ pub type Result<T, E = NetError> = std::result::Result<T, E>;
 
 impl NetError {
     pub(crate) fn from_reqwest(err: reqwest::Error, what: &str) -> Self {
-        if err.is_timeout() {
+        // A connect that never completed means "nobody there", even when it was
+        // the connect timeout that gave up: Windows retries a refused SYN for
+        // ~2 s, so a closed port there looks like a timeout, not a refusal.
+        if err.is_connect() {
+            NetError::Unreachable(what.to_string())
+        } else if err.is_timeout() {
             NetError::Timeout(what.to_string())
         } else if err.is_decode() {
             NetError::Decode(err.to_string())

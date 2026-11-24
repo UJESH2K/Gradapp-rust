@@ -68,7 +68,7 @@ jobs:
         if: failure()
         shell: bash
         run: |
-          grep -nE "^error(\[|:)|panicked at|^---- .* stdout ----|^test .* FAILED|^failures:|assertion .*failed|left: |right: " test.log \
+          grep -nE -A1 "^error(\[|:)|panicked at|^---- .* stdout ----|^test .* FAILED|^failures:|assertion .*failed|left: |right: " test.log \
             | head -60 | while IFS= read -r line; do echo "::error title=${{ matrix.os }}::${line}"; done
           exit 1
 

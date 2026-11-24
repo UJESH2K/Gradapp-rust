@@ -39,8 +39,25 @@ Format:
   be read and fixed without the raw log.
 - `actions/checkout@v5`, `actions/setup-python@v6` (Node 20 deprecation).
 
+### CI round 2 (00:30): only 3 tests failed, all in gm-net
+Everything compiles on Windows and macOS; every other crate's tests pass there.
+- **Windows `client_calls`**: a dead coordinator came back as `Timeout`, not
+  `Unreachable`. Windows retries a refused TCP connect for ~2 s, so our 1.5 s
+  connect timeout fired first. Real effect: the app would say "timed out"
+  instead of "nobody there". Fix: any failed *connect* is `Unreachable`
+  (`gm-net/src/error.rs`).
+- **Windows `sweep_full_slash24_is_fast`**: same cause. After finding a mesh,
+  reading its invite from a closed join port cost two ~2 s HTTP attempts, so
+  every sweep result was held back 3+ s on Windows. Fix: one 800 ms TCP
+  check of the join port first; nothing there → skip both requests
+  (`gm-net/src/invite.rs`). Faster discovery on Windows for real users too.
+- **macOS `beacon_query_over_multicast`**: GitHub's macOS VMs don't loop
+  multicast/broadcast back. The test is skipped on macOS *in CI only* and
+  stays on the real-Mac checklist (it passes on Linux CI and locally).
+- CI annotations now include the line after each panic (the actual message).
+
 ### Next
-- Push, read the Windows/macOS annotations, fix, then re-tag the beta.
+- Push; when ci-v2 is green on all three OSes, re-tag `v2.0.0-beta.1`.
 
 ## 2026-11-24 (late night) — One home for releases: UJESH2K/gradapp
 

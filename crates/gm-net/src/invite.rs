@@ -118,6 +118,25 @@ pub async fn read_invite_with(
     web_port: u16,
 ) -> InviteInfo {
     let web = format!("http://{hostname}:{web_port}");
+    // Nothing listening on the join port is the common case (a bare GradMesh
+    // coordinator, a firewall). Find that out with one short TCP connect
+    // instead of two HTTP requests: on Windows a refused connect takes ~2 s
+    // per attempt, which held every sweep result back by 3+ s.
+    if let Ok(ip) = hostname.parse::<std::net::IpAddr>() {
+        let reachable = tokio::time::timeout(
+            Duration::from_millis(800),
+            tokio::net::TcpStream::connect((ip, web_port)),
+        )
+        .await;
+        if !matches!(reachable, Ok(Ok(_))) {
+            return InviteInfo {
+                web,
+                token: None,
+                mesh_name: None,
+                kind: None,
+            };
+        }
+    }
     if let Ok(response) = client
         .get(format!("{web}/gradapp.json"))
         .timeout(Duration::from_millis(2500))
