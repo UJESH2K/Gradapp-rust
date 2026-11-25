@@ -47,6 +47,13 @@
 
   --shadow-lift: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 18px 40px -24px rgba(0, 0, 0, 0.9);
 
+  /* GradApp: line charts on Runs (js/views/runs.js). */
+  --chart-1: #5b7cfa;
+  --chart-2: #22d3ee;
+  --chart-dot: #0e1117;
+  --chart-area-top: 0.32;
+  --chart-area-bottom: 0;
+
   color-scheme: dark;
 }
 
@@ -82,8 +89,8 @@ body::before {
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(900px 600px at 12% -10%, rgba(91, 124, 250, 0.07), transparent 60%),
-    radial-gradient(800px 500px at 92% 8%, rgba(34, 211, 238, 0.06), transparent 62%);
+    radial-gradient(900px 600px at 12% -10%, var(--t-glow-acc-5b7cfa070), transparent 60%),
+    radial-gradient(800px 500px at 92% 8%, var(--t-glow-cyan-060), transparent 62%);
 }
 
 a {
@@ -132,7 +139,7 @@ hr {
 
 ::selection {
   background: var(--accent);
-  color: #ffffff;
+  color: var(--t-tx-w-ffffff);
 }
 
 /* ------------------------------------------------------------------ layout */
@@ -246,7 +253,7 @@ hr {
 /* ------------------------------------------------------------------ panels */
 
 .panel {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.028), rgba(255, 255, 255, 0.008));
+  background: linear-gradient(180deg, var(--t-gr-w-028), var(--t-gr-w-008));
   border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: 20px;
@@ -280,7 +287,7 @@ hr {
 /* ------------------------------------------------------------------ stats */
 
 .stat {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.006));
+  background: linear-gradient(180deg, var(--t-gr-w-030), var(--t-gr-w-006));
   border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: 16px 18px;
@@ -335,23 +342,23 @@ hr {
 
 .badge-accent {
   color: var(--accent);
-  border-color: rgba(91, 124, 250, 0.32);
-  background: rgba(91, 124, 250, 0.08);
+  border-color: var(--t-bd-acc-5b7cfa320);
+  background: var(--t-bg-acc-5b7cfa080);
 }
 .badge-cyan {
   color: var(--cyan);
-  border-color: rgba(34, 211, 238, 0.32);
-  background: rgba(34, 211, 238, 0.08);
+  border-color: var(--t-bd-cyan-320);
+  background: var(--t-bg-cyan-080);
 }
 .badge-warn {
   color: var(--warn);
-  border-color: rgba(245, 165, 36, 0.32);
-  background: rgba(245, 165, 36, 0.08);
+  border-color: var(--t-bd-warn-320);
+  background: var(--t-bg-warn-080);
 }
 .badge-danger {
   color: var(--danger);
-  border-color: rgba(247, 107, 107, 0.32);
-  background: rgba(247, 107, 107, 0.08);
+  border-color: var(--t-bd-danger-320);
+  background: var(--t-bg-danger-080);
 }
 
 .dot {
@@ -364,25 +371,25 @@ hr {
 
 .dot-live {
   background: var(--live);
-  box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.45);
+  box-shadow: 0 0 0 0 var(--t-sh-live-450);
   animation: pulse 2.4s ease-out infinite;
 }
 
 .badge-live {
   color: var(--live);
-  border-color: rgba(52, 211, 153, 0.3);
-  background: rgba(52, 211, 153, 0.08);
+  border-color: var(--t-bd-live-300);
+  background: var(--t-bg-live-080);
 }
 
 @keyframes pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.45);
+    box-shadow: 0 0 0 0 var(--t-sh-live-450);
   }
   70% {
-    box-shadow: 0 0 0 9px rgba(52, 211, 153, 0);
+    box-shadow: 0 0 0 9px var(--t-sh-live-000);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0);
+    box-shadow: 0 0 0 0 var(--t-sh-live-000);
   }
 }
 
@@ -396,7 +403,7 @@ hr {
   padding: 9px 16px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--line-strong);
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--t-bg-w-040);
   color: var(--text);
   font-size: 0.88rem;
   font-weight: 540;
@@ -406,8 +413,8 @@ hr {
 }
 
 .btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.22);
+  background: var(--t-bg-w-080);
+  border-color: var(--t-bd-w-220);
 }
 
 .btn:active:not(:disabled) {
@@ -422,7 +429,7 @@ hr {
 .btn-primary {
   background: var(--accent);
   border-color: var(--accent);
-  color: #ffffff;
+  color: var(--t-tx-w-ffffff);
   font-weight: 600;
 }
 
@@ -438,17 +445,17 @@ hr {
 }
 .btn-ghost:hover:not(:disabled) {
   color: var(--text);
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--t-bg-w-050);
   border-color: transparent;
 }
 
 .btn-danger {
   color: var(--danger);
-  border-color: rgba(247, 107, 107, 0.3);
+  border-color: var(--t-bd-danger-300);
 }
 .btn-danger:hover:not(:disabled) {
-  background: rgba(247, 107, 107, 0.12);
-  border-color: rgba(247, 107, 107, 0.5);
+  background: var(--t-bg-danger-120);
+  border-color: var(--t-bd-danger-500);
 }
 
 .btn-lg {
@@ -472,7 +479,7 @@ hr {
   padding: 7px 7px 7px 13px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--line);
-  background: rgba(0, 0, 0, 0.35);
+  background: var(--t-bg-k-350);
 }
 
 .copy-line code {
@@ -531,7 +538,7 @@ hr {
   padding: 10px 12px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.015);
+  background: var(--t-bg-w-015);
 }
 
 .sw-title {
@@ -602,7 +609,7 @@ hr {
   padding: 10px 13px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--line-strong);
-  background: rgba(0, 0, 0, 0.35);
+  background: var(--t-bg-k-350);
   color: var(--text);
   font-size: 0.9rem;
   transition: border-color 140ms ease, box-shadow 140ms ease;
@@ -612,8 +619,8 @@ hr {
 .select:focus,
 .textarea:focus {
   outline: none;
-  border-color: rgba(91, 124, 250, 0.5);
-  box-shadow: 0 0 0 3px rgba(91, 124, 250, 0.1);
+  border-color: var(--t-bd-acc-5b7cfa500);
+  box-shadow: 0 0 0 3px var(--t-sh-acc-5b7cfa100);
 }
 
 .textarea {
@@ -675,7 +682,7 @@ hr {
 }
 
 .table tbody tr:hover {
-  background: rgba(255, 255, 255, 0.022);
+  background: var(--t-bg-w-022);
 }
 
 .num {
@@ -689,7 +696,7 @@ hr {
 .meter {
   height: 6px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--t-bg-w-070);
   overflow: hidden;
 }
 
@@ -715,7 +722,7 @@ hr {
 .code {
   font-family: var(--font-mono);
   font-size: 0.83rem;
-  background: rgba(0, 0, 0, 0.45);
+  background: var(--t-bg-k-450);
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   padding: 12px 14px;
@@ -727,7 +734,7 @@ hr {
 .code-inline {
   font-family: var(--font-mono);
   font-size: 0.85em;
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--t-bg-w-070);
   padding: 1px 6px;
   border-radius: 5px;
 }
@@ -751,26 +758,26 @@ hr {
   padding: 12px 15px;
   font-size: 0.86rem;
   border: 1px solid var(--line-strong);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--t-bg-w-030);
   line-height: 1.5;
 }
 
 .notice-warn {
-  border-color: rgba(245, 165, 36, 0.3);
-  background: rgba(245, 165, 36, 0.07);
-  color: #ffdca8;
+  border-color: var(--t-bd-warn-300);
+  background: var(--t-bg-warn-070);
+  color: var(--t-tx-warn-ffdca8);
 }
 
 .notice-danger {
-  border-color: rgba(247, 107, 107, 0.3);
-  background: rgba(247, 107, 107, 0.07);
-  color: #ffc4c4;
+  border-color: var(--t-bd-danger-300);
+  background: var(--t-bg-danger-070);
+  color: var(--t-tx-danger-ffc4c4);
 }
 
 .notice-accent {
-  border-color: rgba(91, 124, 250, 0.26);
-  background: rgba(91, 124, 250, 0.06);
-  color: #c9d6ff;
+  border-color: var(--t-bd-acc-5b7cfa260);
+  background: var(--t-bg-acc-5b7cfa060);
+  color: var(--t-tx-acc-c9d6ff);
 }
 
 .spin {
@@ -838,7 +845,7 @@ hr {
   font-weight: 520;
   white-space: nowrap;
   color: var(--text-dim);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--t-bg-w-030);
 }
 
 .vendor-dot {
@@ -865,16 +872,436 @@ hr {
 
 .vendor.vendor-nvidia {
   color: var(--vendor-nvidia);
-  border-color: rgba(163, 214, 92, 0.32);
-  background: rgba(163, 214, 92, 0.06);
+  border-color: var(--t-bd-nv-320);
+  background: var(--t-bg-nv-060);
 }
 .vendor.vendor-intel {
   color: var(--vendor-intel);
-  border-color: rgba(78, 168, 255, 0.32);
-  background: rgba(78, 168, 255, 0.06);
+  border-color: var(--t-bd-intel-320);
+  background: var(--t-bg-intel-060);
 }
 .vendor.vendor-apple {
   color: var(--vendor-apple);
-  border-color: rgba(211, 213, 222, 0.28);
-  background: rgba(211, 213, 222, 0.05);
+  border-color: var(--t-bd-apple-280);
+  background: var(--t-bg-apple-050);
+}
+
+/* ------------------------------------------------------------ theme colours
+   GradApp: every colour the stylesheets used to hard-code, as a variable.
+   Generated once from the literals (name = context-family-value); the dark
+   value is the original literal, so dark renders exactly as before. Light
+   overrides live in :root[data-theme="light"] below. */
+:root {
+  --t-bd-acc-5b7cfa200: rgba(91, 124, 250, 0.2);
+  --t-bd-acc-5b7cfa260: rgba(91, 124, 250, 0.26);
+  --t-bd-acc-5b7cfa320: rgba(91, 124, 250, 0.32);
+  --t-bd-acc-5b7cfa350: rgba(91, 124, 250, 0.35);
+  --t-bd-acc-5b7cfa400: rgba(91, 124, 250, 0.4);
+  --t-bd-acc-5b7cfa420: rgba(91, 124, 250, 0.42);
+  --t-bd-acc-5b7cfa500: rgba(91, 124, 250, 0.5);
+  --t-bd-acc-5b7cfa550: rgba(91, 124, 250, 0.55);
+  --t-bd-acc-5b7cfa700: rgba(91, 124, 250, 0.7);
+  --t-bd-apple-280: rgba(211, 213, 222, 0.28);
+  --t-bd-cyan-320: rgba(34, 211, 238, 0.32);
+  --t-bd-cyan-500: rgba(34, 211, 238, 0.5);
+  --t-bd-danger-300: rgba(247, 107, 107, 0.3);
+  --t-bd-danger-320: rgba(247, 107, 107, 0.32);
+  --t-bd-danger-350: rgba(247, 107, 107, 0.35);
+  --t-bd-danger-400: rgba(247, 107, 107, 0.4);
+  --t-bd-danger-500: rgba(247, 107, 107, 0.5);
+  --t-bd-intel-320: rgba(78, 168, 255, 0.32);
+  --t-bd-live-220: rgba(52, 211, 153, 0.22);
+  --t-bd-live-300: rgba(52, 211, 153, 0.3);
+  --t-bd-live-350: rgba(52, 211, 153, 0.35);
+  --t-bd-live-400: rgba(52, 211, 153, 0.4);
+  --t-bd-live-550: rgba(52, 211, 153, 0.55);
+  --t-bd-nv-320: rgba(163, 214, 92, 0.32);
+  --t-bd-w-060: rgba(255, 255, 255, 0.06);
+  --t-bd-w-070: rgba(255, 255, 255, 0.07);
+  --t-bd-w-080: rgba(255, 255, 255, 0.08);
+  --t-bd-w-090: rgba(255, 255, 255, 0.09);
+  --t-bd-w-100: rgba(255, 255, 255, 0.1);
+  --t-bd-w-120: rgba(255, 255, 255, 0.12);
+  --t-bd-w-140: rgba(255, 255, 255, 0.14);
+  --t-bd-w-150: rgba(255, 255, 255, 0.15);
+  --t-bd-w-220: rgba(255, 255, 255, 0.22);
+  --t-bd-w-240: rgba(255, 255, 255, 0.24);
+  --t-bd-warn-300: rgba(245, 165, 36, 0.3);
+  --t-bd-warn-320: rgba(245, 165, 36, 0.32);
+  --t-bd-warn-400: rgba(245, 165, 36, 0.4);
+  --t-bg-acc-5b7cfa060: rgba(91, 124, 250, 0.06);
+  --t-bg-acc-5b7cfa080: rgba(91, 124, 250, 0.08);
+  --t-bg-acc-5b7cfa100: rgba(91, 124, 250, 0.1);
+  --t-bg-acc-5b7cfa120: rgba(91, 124, 250, 0.12);
+  --t-bg-acc-5b7cfa140: rgba(91, 124, 250, 0.14);
+  --t-bg-acc-5b7cfa160: rgba(91, 124, 250, 0.16);
+  --t-bg-acc-5b7cfa200: rgba(91, 124, 250, 0.2);
+  --t-bg-acc-5b7cfa350: rgba(91, 124, 250, 0.35);
+  --t-bg-acc-5b7cfa400: rgba(91, 124, 250, 0.4);
+  --t-bg-acc-f4f6ff: #f4f6ff;
+  --t-bg-apple-050: rgba(211, 213, 222, 0.05);
+  --t-bg-apple-720: rgba(211, 213, 222, 0.72);
+  --t-bg-bg-030408660: rgba(3, 4, 8, 0.66);
+  --t-bg-bg-04050a: #04050a;
+  --t-bg-bg-06080e500: rgba(6, 8, 14, 0.5);
+  --t-bg-bg-07080b650: rgba(7, 8, 11, 0.65);
+  --t-bg-bg-07080b860: rgba(7, 8, 11, 0.86);
+  --t-bg-bg-080a12550: rgba(8, 10, 18, 0.55);
+  --t-bg-bg-090a0f: #090a0f;
+  --t-bg-bg-0b0d12: #0b0d12;
+  --t-bg-bg-12151e: #12151e;
+  --t-bg-cpu-700: rgba(125, 134, 153, 0.7);
+  --t-bg-cyan-080: rgba(34, 211, 238, 0.08);
+  --t-bg-cyan-400: rgba(34, 211, 238, 0.4);
+  --t-bg-danger-070: rgba(247, 107, 107, 0.07);
+  --t-bg-danger-080: rgba(247, 107, 107, 0.08);
+  --t-bg-danger-100: rgba(247, 107, 107, 0.1);
+  --t-bg-danger-120: rgba(247, 107, 107, 0.12);
+  --t-bg-danger-160: rgba(247, 107, 107, 0.16);
+  --t-bg-danger-180: rgba(247, 107, 107, 0.18);
+  --t-bg-danger-400: rgba(247, 107, 107, 0.4);
+  --t-bg-intel-060: rgba(78, 168, 255, 0.06);
+  --t-bg-intel-800: rgba(78, 168, 255, 0.8);
+  --t-bg-k-180: rgba(0, 0, 0, 0.18);
+  --t-bg-k-250: rgba(0, 0, 0, 0.25);
+  --t-bg-k-300: rgba(0, 0, 0, 0.3);
+  --t-bg-k-350: rgba(0, 0, 0, 0.35);
+  --t-bg-k-450: rgba(0, 0, 0, 0.45);
+  --t-bg-live-070: rgba(52, 211, 153, 0.07);
+  --t-bg-live-080: rgba(52, 211, 153, 0.08);
+  --t-bg-live-160: rgba(52, 211, 153, 0.16);
+  --t-bg-live-400: rgba(52, 211, 153, 0.4);
+  --t-bg-nv-060: rgba(163, 214, 92, 0.06);
+  --t-bg-nv-780: rgba(163, 214, 92, 0.78);
+  --t-bg-w-015: rgba(255, 255, 255, 0.015);
+  --t-bg-w-020: rgba(255, 255, 255, 0.02);
+  --t-bg-w-022: rgba(255, 255, 255, 0.022);
+  --t-bg-w-025: rgba(255, 255, 255, 0.025);
+  --t-bg-w-030: rgba(255, 255, 255, 0.03);
+  --t-bg-w-040: rgba(255, 255, 255, 0.04);
+  --t-bg-w-045: rgba(255, 255, 255, 0.045);
+  --t-bg-w-050: rgba(255, 255, 255, 0.05);
+  --t-bg-w-060: rgba(255, 255, 255, 0.06);
+  --t-bg-w-070: rgba(255, 255, 255, 0.07);
+  --t-bg-w-080: rgba(255, 255, 255, 0.08);
+  --t-bg-w-120: rgba(255, 255, 255, 0.12);
+  --t-bg-w-350: rgba(255, 255, 255, 0.35);
+  --t-bg-w-ffffff: #fff;
+  --t-bg-warn-070: rgba(245, 165, 36, 0.07);
+  --t-bg-warn-080: rgba(245, 165, 36, 0.08);
+  --t-bg-warn-160: rgba(245, 165, 36, 0.16);
+  --t-bg-warn-750: rgba(245, 165, 36, 0.75);
+  --t-glow-acc-5b7cfa070: rgba(91, 124, 250, 0.07);
+  --t-glow-acc-5b7cfa100: rgba(91, 124, 250, 0.1);
+  --t-glow-acc-5b7cfa120: rgba(91, 124, 250, 0.12);
+  --t-glow-acc-5b7cfa180: rgba(91, 124, 250, 0.18);
+  --t-glow-acc-6d7cff140: rgba(109, 124, 255, 0.14);
+  --t-glow-acc-6d7cff260: rgba(109, 124, 255, 0.26);
+  --t-glow-acc-6d7cff550: rgba(109, 124, 255, 0.55);
+  --t-glow-acc-c8ceff900: rgba(200, 206, 255, 0.9);
+  --t-glow-apple-250: rgba(211, 213, 222, 0.25);
+  --t-glow-bg-04050a850: rgba(4, 5, 10, 0.85);
+  --t-glow-cyan-050: rgba(34, 211, 238, 0.05);
+  --t-glow-cyan-060: rgba(34, 211, 238, 0.06);
+  --t-glow-cyan-090: rgba(34, 211, 238, 0.09);
+  --t-glow-intel-070: rgba(78, 168, 255, 0.07);
+  --t-glow-intel-300: rgba(78, 168, 255, 0.3);
+  --t-glow-live-120: rgba(52, 211, 153, 0.12);
+  --t-glow-nv-350: rgba(163, 214, 92, 0.35);
+  --t-glow-violet-100: rgba(167, 139, 250, 0.1);
+  --t-glow-w-012: rgba(255, 255, 255, 0.012);
+  --t-gr-acc-5b6cf0: #5b6cf0;
+  --t-gr-acc-5b7cfa050: rgba(91, 124, 250, 0.05);
+  --t-gr-acc-5b7cfa220: rgba(91, 124, 250, 0.22);
+  --t-gr-acc-5b7cfa250: rgba(91, 124, 250, 0.25);
+  --t-gr-acc-5b7cfa900: rgba(91, 124, 250, 0.9);
+  --t-gr-acc-7b96ff500: rgba(123, 150, 255, 0.5);
+  --t-gr-acc-7d8cff: #7d8cff;
+  --t-gr-acc-8f9cff: #8f9cff;
+  --t-gr-acc-c8ceff: #c8ceff;
+  --t-gr-bg-04050a300: rgba(4, 5, 10, 0.3);
+  --t-gr-bg-04050a550: rgba(4, 5, 10, 0.55);
+  --t-gr-bg-04050a750: rgba(4, 5, 10, 0.75);
+  --t-gr-bg-04050a920: rgba(4, 5, 10, 0.92);
+  --t-gr-bg-0b0d12970: rgba(11, 13, 18, 0.97);
+  --t-gr-bg-0b0d12980: rgba(11, 13, 18, 0.98);
+  --t-gr-bg-141822970: rgba(20, 24, 34, 0.97);
+  --t-gr-bg-141822980: rgba(20, 24, 34, 0.98);
+  --t-gr-cyan-5ad7f0: #5ad7f0;
+  --t-gr-cyan-700: rgba(34, 211, 238, 0.7);
+  --t-gr-danger-400: rgba(247, 107, 107, 0.4);
+  --t-gr-danger-800: rgba(247, 107, 107, 0.8);
+  --t-gr-live-045: rgba(52, 211, 153, 0.045);
+  --t-gr-w-005: rgba(255, 255, 255, 0.005);
+  --t-gr-w-006: rgba(255, 255, 255, 0.006);
+  --t-gr-w-008: rgba(255, 255, 255, 0.008);
+  --t-gr-w-025: rgba(255, 255, 255, 0.025);
+  --t-gr-w-026: rgba(255, 255, 255, 0.026);
+  --t-gr-w-028: rgba(255, 255, 255, 0.028);
+  --t-gr-w-030: rgba(255, 255, 255, 0.03);
+  --t-gr-w-080: rgba(255, 255, 255, 0.08);
+  --t-gr-warn-400: rgba(245, 165, 36, 0.4);
+  --t-gr-warn-850: rgba(245, 165, 36, 0.85);
+  --t-sh-acc-5b7cfa050: rgba(91, 124, 250, 0.05);
+  --t-sh-acc-5b7cfa100: rgba(91, 124, 250, 0.1);
+  --t-sh-acc-5b7cfa120: rgba(91, 124, 250, 0.12);
+  --t-sh-acc-5b7cfa250: rgba(91, 124, 250, 0.25);
+  --t-sh-acc-5b7cfa280: rgba(91, 124, 250, 0.28);
+  --t-sh-acc-5b7cfa400: rgba(91, 124, 250, 0.4);
+  --t-sh-acc-5b7cfa450: rgba(91, 124, 250, 0.45);
+  --t-sh-acc-5b7cfa500: rgba(91, 124, 250, 0.5);
+  --t-sh-acc-5b7cfa600: rgba(91, 124, 250, 0.6);
+  --t-sh-acc-5b7cfa700: rgba(91, 124, 250, 0.7);
+  --t-sh-acc-6d7cff350: rgba(109, 124, 255, 0.35);
+  --t-sh-acc-6d7cff800: rgba(109, 124, 255, 0.8);
+  --t-sh-acc-6d7cff950: rgba(109, 124, 255, 0.95);
+  --t-sh-acc-7b96ff900: rgba(123, 150, 255, 0.9);
+  --t-sh-cyan-180: rgba(34, 211, 238, 0.18);
+  --t-sh-k-1000: rgba(0, 0, 0, 1);
+  --t-sh-k-400: rgba(0, 0, 0, 0.4);
+  --t-sh-k-500: rgba(0, 0, 0, 0.5);
+  --t-sh-live-000: rgba(52, 211, 153, 0);
+  --t-sh-live-250: rgba(52, 211, 153, 0.25);
+  --t-sh-live-450: rgba(52, 211, 153, 0.45);
+  --t-sh-live-600: rgba(52, 211, 153, 0.6);
+  --t-sh-w-100: rgba(255, 255, 255, 0.1);
+  --t-sh-w-140: rgba(255, 255, 255, 0.14);
+  --t-sh-w-220: rgba(255, 255, 255, 0.22);
+  --t-tx-acc-c9d6ff: #c9d6ff;
+  --t-tx-bg-0b0d12: #0b0d12;
+  --t-tx-danger-ffc4c4: #ffc4c4;
+  --t-tx-danger-ffd0d0: #ffd0d0;
+  --t-tx-live-a7f3d0: #a7f3d0;
+  --t-tx-w-060: rgba(255, 255, 255, 0.06);
+  --t-tx-w-ffffff: #ffffff;
+  --t-tx-warn-ffdca8: #ffdca8;
+}
+
+/* ------------------------------------------------------------ light theme
+   GradApp: Settings › Appearance › Theme. Applied as data-theme="light" on
+   <html> by js/theme-boot.js before first paint. Built for paper as much as for
+   screens: white ground, black text, grey hairlines, near-black for the one
+   accent, no glows and no gradients, and status colours dark enough to stay
+   apart in grayscale (they always sit next to a text label). */
+:root[data-theme="light"] {
+  --bg: #ffffff;
+  --bg-elevated: #fafafa;
+  --surface: #f4f4f5;
+  --surface-2: #e4e4e7;
+  --line: rgba(0, 0, 0, 0.1);
+  --line-strong: rgba(0, 0, 0, 0.18);
+
+  --text: #0a0a0a;
+  --text-dim: #3f3f46;
+  --text-faint: #71717a;
+
+  --accent: #0a0a0a;
+  --accent-hover: #27272a;
+  --accent-dim: #3f3f46;
+  --accent-glow: transparent;
+  --cyan: #71717a;
+  --violet: #52525b;
+  --live: #047857;
+  --warn: #b45309;
+  --danger: #b91c1c;
+
+  --vendor-nvidia: #27272a;
+  --vendor-intel: #71717a;
+  --vendor-apple: #b4b4bb;
+  --vendor-cpu: #d4d4d8;
+
+  --shadow-lift: 0 1px 2px rgba(0, 0, 0, 0.04);
+
+  --chart-1: #0a0a0a;
+  --chart-2: #52525b;
+  --chart-dot: #ffffff;
+  --chart-area-top: 0.06;
+  --chart-area-bottom: 0.06;
+
+  color-scheme: light;
+}
+:root[data-theme="light"] {
+  --t-bd-acc-5b7cfa200: rgba(0, 0, 0, 0.2);
+  --t-bd-acc-5b7cfa260: rgba(0, 0, 0, 0.26);
+  --t-bd-acc-5b7cfa320: rgba(0, 0, 0, 0.32);
+  --t-bd-acc-5b7cfa350: rgba(0, 0, 0, 0.35);
+  --t-bd-acc-5b7cfa400: rgba(0, 0, 0, 0.4);
+  --t-bd-acc-5b7cfa420: rgba(0, 0, 0, 0.42);
+  --t-bd-acc-5b7cfa500: rgba(0, 0, 0, 0.5);
+  --t-bd-acc-5b7cfa550: rgba(0, 0, 0, 0.55);
+  --t-bd-acc-5b7cfa700: rgba(0, 0, 0, 0.6);
+  --t-bd-apple-280: rgba(161, 161, 170, 0.392);
+  --t-bd-cyan-320: rgba(113, 113, 122, 0.448);
+  --t-bd-cyan-500: rgba(113, 113, 122, 0.7);
+  --t-bd-danger-300: rgba(185, 28, 28, 0.42);
+  --t-bd-danger-320: rgba(185, 28, 28, 0.448);
+  --t-bd-danger-350: rgba(185, 28, 28, 0.49);
+  --t-bd-danger-400: rgba(185, 28, 28, 0.56);
+  --t-bd-danger-500: rgba(185, 28, 28, 0.7);
+  --t-bd-intel-320: rgba(82, 82, 91, 0.448);
+  --t-bd-live-220: rgba(4, 120, 87, 0.308);
+  --t-bd-live-300: rgba(4, 120, 87, 0.42);
+  --t-bd-live-350: rgba(4, 120, 87, 0.49);
+  --t-bd-live-400: rgba(4, 120, 87, 0.56);
+  --t-bd-live-550: rgba(4, 120, 87, 0.7);
+  --t-bd-nv-320: rgba(24, 24, 27, 0.448);
+  --t-bd-w-060: rgba(0, 0, 0, 0.075);
+  --t-bd-w-070: rgba(0, 0, 0, 0.088);
+  --t-bd-w-080: rgba(0, 0, 0, 0.1);
+  --t-bd-w-090: rgba(0, 0, 0, 0.112);
+  --t-bd-w-100: rgba(0, 0, 0, 0.125);
+  --t-bd-w-120: rgba(0, 0, 0, 0.15);
+  --t-bd-w-140: rgba(0, 0, 0, 0.175);
+  --t-bd-w-150: rgba(0, 0, 0, 0.188);
+  --t-bd-w-220: rgba(0, 0, 0, 0.275);
+  --t-bd-w-240: rgba(0, 0, 0, 0.3);
+  --t-bd-warn-300: rgba(180, 83, 9, 0.42);
+  --t-bd-warn-320: rgba(180, 83, 9, 0.448);
+  --t-bd-warn-400: rgba(180, 83, 9, 0.56);
+  --t-bg-acc-5b7cfa060: rgba(0, 0, 0, 0.03);
+  --t-bg-acc-5b7cfa080: rgba(0, 0, 0, 0.04);
+  --t-bg-acc-5b7cfa100: rgba(0, 0, 0, 0.05);
+  --t-bg-acc-5b7cfa120: rgba(0, 0, 0, 0.06);
+  --t-bg-acc-5b7cfa140: rgba(0, 0, 0, 0.07);
+  --t-bg-acc-5b7cfa160: rgba(0, 0, 0, 0.08);
+  --t-bg-acc-5b7cfa200: rgba(0, 0, 0, 0.1);
+  --t-bg-acc-5b7cfa350: rgba(0, 0, 0, 0.175);
+  --t-bg-acc-5b7cfa400: rgba(0, 0, 0, 0.2);
+  --t-bg-acc-f4f6ff: #ffffff;
+  --t-bg-apple-050: rgba(161, 161, 170, 0.05);
+  --t-bg-apple-720: rgba(161, 161, 170, 0.72);
+  --t-bg-bg-030408660: rgba(255, 255, 255, 0.66);
+  --t-bg-bg-04050a: #fafafa;
+  --t-bg-bg-06080e500: rgba(255, 255, 255, 0.5);
+  --t-bg-bg-07080b650: rgba(255, 255, 255, 0.65);
+  --t-bg-bg-07080b860: #ffffff;
+  --t-bg-bg-080a12550: rgba(255, 255, 255, 0.55);
+  --t-bg-bg-090a0f: #fafafa;
+  --t-bg-bg-0b0d12: #fafafa;
+  --t-bg-bg-12151e: #fafafa;
+  --t-bg-cpu-700: rgba(113, 113, 122, 0.7);
+  --t-bg-cyan-080: rgba(113, 113, 122, 0.08);
+  --t-bg-cyan-400: rgba(113, 113, 122, 0.4);
+  --t-bg-danger-070: rgba(185, 28, 28, 0.07);
+  --t-bg-danger-080: rgba(185, 28, 28, 0.08);
+  --t-bg-danger-100: rgba(185, 28, 28, 0.1);
+  --t-bg-danger-120: rgba(185, 28, 28, 0.12);
+  --t-bg-danger-160: rgba(185, 28, 28, 0.16);
+  --t-bg-danger-180: rgba(185, 28, 28, 0.18);
+  --t-bg-danger-400: rgba(185, 28, 28, 0.4);
+  --t-bg-intel-060: rgba(82, 82, 91, 0.06);
+  --t-bg-intel-800: rgba(82, 82, 91, 0.8);
+  --t-bg-k-180: rgba(0, 0, 0, 0.02);
+  --t-bg-k-250: rgba(0, 0, 0, 0.028);
+  --t-bg-k-300: rgba(0, 0, 0, 0.033);
+  --t-bg-k-350: rgba(0, 0, 0, 0.038);
+  --t-bg-k-450: rgba(0, 0, 0, 0.05);
+  --t-bg-live-070: rgba(4, 120, 87, 0.07);
+  --t-bg-live-080: rgba(4, 120, 87, 0.08);
+  --t-bg-live-160: rgba(4, 120, 87, 0.16);
+  --t-bg-live-400: rgba(4, 120, 87, 0.4);
+  --t-bg-nv-060: rgba(24, 24, 27, 0.06);
+  --t-bg-nv-780: rgba(24, 24, 27, 0.78);
+  --t-bg-w-015: rgba(0, 0, 0, 0.015);
+  --t-bg-w-020: rgba(0, 0, 0, 0.02);
+  --t-bg-w-022: rgba(0, 0, 0, 0.022);
+  --t-bg-w-025: rgba(0, 0, 0, 0.025);
+  --t-bg-w-030: rgba(0, 0, 0, 0.03);
+  --t-bg-w-040: rgba(0, 0, 0, 0.04);
+  --t-bg-w-045: rgba(0, 0, 0, 0.045);
+  --t-bg-w-050: rgba(0, 0, 0, 0.05);
+  --t-bg-w-060: rgba(0, 0, 0, 0.06);
+  --t-bg-w-070: rgba(0, 0, 0, 0.07);
+  --t-bg-w-080: rgba(0, 0, 0, 0.08);
+  --t-bg-w-120: rgba(0, 0, 0, 0.12);
+  --t-bg-w-350: rgba(0, 0, 0, 0.35);
+  --t-bg-w-ffffff: #ffffff;
+  --t-bg-warn-070: rgba(180, 83, 9, 0.07);
+  --t-bg-warn-080: rgba(180, 83, 9, 0.08);
+  --t-bg-warn-160: rgba(180, 83, 9, 0.16);
+  --t-bg-warn-750: rgba(180, 83, 9, 0.75);
+  --t-glow-acc-5b7cfa070: transparent;
+  --t-glow-acc-5b7cfa100: transparent;
+  --t-glow-acc-5b7cfa120: transparent;
+  --t-glow-acc-5b7cfa180: transparent;
+  --t-glow-acc-6d7cff140: transparent;
+  --t-glow-acc-6d7cff260: transparent;
+  --t-glow-acc-6d7cff550: transparent;
+  --t-glow-acc-c8ceff900: transparent;
+  --t-glow-apple-250: transparent;
+  --t-glow-bg-04050a850: transparent;
+  --t-glow-cyan-050: transparent;
+  --t-glow-cyan-060: transparent;
+  --t-glow-cyan-090: transparent;
+  --t-glow-intel-070: transparent;
+  --t-glow-intel-300: transparent;
+  --t-glow-live-120: transparent;
+  --t-glow-nv-350: transparent;
+  --t-glow-violet-100: transparent;
+  --t-glow-w-012: transparent;
+  --t-gr-acc-5b6cf0: #0a0a0a;
+  --t-gr-acc-5b7cfa050: rgba(0, 0, 0, 0.02);
+  --t-gr-acc-5b7cfa220: rgba(0, 0, 0, 0.08);
+  --t-gr-acc-5b7cfa250: rgba(10, 10, 10, 0.55);
+  --t-gr-acc-5b7cfa900: #0a0a0a;
+  --t-gr-acc-7b96ff500: rgba(10, 10, 10, 0.55);
+  --t-gr-acc-7d8cff: #0a0a0a;
+  --t-gr-acc-8f9cff: #0a0a0a;
+  --t-gr-acc-c8ceff: #0a0a0a;
+  --t-gr-bg-04050a300: rgba(255, 255, 255, 0.3);
+  --t-gr-bg-04050a550: rgba(255, 255, 255, 0.55);
+  --t-gr-bg-04050a750: rgba(255, 255, 255, 0.75);
+  --t-gr-bg-04050a920: rgba(255, 255, 255, 0.92);
+  --t-gr-bg-0b0d12970: rgba(255, 255, 255, 0.97);
+  --t-gr-bg-0b0d12980: rgba(255, 255, 255, 0.98);
+  --t-gr-bg-141822970: rgba(255, 255, 255, 0.97);
+  --t-gr-bg-141822980: rgba(255, 255, 255, 0.98);
+  --t-gr-cyan-5ad7f0: rgba(113, 113, 122, 1);
+  --t-gr-cyan-700: rgba(113, 113, 122, 0.7);
+  --t-gr-danger-400: rgba(185, 28, 28, 0.6);
+  --t-gr-danger-800: rgba(185, 28, 28, 0.8);
+  --t-gr-live-045: #fafafa;
+  --t-gr-w-005: #fafafa;
+  --t-gr-w-006: #fafafa;
+  --t-gr-w-008: #fafafa;
+  --t-gr-w-025: #fafafa;
+  --t-gr-w-026: #fafafa;
+  --t-gr-w-028: #fafafa;
+  --t-gr-w-030: #fafafa;
+  --t-gr-w-080: rgba(0, 0, 0, 0.08);
+  --t-gr-warn-400: rgba(180, 83, 9, 0.6);
+  --t-gr-warn-850: rgba(180, 83, 9, 0.85);
+  --t-sh-acc-5b7cfa050: transparent;
+  --t-sh-acc-5b7cfa100: transparent;
+  --t-sh-acc-5b7cfa120: transparent;
+  --t-sh-acc-5b7cfa250: transparent;
+  --t-sh-acc-5b7cfa280: transparent;
+  --t-sh-acc-5b7cfa400: transparent;
+  --t-sh-acc-5b7cfa450: transparent;
+  --t-sh-acc-5b7cfa500: transparent;
+  --t-sh-acc-5b7cfa600: transparent;
+  --t-sh-acc-5b7cfa700: transparent;
+  --t-sh-acc-6d7cff350: transparent;
+  --t-sh-acc-6d7cff800: transparent;
+  --t-sh-acc-6d7cff950: transparent;
+  --t-sh-acc-7b96ff900: transparent;
+  --t-sh-cyan-180: transparent;
+  --t-sh-k-1000: rgba(0, 0, 0, 0.1);
+  --t-sh-k-400: rgba(0, 0, 0, 0.048);
+  --t-sh-k-500: rgba(0, 0, 0, 0.06);
+  --t-sh-live-000: transparent;
+  --t-sh-live-250: transparent;
+  --t-sh-live-450: transparent;
+  --t-sh-live-600: transparent;
+  --t-sh-w-100: transparent;
+  --t-sh-w-140: transparent;
+  --t-sh-w-220: transparent;
+  --t-tx-acc-c9d6ff: #0a0a0a;
+  --t-tx-bg-0b0d12: #0a0a0a;
+  --t-tx-danger-ffc4c4: #7f1d1d;
+  --t-tx-danger-ffd0d0: #7f1d1d;
+  --t-tx-live-a7f3d0: #065f46;
+  --t-tx-w-060: #ffffff;
+  --t-tx-w-ffffff: #ffffff;
+  --t-tx-warn-ffdca8: #78350f;
 }

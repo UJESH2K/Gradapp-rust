@@ -7,7 +7,7 @@
 
 .dash-side {
   border-right: 1px solid var(--line);
-  background: rgba(0, 0, 0, 0.25);
+  background: var(--t-bg-k-250);
   padding: 18px 14px;
   display: flex;
   flex-direction: column;
@@ -55,12 +55,12 @@
 }
 
 .dash-link:hover {
-  background: rgba(255, 255, 255, 0.045);
+  background: var(--t-bg-w-045);
   color: var(--text);
 }
 
 .dash-link.is-active {
-  background: rgba(91, 124, 250, 0.1);
+  background: var(--t-bg-acc-5b7cfa100);
   color: var(--accent);
 }
 
@@ -90,7 +90,7 @@
 }
 
 .dash-stack:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--t-bg-w-040);
 }
 
 .dash-main {
@@ -109,7 +109,7 @@
   gap: 16px;
   padding: 15px 28px;
   border-bottom: 1px solid var(--line);
-  background: rgba(7, 8, 11, 0.86);
+  background: var(--t-bg-bg-07080b860);
   backdrop-filter: blur(12px);
   flex-wrap: wrap;
 }
@@ -166,7 +166,7 @@
   border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: 16px 18px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.026), rgba(255, 255, 255, 0.005));
+  background: linear-gradient(180deg, var(--t-gr-w-026), var(--t-gr-w-005));
   display: flex;
   flex-direction: column;
   gap: 13px;
@@ -174,8 +174,8 @@
 }
 
 .node-card.is-training {
-  border-color: rgba(52, 211, 153, 0.3);
-  background: linear-gradient(180deg, rgba(52, 211, 153, 0.045), rgba(255, 255, 255, 0.005));
+  border-color: var(--t-bd-live-300);
+  background: linear-gradient(180deg, var(--t-gr-live-045), var(--t-gr-w-005));
 }
 
 .node-card.is-offline {
@@ -213,7 +213,7 @@
   position: relative;
   height: 20px;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--t-bg-w-050);
   overflow: hidden;
 }
 
@@ -224,19 +224,19 @@
 }
 
 .shard-fill.is-running {
-  background: linear-gradient(90deg, rgba(91, 124, 250, 0.9), rgba(123, 150, 255, 0.5));
+  background: linear-gradient(90deg, var(--t-gr-acc-5b7cfa900), var(--t-gr-acc-7b96ff500));
 }
 .shard-fill.is-queued {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--t-bg-w-120);
 }
 .shard-fill.is-done {
-  background: rgba(52, 211, 153, 0.4);
+  background: var(--t-bg-live-400);
 }
 .shard-fill.is-late {
-  background: linear-gradient(90deg, rgba(245, 165, 36, 0.85), rgba(245, 165, 36, 0.4));
+  background: linear-gradient(90deg, var(--t-gr-warn-850), var(--t-gr-warn-400));
 }
 .shard-fill.is-lost {
-  background: linear-gradient(90deg, rgba(247, 107, 107, 0.8), rgba(247, 107, 107, 0.4));
+  background: linear-gradient(90deg, var(--t-gr-danger-800), var(--t-gr-danger-400));
 }
 
 .shard-marker {
@@ -244,7 +244,7 @@
   top: 0;
   bottom: 0;
   width: 1px;
-  background: rgba(255, 255, 255, 0.35);
+  background: var(--t-bg-w-350);
 }
 
 /* ------------------------------------------------------------------ chart */
@@ -260,7 +260,7 @@
   flex: 1;
   min-width: 3px;
   border-radius: 3px 3px 0 0;
-  background: linear-gradient(180deg, var(--accent), rgba(91, 124, 250, 0.25));
+  background: linear-gradient(180deg, var(--accent), var(--t-gr-acc-5b7cfa250));
   transition: height 500ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -277,7 +277,7 @@
 
 .dropzone.is-over {
   border-color: var(--accent);
-  background: rgba(91, 124, 250, 0.06);
+  background: var(--t-bg-acc-5b7cfa060);
 }
 
 /* ---------------------------------------------------------------- responsive */
@@ -325,18 +325,18 @@
   display: flex;
   align-items: stretch;
   gap: 0;
-  border: 1px solid rgba(91, 124, 250, 0.35);
+  border: 1px solid var(--t-bd-acc-5b7cfa350);
   border-radius: 16px;
-  background: linear-gradient(180deg, rgba(20, 24, 34, 0.97), rgba(11, 13, 18, 0.97));
+  background: linear-gradient(180deg, var(--t-gr-bg-141822970), var(--t-gr-bg-0b0d12970));
   backdrop-filter: blur(14px);
-  box-shadow: 0 24px 60px -28px rgba(0, 0, 0, 1), 0 0 0 1px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 24px 60px -28px var(--t-sh-k-1000), 0 0 0 1px var(--t-sh-k-400);
   overflow: hidden;
   max-width: min(360px, calc(100vw - 44px));
   animation: dock-in 420ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .dock.is-waiting {
-  border-color: rgba(245, 165, 36, 0.4);
+  border-color: var(--t-bd-warn-400);
 }
 
 @keyframes dock-in {
@@ -371,7 +371,7 @@
   place-items: center;
   background: conic-gradient(
     var(--accent) var(--dock-progress, 0deg),
-    rgba(255, 255, 255, 0.08) var(--dock-progress, 0deg)
+    var(--t-gr-w-080) var(--dock-progress, 0deg)
   );
   transition: background 600ms cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -381,7 +381,7 @@
   position: absolute;
   inset: 4px;
   border-radius: 50%;
-  background: #0b0d12;
+  background: var(--t-bg-bg-0b0d12);
 }
 
 .dock-ring-value {
@@ -416,7 +416,7 @@
   display: block;
   height: 3px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--t-bg-w-080);
   overflow: hidden;
   margin-top: 3px;
 }
@@ -456,7 +456,7 @@
 
 .dock-close:hover {
   color: var(--text);
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--t-bg-w-070);
 }
 
 @media (max-width: 720px) {
@@ -477,8 +477,8 @@
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   background:
-    radial-gradient(700px 280px at 20% 0%, rgba(91, 124, 250, 0.12), transparent 70%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.028), rgba(255, 255, 255, 0.006));
+    radial-gradient(700px 280px at 20% 0%, var(--t-glow-acc-5b7cfa120), transparent 70%),
+    linear-gradient(180deg, var(--t-gr-w-028), var(--t-gr-w-006));
 }
 
 .train-rig {
@@ -491,8 +491,8 @@
   border-radius: var(--radius);
   overflow: hidden;
   background:
-    radial-gradient(circle at 50% 42%, rgba(109, 124, 255, 0.14), transparent 62%),
-    radial-gradient(circle at 50% 100%, rgba(34, 211, 238, 0.05), transparent 55%);
+    radial-gradient(circle at 50% 42%, var(--t-glow-acc-6d7cff140), transparent 62%),
+    radial-gradient(circle at 50% 100%, var(--t-glow-cyan-050), transparent 55%);
 }
 
 .rig-canvas {
@@ -547,7 +547,7 @@
   position: relative;
   height: 12px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--t-bg-w-070);
   overflow: hidden;
 }
 
@@ -565,7 +565,7 @@
   top: 0;
   bottom: 0;
   width: 1px;
-  background: rgba(7, 8, 11, 0.65);
+  background: var(--t-bg-bg-07080b650);
 }
 
 .train-state {
@@ -573,7 +573,7 @@
   padding: 10px 14px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--line);
-  background: rgba(0, 0, 0, 0.25);
+  background: var(--t-bg-k-250);
   font-size: 0.87rem;
   color: var(--text-dim);
 }
@@ -588,7 +588,7 @@
   padding: 12px 14px;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.015);
+  background: var(--t-bg-w-015);
 }
 
 @media (max-width: 900px) {
@@ -625,7 +625,7 @@
   padding: 6px 13px;
   border-radius: 999px;
   border: 1px solid var(--line-strong);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--t-bg-w-030);
   color: var(--text-dim);
   font-size: 0.82rem;
   cursor: pointer;
@@ -634,12 +634,12 @@
 
 .chip:hover {
   color: var(--text);
-  border-color: rgba(255, 255, 255, 0.24);
+  border-color: var(--t-bd-w-240);
 }
 
 .chip.is-on {
-  background: rgba(91, 124, 250, 0.14);
-  border-color: rgba(91, 124, 250, 0.5);
+  background: var(--t-bg-acc-5b7cfa140);
+  border-color: var(--t-bd-acc-5b7cfa500);
   color: var(--accent);
 }
 
@@ -667,11 +667,11 @@
 }
 
 .suite-row:hover {
-  background: rgba(255, 255, 255, 0.025);
+  background: var(--t-bg-w-025);
 }
 
 .suite-row.is-open {
-  background: rgba(91, 124, 250, 0.08);
+  background: var(--t-bg-acc-5b7cfa080);
   box-shadow: inset 2px 0 0 var(--accent);
 }
 
@@ -681,12 +681,12 @@
    nobody is watching, and the next thing that has to happen is a person walking
    over to change the Wi-Fi. */
 .handoff {
-  border: 1px solid rgba(52, 211, 153, 0.4);
+  border: 1px solid var(--t-bd-live-400);
   border-radius: var(--radius-lg);
   padding: 22px 24px;
   background:
-    radial-gradient(600px 240px at 15% 0%, rgba(52, 211, 153, 0.12), transparent 70%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.008));
+    radial-gradient(600px 240px at 15% 0%, var(--t-glow-live-120), transparent 70%),
+    linear-gradient(180deg, var(--t-gr-w-030), var(--t-gr-w-008));
   animation: handoff-in 420ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -749,7 +749,7 @@
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   padding: 14px;
-  background: rgba(255, 255, 255, 0.015);
+  background: var(--t-bg-w-015);
 }
 
 /* ------------------------------------------------------------------ guide */
@@ -759,7 +759,7 @@
 .guide {
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.028), rgba(255, 255, 255, 0.006));
+  background: linear-gradient(180deg, var(--t-gr-w-028), var(--t-gr-w-006));
   overflow: hidden;
 }
 
@@ -779,7 +779,7 @@
 }
 
 .guide-head:hover {
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--t-bg-w-020);
 }
 
 .guide-toggle {
@@ -804,7 +804,7 @@
   padding: 7px 14px;
   border-radius: 999px;
   border: 1px solid var(--line-strong);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--t-bg-w-030);
   color: var(--text-dim);
   font-size: 0.83rem;
   cursor: pointer;
@@ -816,8 +816,8 @@
 }
 
 .guide-tab.is-on {
-  background: rgba(91, 124, 250, 0.14);
-  border-color: rgba(91, 124, 250, 0.5);
+  background: var(--t-bg-acc-5b7cfa140);
+  border-color: var(--t-bd-acc-5b7cfa500);
   color: var(--accent);
 }
 
@@ -853,7 +853,7 @@
   padding: 16px;
   border-radius: var(--radius);
   border: 1px solid var(--line);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.005));
+  background: linear-gradient(180deg, var(--t-gr-w-025), var(--t-gr-w-005));
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -899,7 +899,7 @@
   height: 8px;
   border-radius: 999px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--t-bg-w-060);
 }
 
 .split-bar > span {
@@ -907,7 +907,7 @@
 }
 
 .split-bar .is-fixed {
-  background: rgba(245, 165, 36, 0.75);
+  background: var(--t-bg-warn-750);
 }
 
 .split-bar .is-compute {
@@ -931,7 +931,7 @@
 }
 
 .legend.is-fixed::before {
-  background: rgba(245, 165, 36, 0.75);
+  background: var(--t-bg-warn-750);
 }
 
 .phase {
@@ -969,9 +969,9 @@
   margin-top: 1px;
 }
 
-.check-mark.is-ok { background: rgba(52, 211, 153, 0.16); color: var(--live); }
-.check-mark.is-warn { background: rgba(245, 165, 36, 0.16); color: var(--warn); }
-.check-mark.is-fail { background: rgba(247, 107, 107, 0.16); color: var(--danger); }
+.check-mark.is-ok { background: var(--t-bg-live-160); color: var(--live); }
+.check-mark.is-warn { background: var(--t-bg-warn-160); color: var(--warn); }
+.check-mark.is-fail { background: var(--t-bg-danger-160); color: var(--danger); }
 
 .advanced {
   border: 1px solid var(--line);

@@ -25,7 +25,7 @@ code,
 }
 
 :focus-visible {
-  outline: 2px solid rgba(91, 124, 250, 0.7);
+  outline: 2px solid var(--t-bd-acc-5b7cfa700);
   outline-offset: 2px;
 }
 
@@ -53,7 +53,7 @@ code,
   font-size: 0.64rem;
   padding: 2px 6px;
   border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid var(--t-bd-w-140);
   color: var(--text-dim);
   font-weight: 500;
   margin-left: auto;
@@ -99,7 +99,7 @@ code,
 }
 .nav-dot[data-tone="live"] {
   background: var(--live);
-  box-shadow: 0 0 10px rgba(52, 211, 153, 0.6);
+  box-shadow: 0 0 10px var(--t-sh-live-600);
 }
 .nav-dot[data-tone="warn"] {
   background: var(--warn);
@@ -163,7 +163,7 @@ code,
   padding: 0 8px 0 11px;
   border-radius: 9px;
   border: 1px solid var(--line-strong);
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--t-bg-k-300);
   color: var(--text-faint);
   font-size: 0.82rem;
   cursor: pointer;
@@ -173,7 +173,7 @@ code,
 
 .search-pill:hover {
   color: var(--text-dim);
-  border-color: rgba(255, 255, 255, 0.22);
+  border-color: var(--t-bd-w-220);
 }
 
 .search-pill span:nth-child(2) {
@@ -188,7 +188,7 @@ kbd,
   padding: 2px 6px;
   border-radius: 5px;
   border: 1px solid var(--line-strong);
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--t-bg-w-040);
   color: var(--text-dim);
 }
 
@@ -200,9 +200,9 @@ kbd,
   height: 30px;
   padding: 0 12px 0 10px;
   border-radius: 999px;
-  border: 1px solid rgba(91, 124, 250, 0.42);
-  background: rgba(91, 124, 250, 0.12);
-  color: #c9d6ff;
+  border: 1px solid var(--t-bd-acc-5b7cfa420);
+  background: var(--t-bg-acc-5b7cfa120);
+  color: var(--t-tx-acc-c9d6ff);
   font-size: 0.8rem;
   font-weight: 560;
   cursor: pointer;
@@ -210,12 +210,12 @@ kbd,
 }
 
 .update-pill:hover {
-  background: rgba(91, 124, 250, 0.2);
+  background: var(--t-bg-acc-5b7cfa200);
 }
 
 .update-pill .dot {
   background: var(--accent-hover);
-  box-shadow: 0 0 10px rgba(123, 150, 255, 0.9);
+  box-shadow: 0 0 10px var(--t-sh-acc-7b96ff900);
 }
 
 @keyframes pill-in {
@@ -238,7 +238,7 @@ kbd,
   border-radius: var(--radius-lg);
   border: 1px solid var(--line);
   overflow: hidden;
-  background: #04050a;
+  background: var(--t-bg-bg-04050a);
   isolation: isolate;
 }
 
@@ -253,10 +253,10 @@ kbd,
   position: absolute;
   inset: -10%;
   background:
-    radial-gradient(42% 48% at 74% 44%, rgba(109, 124, 255, 0.26), transparent 70%),
-    radial-gradient(30% 30% at 88% 82%, rgba(34, 211, 238, 0.09), transparent 70%),
-    radial-gradient(36% 40% at 10% 92%, rgba(167, 139, 250, 0.1), transparent 70%),
-    radial-gradient(60% 50% at 50% 120%, rgba(78, 168, 255, 0.07), transparent 70%);
+    radial-gradient(42% 48% at 74% 44%, var(--t-glow-acc-6d7cff260), transparent 70%),
+    radial-gradient(30% 30% at 88% 82%, var(--t-glow-cyan-090), transparent 70%),
+    radial-gradient(36% 40% at 10% 92%, var(--t-glow-violet-100), transparent 70%),
+    radial-gradient(60% 50% at 50% 120%, var(--t-glow-intel-070), transparent 70%);
   filter: blur(10px);
 }
 
@@ -281,20 +281,20 @@ kbd,
 .hero.scene-fallback .ld-canvas {
   opacity: 1;
   background:
-    radial-gradient(circle at 72% 46%, rgba(200, 206, 255, 0.9) 0 3px, transparent 4px),
-    radial-gradient(circle at 72% 46%, rgba(109, 124, 255, 0.55), transparent 16%),
-    radial-gradient(ellipse 22% 7% at 72% 50%, transparent 92%, rgba(163, 214, 92, 0.35) 94%, transparent 97%),
-    radial-gradient(ellipse 30% 10% at 72% 50%, transparent 94%, rgba(78, 168, 255, 0.3) 96%, transparent 98%),
-    radial-gradient(ellipse 38% 13% at 72% 50%, transparent 95%, rgba(211, 213, 222, 0.25) 97%, transparent 99%);
+    radial-gradient(circle at 72% 46%, var(--t-glow-acc-c8ceff900) 0 3px, transparent 4px),
+    radial-gradient(circle at 72% 46%, var(--t-glow-acc-6d7cff550), transparent 16%),
+    radial-gradient(ellipse 22% 7% at 72% 50%, transparent 92%, var(--t-glow-nv-350) 94%, transparent 97%),
+    radial-gradient(ellipse 30% 10% at 72% 50%, transparent 94%, var(--t-glow-intel-300) 96%, transparent 98%),
+    radial-gradient(ellipse 38% 13% at 72% 50%, transparent 95%, var(--t-glow-apple-250) 97%, transparent 99%);
 }
 
 .ld-vignette {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, rgba(4, 5, 10, 0.92) 0%, rgba(4, 5, 10, 0.55) 34%, transparent 58%),
-    radial-gradient(120% 90% at 60% 45%, transparent 55%, rgba(4, 5, 10, 0.85) 100%),
-    linear-gradient(180deg, rgba(4, 5, 10, 0.3), transparent 18%, transparent 80%, rgba(4, 5, 10, 0.75));
+    linear-gradient(90deg, var(--t-gr-bg-04050a920) 0%, var(--t-gr-bg-04050a550) 34%, transparent 58%),
+    radial-gradient(120% 90% at 60% 45%, transparent 55%, var(--t-glow-bg-04050a850) 100%),
+    linear-gradient(180deg, var(--t-gr-bg-04050a300), transparent 18%, transparent 80%, var(--t-gr-bg-04050a750));
 }
 
 .ld-grain {
@@ -321,8 +321,8 @@ kbd,
   gap: 10px;
   padding: 7px 14px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(8, 10, 18, 0.55);
+  border: 1px solid var(--t-bd-w-100);
+  background: var(--t-bg-bg-080a12550);
   backdrop-filter: blur(10px);
   font-family: var(--font-mono);
   font-size: 0.7rem;
@@ -366,11 +366,11 @@ kbd,
 
 .ld-title-glow {
   display: block;
-  background: linear-gradient(92deg, #c8ceff 0%, #8f9cff 38%, #5ad7f0 100%);
+  background: linear-gradient(92deg, var(--t-gr-acc-c8ceff) 0%, var(--t-gr-acc-8f9cff) 38%, var(--t-gr-cyan-5ad7f0) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 0 28px rgba(109, 124, 255, 0.35));
+  filter: drop-shadow(0 0 28px var(--t-sh-acc-6d7cff350));
   padding-bottom: 0.06em;
 }
 
@@ -431,13 +431,13 @@ kbd,
 }
 
 .ld-btn-solid {
-  color: #fff;
-  background: linear-gradient(180deg, #7d8cff, #5b6cf0);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.14) inset, 0 10px 30px -10px rgba(109, 124, 255, 0.8);
+  color: var(--t-tx-w-ffffff);
+  background: linear-gradient(180deg, var(--t-gr-acc-7d8cff), var(--t-gr-acc-5b6cf0));
+  box-shadow: 0 0 0 1px var(--t-sh-w-140) inset, 0 10px 30px -10px var(--t-sh-acc-6d7cff800);
 }
 
 .ld-btn-solid:hover:not(:disabled) {
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.22) inset, 0 14px 40px -10px rgba(109, 124, 255, 0.95);
+  box-shadow: 0 0 0 1px var(--t-sh-w-220) inset, 0 14px 40px -10px var(--t-sh-acc-6d7cff950);
 }
 
 .ld-btn-solid .arrow {
@@ -450,24 +450,24 @@ kbd,
 
 .ld-btn-ghost {
   color: var(--text);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--t-bg-w-040);
+  border: 1px solid var(--t-bd-w-120);
   backdrop-filter: blur(10px);
 }
 
 .ld-btn-ghost:hover:not(:disabled) {
-  border-color: rgba(255, 255, 255, 0.24);
-  background: rgba(255, 255, 255, 0.07);
+  border-color: var(--t-bd-w-240);
+  background: var(--t-bg-w-070);
 }
 
 .ld-btn-danger {
-  color: #ffd0d0;
-  background: rgba(247, 107, 107, 0.1);
-  border: 1px solid rgba(247, 107, 107, 0.35);
+  color: var(--t-tx-danger-ffd0d0);
+  background: var(--t-bg-danger-100);
+  border: 1px solid var(--t-bd-danger-350);
 }
 
 .ld-btn-danger:hover:not(:disabled) {
-  background: rgba(247, 107, 107, 0.18);
+  background: var(--t-bg-danger-180);
 }
 
 .hero-stage {
@@ -487,8 +487,8 @@ kbd,
   gap: 8px;
   padding: 6px 10px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(6, 8, 14, 0.5);
+  border: 1px solid var(--t-bd-w-080);
+  background: var(--t-bg-bg-06080e500);
   backdrop-filter: blur(8px);
   font-family: var(--font-mono);
   font-size: 0.66rem;
@@ -508,7 +508,7 @@ kbd,
   position: absolute;
   width: 26px;
   height: 26px;
-  border-color: rgba(255, 255, 255, 0.22);
+  border-color: var(--t-bd-w-220);
   border-style: solid;
 }
 
@@ -529,7 +529,7 @@ kbd,
   z-index: 2;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--t-bd-w-080);
   margin: 0 36px;
   padding-bottom: 30px;
 }
@@ -541,7 +541,7 @@ kbd,
 
 .ld-telemetry > div + div {
   padding-left: 22px;
-  border-left: 1px solid rgba(255, 255, 255, 0.06);
+  border-left: 1px solid var(--t-bd-w-060);
 }
 
 .ld-telemetry dt {
@@ -623,17 +623,17 @@ kbd,
 
 .gpu-glyph.vendor-nvidia {
   color: var(--vendor-nvidia);
-  border-color: rgba(163, 214, 92, 0.32);
-  background: rgba(163, 214, 92, 0.06);
+  border-color: var(--t-bd-nv-320);
+  background: var(--t-bg-nv-060);
 }
 .gpu-glyph.vendor-intel {
   color: var(--vendor-intel);
-  border-color: rgba(78, 168, 255, 0.32);
-  background: rgba(78, 168, 255, 0.06);
+  border-color: var(--t-bd-intel-320);
+  background: var(--t-bg-intel-060);
 }
 .gpu-glyph.vendor-apple {
   color: var(--vendor-apple);
-  border-color: rgba(211, 213, 222, 0.28);
+  border-color: var(--t-bd-apple-280);
 }
 
 .gpu-name {
@@ -668,25 +668,25 @@ kbd,
 
 .state-chip.is-ready {
   color: var(--live);
-  border-color: rgba(52, 211, 153, 0.3);
-  background: rgba(52, 211, 153, 0.08);
+  border-color: var(--t-bd-live-300);
+  background: var(--t-bg-live-080);
 }
 .state-chip.is-installing {
   color: var(--accent);
-  border-color: rgba(91, 124, 250, 0.32);
-  background: rgba(91, 124, 250, 0.08);
+  border-color: var(--t-bd-acc-5b7cfa320);
+  background: var(--t-bg-acc-5b7cfa080);
 }
 .state-chip.is-stale,
 .state-chip.is-not_installed {
   color: var(--warn);
-  border-color: rgba(245, 165, 36, 0.3);
-  background: rgba(245, 165, 36, 0.07);
+  border-color: var(--t-bd-warn-300);
+  background: var(--t-bg-warn-070);
 }
 .state-chip.is-failed,
 .state-chip.is-blocked {
   color: var(--danger);
-  border-color: rgba(247, 107, 107, 0.3);
-  background: rgba(247, 107, 107, 0.07);
+  border-color: var(--t-bd-danger-300);
+  background: var(--t-bg-danger-070);
 }
 
 /* ---------------------------------------------------------- ports */
@@ -711,7 +711,7 @@ kbd,
 }
 
 .port-row.is-selected {
-  background: rgba(91, 124, 250, 0.06);
+  background: var(--t-bg-acc-5b7cfa060);
   box-shadow: inset 2px 0 0 var(--accent);
 }
 
@@ -732,13 +732,13 @@ kbd,
   border-radius: 6px;
   border: 1px solid var(--line);
   color: var(--text-faint);
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--t-bg-w-020);
 }
 
 .plat.is-here {
   color: var(--live);
-  border-color: rgba(52, 211, 153, 0.35);
-  background: rgba(52, 211, 153, 0.07);
+  border-color: var(--t-bd-live-350);
+  background: var(--t-bg-live-070);
 }
 
 .log {
@@ -746,7 +746,7 @@ kbd,
   font-family: var(--font-mono);
   font-size: 0.78rem;
   line-height: 1.6;
-  background: rgba(0, 0, 0, 0.45);
+  background: var(--t-bg-k-450);
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   padding: 12px 14px;
@@ -772,13 +772,13 @@ kbd,
 }
 
 .log .ln.is-warn {
-  color: #ffdca8;
+  color: var(--t-tx-warn-ffdca8);
 }
 .log .ln.is-error {
-  color: #ffc4c4;
+  color: var(--t-tx-danger-ffc4c4);
 }
 .log .ln.is-ok {
-  color: #a7f3d0;
+  color: var(--t-tx-live-a7f3d0);
 }
 
 .steps {
@@ -813,7 +813,7 @@ kbd,
 }
 .step.is-active {
   color: var(--accent);
-  border-color: rgba(91, 124, 250, 0.4);
+  border-color: var(--t-bd-acc-5b7cfa400);
 }
 .step.is-active i {
   background: var(--accent);
@@ -838,28 +838,28 @@ kbd,
 }
 
 .mesh-row:hover {
-  background: rgba(255, 255, 255, 0.022);
+  background: var(--t-bg-w-022);
 }
 
 .mesh-row.is-selected {
-  background: rgba(91, 124, 250, 0.08);
+  background: var(--t-bg-acc-5b7cfa080);
   box-shadow: inset 2px 0 0 var(--accent);
 }
 
 .radar-avatar.is-mesh {
-  border-color: rgba(91, 124, 250, 0.55);
+  border-color: var(--t-bd-acc-5b7cfa550);
   color: var(--accent-hover);
-  box-shadow: 0 0 20px rgba(91, 124, 250, 0.28);
+  box-shadow: 0 0 20px var(--t-sh-acc-5b7cfa280);
 }
 
 .radar-node.is-local .radar-avatar {
-  border-color: rgba(52, 211, 153, 0.55);
+  border-color: var(--t-bd-live-550);
   color: var(--live);
-  box-shadow: 0 0 20px rgba(52, 211, 153, 0.25);
+  box-shadow: 0 0 20px var(--t-sh-live-250);
 }
 
 .radar-ring-label {
-  background: #090a0f;
+  background: var(--t-bg-bg-090a0f);
 }
 
 .radar {
@@ -893,11 +893,11 @@ kbd,
 }
 
 .run-row:hover {
-  background: rgba(255, 255, 255, 0.025);
+  background: var(--t-bg-w-025);
 }
 
 .run-row.is-open {
-  background: rgba(91, 124, 250, 0.08);
+  background: var(--t-bg-acc-5b7cfa080);
   box-shadow: inset 2px 0 0 var(--accent);
 }
 
@@ -915,7 +915,7 @@ kbd,
 }
 
 .chart .grid-line {
-  stroke: rgba(255, 255, 255, 0.06);
+  stroke: var(--t-tx-w-060);
 }
 
 .chart .axis {
@@ -931,8 +931,8 @@ kbd,
   place-items: center;
   padding: 18px;
   border-radius: var(--radius);
-  background: #f4f6ff;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 24px 60px -28px rgba(91, 124, 250, 0.7);
+  background: var(--t-bg-acc-f4f6ff);
+  box-shadow: 0 0 0 1px var(--t-sh-w-100), 0 24px 60px -28px var(--t-sh-acc-5b7cfa700);
 }
 
 .qr-card svg {
@@ -991,7 +991,7 @@ kbd,
   height: 23px;
   border-radius: 999px;
   border: 1px solid var(--line-strong);
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--t-bg-w-060);
   cursor: pointer;
   flex: none;
   padding: 0;
@@ -1017,19 +1017,21 @@ kbd,
 
 .toggle[aria-checked="true"]::after {
   transform: translateX(17px);
-  background: #fff;
+  background: var(--t-bg-w-ffffff);
 }
 
 .seg {
+  flex: none;
   display: inline-flex;
   padding: 3px;
   gap: 3px;
   border-radius: 10px;
   border: 1px solid var(--line-strong);
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--t-bg-k-300);
 }
 
 .seg button {
+  white-space: nowrap;
   border: 0;
   background: none;
   padding: 5px 13px;
@@ -1040,7 +1042,7 @@ kbd,
 }
 
 .seg button.is-on {
-  background: rgba(91, 124, 250, 0.16);
+  background: var(--t-bg-acc-5b7cfa160);
   color: var(--accent);
 }
 
@@ -1059,7 +1061,7 @@ kbd,
   padding: 3px;
   border-radius: 11px;
   border: 1px solid var(--line);
-  background: rgba(0, 0, 0, 0.25);
+  background: var(--t-bg-k-250);
 }
 
 .tab {
@@ -1076,7 +1078,7 @@ kbd,
 }
 
 .tab.is-on {
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--t-bg-w-070);
   color: var(--text);
 }
 
@@ -1094,7 +1096,7 @@ kbd,
   z-index: 100;
   display: grid;
   place-items: center;
-  background: rgba(3, 4, 8, 0.66);
+  background: var(--t-bg-bg-030408660);
   backdrop-filter: blur(6px);
   animation: fade-in 200ms ease;
 }
@@ -1114,11 +1116,11 @@ kbd,
   position: relative;
   width: min(520px, calc(100vw - 48px));
   border-radius: var(--radius-lg);
-  border: 1px solid rgba(91, 124, 250, 0.32);
+  border: 1px solid var(--t-bd-acc-5b7cfa320);
   background:
-    radial-gradient(520px 220px at 18% 0%, rgba(91, 124, 250, 0.18), transparent 70%),
-    linear-gradient(180deg, rgba(20, 24, 34, 0.98), rgba(11, 13, 18, 0.98));
-  box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 1), 0 0 0 1px rgba(0, 0, 0, 0.5);
+    radial-gradient(520px 220px at 18% 0%, var(--t-glow-acc-5b7cfa180), transparent 70%),
+    linear-gradient(180deg, var(--t-gr-bg-141822980), var(--t-gr-bg-0b0d12980));
+  box-shadow: 0 40px 90px -30px var(--t-sh-k-1000), 0 0 0 1px var(--t-sh-k-500);
   overflow: hidden;
   animation: modal-in 380ms cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -1157,8 +1159,8 @@ kbd,
   display: grid;
   place-items: center;
   background: radial-gradient(circle at 40% 35%, var(--accent-hover), var(--accent-dim));
-  box-shadow: 0 0 0 7px rgba(91, 124, 250, 0.12), 0 0 30px rgba(91, 124, 250, 0.5);
-  color: #fff;
+  box-shadow: 0 0 0 7px var(--t-sh-acc-5b7cfa120), 0 0 30px var(--t-sh-acc-5b7cfa500);
+  color: var(--t-tx-w-ffffff);
 }
 
 .notes {
@@ -1167,7 +1169,7 @@ kbd,
   padding: 14px 16px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--line);
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--t-bg-k-300);
   font-size: 0.86rem;
   color: var(--text-dim);
   line-height: 1.6;
@@ -1196,7 +1198,7 @@ kbd,
   display: grid;
   place-items: center;
   position: relative;
-  background: conic-gradient(var(--accent) var(--p), rgba(255, 255, 255, 0.08) var(--p));
+  background: conic-gradient(var(--accent) var(--p), var(--t-gr-w-080) var(--p));
   flex: none;
 }
 
@@ -1205,7 +1207,7 @@ kbd,
   position: absolute;
   inset: 4px;
   border-radius: 50%;
-  background: #12151e;
+  background: var(--t-bg-bg-12151e);
 }
 
 .progress-ring span {
@@ -1219,8 +1221,8 @@ kbd,
   width: min(600px, calc(100vw - 48px));
   border-radius: 16px;
   border: 1px solid var(--line-strong);
-  background: linear-gradient(180deg, rgba(20, 24, 34, 0.98), rgba(11, 13, 18, 0.98));
-  box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 1);
+  background: linear-gradient(180deg, var(--t-gr-bg-141822980), var(--t-gr-bg-0b0d12980));
+  box-shadow: 0 40px 90px -30px var(--t-sh-k-1000);
   overflow: hidden;
   animation: modal-in 260ms cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -1256,7 +1258,7 @@ kbd,
 }
 
 .palette-item.is-active {
-  background: rgba(91, 124, 250, 0.12);
+  background: var(--t-bg-acc-5b7cfa120);
   color: var(--text);
 }
 
@@ -1285,19 +1287,19 @@ kbd,
   padding: 11px 15px;
   border-radius: 12px;
   border: 1px solid var(--line-strong);
-  background: linear-gradient(180deg, rgba(20, 24, 34, 0.98), rgba(11, 13, 18, 0.98));
-  box-shadow: 0 24px 60px -28px rgba(0, 0, 0, 1);
+  background: linear-gradient(180deg, var(--t-gr-bg-141822980), var(--t-gr-bg-0b0d12980));
+  box-shadow: 0 24px 60px -28px var(--t-sh-k-1000);
   font-size: 0.86rem;
   animation: dock-in 320ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .toast.is-error {
-  border-color: rgba(247, 107, 107, 0.4);
-  color: #ffc4c4;
+  border-color: var(--t-bd-danger-400);
+  color: var(--t-tx-danger-ffc4c4);
 }
 
 .toast.is-ok {
-  border-color: rgba(52, 211, 153, 0.35);
+  border-color: var(--t-bd-live-350);
 }
 
 .empty-state {
@@ -1327,7 +1329,7 @@ kbd,
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.15);
+  border: 2px solid var(--t-bd-w-150);
   border-top-color: var(--accent);
   animation: spin 800ms linear infinite;
   display: inline-block;
@@ -1389,4 +1391,93 @@ kbd,
   .dash-main {
     scroll-behavior: auto;
   }
+}
+
+/* ------------------------------------------------------- light theme: home
+   GradApp: the station scene is a night-sky render (additive glows, stars,
+   fog) and has no honest daylight version, so on light the hero drops the
+   scene and its annotations and becomes a plain header panel. scene.js also
+   pauses rendering while it is hidden. */
+:root[data-theme="light"] .hero {
+  min-height: 0;
+}
+:root[data-theme="light"] .hero-backdrop,
+:root[data-theme="light"] .hero-stage,
+:root[data-theme="light"] .rig-note {
+  display: none;
+}
+:root[data-theme="light"] .hero-copy {
+  max-width: 720px;
+}
+:root[data-theme="light"] .ld-title-glow {
+  background: none;
+  color: var(--text-dim);
+  filter: none;
+}
+
+/* ------------------------------------------------ light theme: components
+   GradApp: flat fills where dark uses a gradient, and grayscale-safe data
+   marks. Vendor shares step through lightness (NVIDIA darkest, then Intel,
+   Apple, CPU) and every segment keeps its name label, so a grayscale print
+   still reads. */
+:root[data-theme="light"] .seg button.is-on {
+  background: var(--accent);
+  color: #ffffff;
+}
+:root[data-theme="light"] .shard-fill.is-running,
+:root[data-theme="light"] .spark-bar,
+:root[data-theme="light"] .train-bar-fill,
+:root[data-theme="light"] .transfer-fill,
+:root[data-theme="light"] .radar-core-dot,
+:root[data-theme="light"] .modal-orbit {
+  background: var(--accent);
+}
+:root[data-theme="light"] .shard-fill.is-late {
+  background: var(--warn);
+}
+:root[data-theme="light"] .shard-fill.is-lost {
+  background: var(--danger);
+}
+:root[data-theme="light"] .transfer-fill.is-processing {
+  background: repeating-linear-gradient(-45deg, #0a0a0a 0 10px, #a1a1aa 10px 20px);
+}
+:root[data-theme="light"] .vendor {
+  color: var(--text);
+}
+:root[data-theme="light"] .share-seg.vendor-nvidia {
+  background: #27272a;
+}
+:root[data-theme="light"] .share-seg.vendor-intel {
+  background: #71717a;
+}
+:root[data-theme="light"] .share-seg.vendor-apple {
+  background: #d4d4d8;
+}
+:root[data-theme="light"] .share-seg.vendor-cpu {
+  background: #e4e4e7;
+}
+:root[data-theme="light"] .share-seg.vendor-nvidia .share-seg-label,
+:root[data-theme="light"] .share-seg.vendor-intel .share-seg-label {
+  color: #ffffff;
+}
+/* A second machine of the same vendor: hatched instead of darker, so it stays
+   apart from the first in grayscale. */
+:root[data-theme="light"] .share-seg.is-alt,
+:root[data-theme="light"] .share-fill.is-alt {
+  filter: none;
+  background-image: repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.28) 0 3px, transparent 3px 7px);
+}
+:root[data-theme="light"] .vendor-dot.is-alt {
+  filter: none;
+  outline: 1.5px solid var(--text-faint);
+  outline-offset: 1px;
+}
+:root[data-theme="light"] ::selection {
+  background: #0a0a0a;
+  color: #ffffff;
+}
+:root[data-theme="light"] *,
+:root[data-theme="light"] *::before,
+:root[data-theme="light"] *::after {
+  backdrop-filter: none !important;
 }

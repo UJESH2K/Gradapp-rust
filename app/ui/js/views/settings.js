@@ -75,6 +75,23 @@ export function renderSettings(root, { checkForUpdates }) {
         "div",
         { class: "stack" },
         group(
+          "Appearance",
+          null,
+          line(
+            "Theme",
+            "Match system follows your computer's light or dark setting as it changes.",
+            segmented(
+              [
+                ["system", "Match system"],
+                ["dark", "Dark"],
+                ["light", "Light"],
+              ],
+              ["dark", "light"].includes(s.theme) ? s.theme : "system",
+              (v) => save({ theme: v })
+            )
+          )
+        ),
+        group(
           "Updates",
           `You have GradApp ${version}.`,
           line("Channel", "Beta gets new builds about a week earlier.", segmented([["stable", "Stable"], ["beta", "Beta"]], s.update_channel || "stable", (v) => save({ update_channel: v }, v === "beta" ? "Beta builds from now on." : "Stable builds only."))),

@@ -21,7 +21,7 @@
   width: 100%;
   border-radius: 6px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--t-bg-w-040);
 }
 .share-seg {
   position: relative;
@@ -31,10 +31,10 @@
   background: var(--vendor-cpu);
   transition: flex-grow 600ms cubic-bezier(0.22, 1, 0.36, 1);
 }
-.share-seg.vendor-nvidia { background: rgba(163, 214, 92, 0.78); }
-.share-seg.vendor-intel { background: rgba(78, 168, 255, 0.8); }
-.share-seg.vendor-apple { background: rgba(211, 213, 222, 0.72); }
-.share-seg.vendor-cpu { background: rgba(125, 134, 153, 0.7); }
+.share-seg.vendor-nvidia { background: var(--t-bg-nv-780); }
+.share-seg.vendor-intel { background: var(--t-bg-intel-800); }
+.share-seg.vendor-apple { background: var(--t-bg-apple-720); }
+.share-seg.vendor-cpu { background: var(--t-bg-cpu-700); }
 /* Two machines of one vendor side by side: the second is a shade darker. */
 .share-seg.is-alt,
 .vendor-dot.is-alt,
@@ -48,7 +48,7 @@
   padding: 0 8px;
   font-size: 0.74rem;
   font-weight: 600;
-  color: #0b0d12;
+  color: var(--t-tx-bg-0b0d12);
   white-space: nowrap;
 }
 .share-legend {
@@ -73,7 +73,7 @@
 .share-row:last-child { border-bottom: none; }
 .share-row.share-head { padding: 4px 10px 8px; text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.68rem; }
 .share-row.is-self {
-  background: rgba(91, 124, 250, 0.08);
+  background: var(--t-bg-acc-5b7cfa080);
   box-shadow: inset 3px 0 0 var(--accent);
 }
 .share-row.is-out { opacity: 0.55; }
@@ -85,7 +85,7 @@
   height: 8px;
   margin-top: 6px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--t-bg-w-060);
   overflow: hidden;
 }
 .share-fill {
@@ -127,7 +127,7 @@
   grid-row: 1;
   height: 16px;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--t-bg-w-030);
 }
 .tl-row > .tl-bar { grid-row: 1; }
 
@@ -147,15 +147,15 @@
   padding: 12px 16px;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--t-bg-w-020);
 }
-.transfer.is-running, .transfer.is-processing { border-color: rgba(91, 124, 250, 0.35); }
-.transfer.is-failed { border-color: rgba(247, 107, 107, 0.4); }
+.transfer.is-running, .transfer.is-processing { border-color: var(--t-bg-acc-5b7cfa350); }
+.transfer.is-failed { border-color: var(--t-bg-danger-400); }
 .transfer-icon { color: var(--accent); flex: none; }
 .transfer-track {
   height: 6px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--t-bg-w-060);
   overflow: hidden;
 }
 .transfer-fill {
@@ -167,7 +167,7 @@
 .transfer.is-done .transfer-fill { background: var(--live); }
 .transfer.is-failed .transfer-fill, .transfer.is-cancelled .transfer-fill { background: var(--text-faint); }
 .transfer-fill.is-processing {
-  background: repeating-linear-gradient(-45deg, rgba(91, 124, 250, 0.9) 0 10px, rgba(34, 211, 238, 0.7) 10px 20px);
+  background: repeating-linear-gradient(-45deg, var(--t-gr-acc-5b7cfa900) 0 10px, var(--t-gr-cyan-700) 10px 20px);
   background-size: 28px 28px;
   animation: stripes 900ms linear infinite;
 }
@@ -180,8 +180,8 @@
   align-items: end;
 }
 .upload-form > label.row { grid-column: 1 / -1; }
-.dataset-card.is-default { border-color: rgba(91, 124, 250, 0.4); }
-.dataset-card.is-importing { border-color: rgba(34, 211, 238, 0.4); }
+.dataset-card.is-default { border-color: var(--t-bg-acc-5b7cfa400); }
+.dataset-card.is-importing { border-color: var(--t-bg-cyan-400); }
 
 @media (max-width: 1100px) {
   .share-row { grid-template-columns: minmax(170px, 1.2fr) minmax(120px, 1fr) 84px; }

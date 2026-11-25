@@ -1704,7 +1704,7 @@ checksum = "e4eba85ea1d0a966a983acd07deee566e67395d2d96b6fb39e62b5a833f1eb0b"
 
 [[package]]
 name = "gm-net"
-version = "2.0.1"
+version = "2.0.2"
 dependencies = [
  "axum",
  "futures",
@@ -1727,7 +1727,7 @@ dependencies = [
 
 [[package]]
 name = "gm-ports"
-version = "2.0.1"
+version = "2.0.2"
 dependencies = [
  "dirs 5.0.1",
  "flate2",
@@ -1750,7 +1750,7 @@ dependencies = [
 
 [[package]]
 name = "gm-probe"
-version = "2.0.1"
+version = "2.0.2"
 dependencies = [
  "gm-types",
  "hex",
@@ -1762,7 +1762,7 @@ dependencies = [
 
 [[package]]
 name = "gm-supervisor"
-version = "2.0.1"
+version = "2.0.2"
 dependencies = [
  "gm-types",
  "libc",
@@ -1776,7 +1776,7 @@ dependencies = [
 
 [[package]]
 name = "gm-types"
-version = "2.0.1"
+version = "2.0.2"
 dependencies = [
  "serde",
  "serde_json",
@@ -1784,7 +1784,7 @@ dependencies = [
 
 [[package]]
 name = "gm-update"
-version = "2.0.1"
+version = "2.0.2"
 dependencies = [
  "axum",
  "gm-types",
@@ -1800,7 +1800,7 @@ dependencies = [
 
 [[package]]
 name = "gmctl"
-version = "2.0.1"
+version = "2.0.2"
 dependencies = [
  "anyhow",
  "axum",
@@ -1830,7 +1830,7 @@ dependencies = [
 
 [[package]]
 name = "gradapp"
-version = "2.0.1"
+version = "2.0.2"
 dependencies = [
  "dirs 5.0.1",
  "futures",

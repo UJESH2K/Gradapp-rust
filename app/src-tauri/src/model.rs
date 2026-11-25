@@ -167,6 +167,8 @@ pub struct Settings {
     pub visible_on_lan: bool,
     /// Device ids whose invites are refused ("Block this device").
     pub blocked_peers: Vec<String>,
+    /// Window theme: "system" (follow the OS) | "dark" | "light".
+    pub theme: String,
 }
 
 impl Default for Settings {
@@ -185,6 +187,20 @@ impl Default for Settings {
             rejoin_on_start: false,
             visible_on_lan: true,
             blocked_peers: Vec::new(),
+            theme: "system".into(),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Settings;
+
+    #[test]
+    fn settings_from_before_the_theme_option_default_to_system() {
+        let old: Settings =
+            serde_json::from_str(r#"{"device_name":"lab","update_channel":"beta"}"#).unwrap();
+        assert_eq!(old.theme, "system");
+        assert_eq!(old.update_channel, "beta");
     }
 }

@@ -10,6 +10,7 @@
 //   ?update=modal|later|none    the "2.0.1 available" event after ~3 s (default modal)
 //   ?install=1                  start a port install on load (to screenshot progress)
 //   ?invite=1                   another GradApp on the LAN invites this one after ~3 s
+//   ?theme=light|dark|system    Settings › Theme for this load (applied before first paint)
 
 const TAURI = typeof window !== "undefined" ? window.__TAURI__ : undefined;
 export const isTauri = Boolean(TAURI?.core?.invoke);

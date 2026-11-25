@@ -150,6 +150,7 @@ export function createMock(dispatch, dispatchChannel) {
       preferred_backend: null,
       visible_on_lan: true,
       blocked_peers: [],
+      theme: /^(light|dark|system)$/.test(params.get("theme") || "") ? params.get("theme") : "system",
       last_invite: "gradapp://join?host=192.168.1.42&port=8000&token=c41d8e0f9b2a7731&name=Vision%20lab",
     },
     joined: null,

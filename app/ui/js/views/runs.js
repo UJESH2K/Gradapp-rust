@@ -34,7 +34,7 @@ const RATE_NOTE = {
 const pct = (x, digits = 0) => `${(x * 100).toFixed(digits)}%`;
 const secs = (s) => (s == null ? "–" : s < 60 ? `${s.toFixed(s < 10 ? 1 : 0)} s` : fmtDuration(s));
 
-function lineChart(points, { format = (v) => v.toFixed(2), label, color = "#5b7cfa" }) {
+function lineChart(points, { format = (v) => v.toFixed(2), label, color = "var(--chart-1)" }) {
   const W = 560;
   const H = 170;
   const pad = { l: 38, r: 12, t: 12, b: 22 };
@@ -49,11 +49,11 @@ function lineChart(points, { format = (v) => v.toFixed(2), label, color = "#5b7c
   const ticks = [min, (min + max) / 2, max];
   const el = h("svg", { svg: true, class: "chart", viewBox: `0 0 ${W} ${H}`, preserveAspectRatio: "none", role: "img", "aria-label": label });
   el.innerHTML = `
-    <defs><linearGradient id="g-${label}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${color}" stop-opacity="0.32"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></linearGradient></defs>
+    <defs><linearGradient id="g-${label}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:${color};stop-opacity:var(--chart-area-top)"/><stop offset="1" style="stop-color:${color};stop-opacity:var(--chart-area-bottom)"/></linearGradient></defs>
     ${ticks.map((t) => `<line class="grid-line" x1="${pad.l}" x2="${W - pad.r}" y1="${y(t)}" y2="${y(t)}"/><text class="axis" x="${pad.l - 6}" y="${y(t) + 3}" text-anchor="end">${format(t)}</text>`).join("")}
     <path d="${area}" fill="url(#g-${label})"/>
-    <path d="${path}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-    ${points.map((p, i) => `<circle cx="${x(i)}" cy="${y(p.y)}" r="${i === points.length - 1 ? 4 : 2.6}" fill="${i === points.length - 1 ? color : "#0e1117"}" stroke="${color}" stroke-width="1.4"><title>Round ${p.x}: ${format(p.y)}</title></circle>`).join("")}
+    <path d="${path}" fill="none" style="stroke:${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+    ${points.map((p, i) => `<circle cx="${x(i)}" cy="${y(p.y)}" r="${i === points.length - 1 ? 4 : 2.6}" style="fill:${i === points.length - 1 ? color : "var(--chart-dot)"};stroke:${color}" stroke-width="1.4"><title>Round ${p.x}: ${format(p.y)}</title></circle>`).join("")}
     ${points.map((p, i) => (points.length <= 12 || i % 2 === 0 ? `<text class="axis" x="${x(i)}" y="${H - 6}" text-anchor="middle">${p.x}</text>` : "")).join("")}`;
   return el;
 }
@@ -617,7 +617,7 @@ export function renderRuns(root, { go }) {
               "section",
               { class: "panel" },
               h("div", { class: "row-between", style: { marginBottom: "10px" } }, h("span", { class: "panel-title" }, "Training loss by round"), h("span", { class: "small faint" }, losses.length ? "mean of the machines' reports" : "no scores yet")),
-              losses.length ? lineChart(losses, { label: "loss", format: (v) => v.toFixed(2), color: "#22d3ee" }) : h("div", { class: "empty" }, "mAP and loss appear after the first round is averaged.")
+              losses.length ? lineChart(losses, { label: "loss", format: (v) => v.toFixed(2), color: "var(--chart-2)" }) : h("div", { class: "empty" }, "mAP and loss appear after the first round is averaged.")
             )
       ),
       metrics.length

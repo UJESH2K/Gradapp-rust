@@ -233,6 +233,7 @@ export async function boot() {
   const [status, settings, logs] = await Promise.all([api.appStatus(), api.getSettings(), api.logs()]);
   store.status = status;
   store.settings = settings;
+  window.GradAppTheme?.apply(settings?.theme);
   store.logs = (logs || []).sort((a, b) => a.at - b.at);
   if (status.update?.available) store.update = status.update;
   emit("status");
@@ -250,6 +251,7 @@ export function onNotice(fn) {
 export async function saveSettings(patch) {
   const next = await api.setSettings({ ...store.settings, ...patch });
   store.settings = next;
+  window.GradAppTheme?.apply(next?.theme);
   emit("settings");
   return next;
 }

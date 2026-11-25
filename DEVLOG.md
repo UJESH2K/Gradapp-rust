@@ -16,6 +16,26 @@ Format:
 
 ---
 
+## 2026-11-25 — Light theme (2.0.2)
+
+### What
+- Settings → Appearance → Theme: **Match system / Dark / Light** (saved as
+  `theme` in settings, default "system"; older settings files still load).
+  `app/ui/js/theme-boot.js` applies it before first paint, so no flash.
+- Light theme: white page, near-white panels, black text, grey hairlines,
+  black primary buttons; no glows or gradients; status colours darkened and
+  always next to a text label; per-device share bars vary by lightness (and a
+  hatch for a second machine of the same vendor) so they survive grayscale.
+  286 hard-coded colours became CSS variables. On light, the 3D station scene
+  is hidden and stops rendering; Home shows a plain header panel.
+- Dark theme unchanged (before/after captures pixel-identical except the new
+  Appearance panel). Screenshots: `docs/screenshots/light/` (+ `gray/`).
+  Details: `docs/devlog/light-theme.md`.
+
+### Why
+- The owner's project report needs screenshots that print cleanly in black
+  and white, and some people simply prefer a light app.
+
 ## 2026-11-25 — First real install, and 2.0.1 (2.0.1)
 
 ### Field report (owner's Windows laptop, RTX 3050 Laptop GPU, 4 GB)

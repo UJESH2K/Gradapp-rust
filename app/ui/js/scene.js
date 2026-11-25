@@ -294,7 +294,8 @@ function createScene() {
     { passive: true }
   );
 
-  const shouldRun = () => Boolean(shared.host && shared.host.isConnected && onScreen && !document.hidden && three);
+  // Light theme hides the scene (app.css), so it does not render either.
+  const shouldRun = () => Boolean(shared.host && shared.host.isConnected && onScreen && !document.hidden && three && document.documentElement.dataset.theme !== "light");
 
   function frame(t) {
     raf = 0;
@@ -343,6 +344,7 @@ function createScene() {
   }
 
   document.addEventListener("visibilitychange", wake);
+  window.addEventListener("gradapp:theme", wake);
   reduceMotion.addEventListener?.("change", wake);
 
   const resizeObserver = new ResizeObserver(() => resize());
